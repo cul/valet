@@ -1,0 +1,39 @@
+_all_environments:
+
+  oracle_connection_details:
+    user: ro_columbiadb
+    password: ro_columbiadb0720
+    service: VGER
+    # For marquis's offsite desktop host, do this:
+    # (1) start an ssh tunnel
+    #   ssh -N -L1527:voyagerproddb01.cc.columbia.edu:1527 litoserv@clio-dev.cul.columbia.edu
+    # (2) override 'service' with our local definition
+    # Sprite:~ marquis$ egrep -A4 TUNNEL /usr/local/oracle/network/admin/tnsnames.ora
+    # VGER_TUNNEL=
+    #  (DESCRIPTION=
+    #    (ADDRESS_LIST=
+    #      (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1527))
+    #    )
+    # 
+    service: VGER_TUNNEL
+
+
+  ldap_connection_details:
+    host: ldap.columbia.edu
+    port: 389
+    base: o=Columbia University, c=US
+
+
+  solr_connection_details:
+    url: http://lito-solr-dev1.cul.columbia.edu:8983/solr/clio_dev
+    # To use SSH tunneling, 
+    # (1) open a tunnel like this:
+    #     ssh -v -L 8901:all-index-solr-test1.cul.columbia.edu:8983 marquis@connect.cul.columbia.edu
+    # (2) un-comment this line, over-riding the previous host definition
+    url: http://localhost:8901/solr/clio_dev
+
+
+
+
+
+    

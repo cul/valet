@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Valet</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<div>
+  <%= current_user %>
+  <br>
+  Affils: <%= current_user.affils %>
+  <br>
+  Barcode: <%= current_user.barcode %>
+  <br>
+  <%= link_to "Log Out", destroy_user_session_path %> [<%= current_user.uid %>]
+</div>
+  
+<%= yield %>
+
+</body>
+</html>

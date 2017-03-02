@@ -1,0 +1,45 @@
+<%= form_for(@offsite_request) do |f| %>
+
+  <% if @offsite_request.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited this offsite_request from being saved:</h2>
+
+      <ul>
+      <% @offsite_request.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @marc %>
+  dc = record.to_dublin_core
+  
+  <table width="610" bgcolor="#F0F0F0" border="2" cellspacing="0" cellpadding="3">
+    <tbody>
+      <tr>
+        <td width="150" align="right">CLIO Record Key:</td>
+        <td><%= @marc['001'].value%></td>
+      </tr>
+      <tr>
+        <td align="right">TITLE       :</td>
+        <td><%= @marc['245']['a']%></td>
+      </tr>
+      <tr>
+        <td align="right">AUTHOR      :</td>
+        <td><%= @marc['100']['a']%></td>
+      </tr>
+      <tr>
+        <td align="right">PUBLISHER   :</td>
+        <td><%= @marc['264']['a']%></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <% end %>
+
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

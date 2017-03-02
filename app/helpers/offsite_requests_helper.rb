@@ -1,0 +1,2 @@
+module OffsiteRequestsHelper
+end
