@@ -14,3 +14,7 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+// Use Twitter Bootstrap for styling
+//= require bootstrap-sprockets
+

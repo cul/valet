@@ -17,16 +17,25 @@ class OffsiteRequestsController < ApplicationController
   def new
     bib_id = params['bib_id']
 
+    if bib_id.blank?
+      redirect_to action: 'bib'
+    end
+
     marc = nil
     if bib_id.present?
       solr_connection = Clio::SolrConnection.new()
-      marcxml = solr_connection.retrieve_marcxml(bib_id)
-      reader = MARC::XMLReader.new(StringIO.new(marcxml))
-      @marc = reader.entries[0]
-      @dc = @marc.to_dublin_core
+      if (marcxml = solr_connection.retrieve_marcxml(bib_id))
+        reader = MARC::XMLReader.new(StringIO.new(marcxml))
+        @marc = reader.entries[0]
+        # Some Dublin Core support from rubymarc
+        @dc = @marc.to_dublin_core
+      end
     end
 
     @offsite_request = OffsiteRequest.new
+  end
+
+  def bib
   end
 
   # GET /offsite_requests/1/edit

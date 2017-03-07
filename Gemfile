@@ -77,6 +77,8 @@ gem 'rsolr'
 # Parse the MARC data structure of our catalog records
 gem 'marc'
 
+# Use Twitter Bootstrap for styling
+gem 'bootstrap-sass'
 
 
 

@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
-  # devise_for :users
+  root 'welcome#index'
+  get 'welcome/index'
 
   devise_for :users, controllers: { sessions: 'users/sessions', :omniauth_callbacks => "users/omniauth_callbacks" }
 
@@ -9,7 +10,12 @@ Rails.application.routes.draw do
     get 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
   end
 
-  resources :offsite_requests
+  resources :offsite_requests do
+    collection do
+      get 'bib'
+    end
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
