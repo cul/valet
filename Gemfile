@@ -59,6 +59,17 @@ group :development do
   # Better error page for Rack apps
   gem "better_errors"
 
+  # Deployment with Capistrano
+  gem 'capistrano', '~> 3.0', require: false
+  # Rails and Bundler integrations were moved out from Capistrano 3
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-bundler', require: false
+  # "idiomatic support for your preferred ruby version manager"
+  gem 'capistrano-rvm', require: false
+  # The `deploy:restart` hook for passenger applications is now in a separate gem
+  # Just add it to your Gemfile and require it in your Capfile.
+  gem 'capistrano-passenger', require: false
+
 end
 
 # # Authentication

@@ -15,3 +15,13 @@
 /log/*
 !/log/.keep
 /tmp
+
+# Ignore private configuration
+config/database.yml
+config/app_config.yml
+config/secrets.yml
+
+# Don't need to commit localhost dev/test databases
+db/*.sqlite3
+
+
