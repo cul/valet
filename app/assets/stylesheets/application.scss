@@ -1,7 +1,11 @@
 
-@import 'offsite_requests';
-/*@import 'scaffolds';*/
 
- // "bootstrap-sprockets" must be imported before "bootstrap" and "bootstrap/variables"
- @import "bootstrap-sprockets";
- @import "bootstrap";
+// Bootstrap 3
+$body-bg:    #eef;
+
+// "bootstrap-sprockets" must be imported before "bootstrap" and "bootstrap/variables"
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+
+@import 'offsite_requests';

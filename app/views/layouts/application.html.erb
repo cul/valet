@@ -17,8 +17,11 @@
   <br>
   <%= link_to "Log Out", destroy_user_session_path %> [<%= current_user.uid %>]
 </div>
-  
-<%= yield %>
+
+<div class="container">
+  <%= render '/layouts/messages' %>
+  <%= yield %>
+</div>
 
 </body>
 </html>

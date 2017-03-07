@@ -18,18 +18,14 @@ class OffsiteRequestsController < ApplicationController
     bib_id = params['bib_id']
 
     if bib_id.blank?
-      redirect_to action: 'bib'
+      return redirect_to action: 'bib'
     end
 
-    marc = nil
-    if bib_id.present?
-      solr_connection = Clio::SolrConnection.new()
-      if (marcxml = solr_connection.retrieve_marcxml(bib_id))
-        reader = MARC::XMLReader.new(StringIO.new(marcxml))
-        @marc = reader.entries[0]
-        # Some Dublin Core support from rubymarc
-        @dc = @marc.to_dublin_core
-      end
+    @clio_record = ClioRecord::new_from_bib_id(bib_id)
+
+    if @clio_record.blank?
+      flash[:notice] = "Cannot find record #{bib_id}"
+      return redirect_to action: 'bib'
     end
 
     @offsite_request = OffsiteRequest.new
