@@ -19,9 +19,16 @@ module Clio
       raise "retrieve_marc() needs bib_id" unless bib_id.present?
 
       solr_doc = fetch_solr_doc(bib_id)
-      return nil unless solr_doc.present?
+      if solr_doc.blank?
+        Rails.logger.info "Clio::Solr::retrieve_marcxml(#{bib_id}) retrieved nil solr_doc!"
+        return nil
+      end
 
       marc = solr_doc_to_marcxml(solr_doc)
+      if marc.blank?
+        Rails.logger.info "Clio::Solr::retrieve_marcxml(#{bib_id}) retrieved nil marc!"
+      end
+      return marc
     end
 
     def fetch_solr_doc(bib_id = nil)

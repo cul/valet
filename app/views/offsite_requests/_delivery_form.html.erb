@@ -1,0 +1,32 @@
+<h3>Please select a delivery method:</h3>
+
+
+<table class='offsite_request'>
+
+  <tr>
+    <td>
+      <%= radio_button_tag(:delivery_type, 'physical') %>
+      <%= label_tag(:delivery_type_physical, 'Item to Library') %>
+    <td>
+      <p class="text-center">
+        <strong>Preferred Campus Delivery Location</strong>
+      </p>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <%= radio_button_tag(:delivery_type, 'electronic') %>
+      <%= label_tag(:delivery_type_electronic, 'Electronic') %>
+    </td>
+    <td>
+      <p class="text-center">
+        <strong>Citation</strong>
+      </p>
+    </td>
+  </tr>
+  
+</table>
+
+
+

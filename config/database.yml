@@ -20,3 +20,10 @@ test:
   <<: *default
   database: db/test.sqlite3
 
+valet_dev:
+  adapter: mysql2
+  database: valet_dev
+  username: valet_dev_user
+  password: Draw-Strike-Kill-Minute-7
+  host: all-db-dev2.cul.columbia.edu
+  port: 3313

@@ -2,7 +2,7 @@
 
   <% if @offsite_request.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited this offsite_request from being saved:</h2>
+      <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited tdis offsite_request from being saved:</h2>
 
       <ul>
       <% @offsite_request.errors.full_messages.each do |message| %>
@@ -12,31 +12,22 @@
     </div>
   <% end %>
 
-  <% if @clio_record %>  
-    <table class="table table-bordered">
-      <tbody>
-        <tr>
-          <th>CLIO Record Key:</th>
-          <td><%= @clio_record.key%></td>
-        </tr>
-        <tr>
-          <th>TITLE:</th>
-          <td><%= @clio_record.title%></td>
-        </tr>
-        <tr>
-          <th>AUTHOR:</th>
-          <td><%= @clio_record.author%></td>
-        </tr>
-        <tr>
-          <th>PUBLISHER:</th>
-          <td><%= @clio_record.publisher%></td>
-        </tr>
-      </tbody>
-    </table>
+  <% if @clio_record %>
+    <%= render 'record_form', f: f %>
+  <% else %>
+    <!-- should never happen -->
+    <div class='alert alert-danger'>
+      ERROR: No CLIO Record passed to view!
+    </div>
   <% end %>
+
+  <%= render 'delivery_form', f: f %>
 
 
   <div class="actions">
     <%= f.submit %>
   </div>
+
 <% end %>
+
+

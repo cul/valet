@@ -3,24 +3,38 @@
 # 
 # It is not a Blacklight Document.
 class ClioRecord
-  attr_reader :marc_record
+  attr_reader :marc_record, :holdings, :barcodes, :availabilities, :tocs
 
   def initialize(marc_record = nil)
     @marc_record = marc_record
+    self.populate_holdings
+    self.fetch_barcodes
+    self.fetch_availabilty
+    self.fetch_tocs
   end
 
   def self.new_from_bib_id(bib_id = nil)
+    if bib_id.blank?
+      Rails.logger.error "ClioRecord::new_from_bib_id() missing bib_id!"
+      return nil
+    end
     return nil unless bib_id.present?
 
     solr_connection = Clio::SolrConnection.new()
     raise "Clio::SolrConnection failed!" unless solr_connection
 
     marcxml = solr_connection.retrieve_marcxml(bib_id)
-    return nil unless marcxml.present?
+    if marcxml.blank?
+      Rails.logger.error "ClioRecord::new_from_bib_id() marcxml nil!"
+      return nil
+    end
 
     reader = MARC::XMLReader.new(StringIO.new(marcxml))
     marc_record = reader.entries[0]
-    return nil unless marc_record
+    if marc_record.blank?
+      Rails.logger.error "ClioRecord::new_from_bib_id() marc_record nil!"
+      return nil
+    end
 
     ClioRecord.new(marc_record)
   end
@@ -39,34 +53,148 @@ class ClioRecord
   end
   def author
     author ||= []
-    "abcdefgjklnpqtu".split(//).each do |subfield|
-      if marc_record['100']
-        author << marc_record['100'][subfield]
-      elsif marc_record['110']
-        author << marc_record['110'][subfield]
-      elsif marc_record['111']
-        author << marc_record['111'][subfield]
+    ['100', '110', '111'].each do |field|
+      next unless marc_record[field]
+      'abcdefgjklnpqtu'.split(//).each do |subfield|
+        author << marc_record[field][subfield]
       end
+      # stop once the 1st possible field is found & processed
+      break
     end
+    # "abcdefgjklnpqtu".split(//).each do |subfield|
+    #   if marc_record['100']
+    #     author << marc_record['100'][subfield]
+    #   elsif marc_record['110']
+    #     author << marc_record['110'][subfield]
+    #   elsif marc_record['111']
+    #     author << marc_record['111'][subfield]
+    #   end
+    # end
     return author.compact.join(' ')
   end
   def publisher
     publisher ||= []
-    'abcefg3'.split(//).each do |subfield|
-      if marc_record['260']
-        publisher << marc_record['260'][subfield]
-      elsif marc_record['264']
-        publisher << marc_record['260'][subfield]
+    ['260', '264'].each do |field|
+      next unless marc_record[field]
+      'abcefg3'.split(//).each do |subfield|
+        publisher << marc_record[field][subfield]
       end
+      # stop once the 1st possible field is found & processed
+      break
     end
+    # 'abcefg3'.split(//).each do |subfield|
+    #   if marc_record['260']
+    #     publisher << marc_record['260'][subfield]
+    #   elsif marc_record['264']
+    #     publisher << marc_record['264'][subfield]
+    #   end
+    # end
     return publisher.compact.join(' ')
   end
+
 
   # Drill down into the MARC fields to build an
   # array of holdings.  See:
   # https://wiki.library.columbia.edu/display/cliogroup/Holdings+Revision+project
-  def holdings
+  def populate_holdings
+    mfhd_fields  = {
+      summary_holdings:         '866',
+      supplements:              '867',
+      indexes:                  '868',
+      public_notes:             '890',
+      donor_information:        '891',
+      reproduction_note:        '892',
+      url:                      '893',
+      acquisitions_information: '894',
+      current_issues:           '895',
+    }
 
+    # Process each 852, creating a new mfhd for each
+    holdings = Hash.new
+    marc_record.each_by_tag('852') do |tag852|
+      mfhd_id = tag852['0']
+      holdings[mfhd_id] = {
+        mfhd_id: mfhd_id,
+        location_display:         tag852['a'],
+        location_code:            tag852['b'],
+        display_call_number:      tag852['h'],
+        items:                    [],
+      }
+      # And fill in all possible mfhd fields with empty array
+      mfhd_fields.each_pair do |label, tag|
+        holdings[mfhd_id][label] = []
+      end
+    end
+
+    # Scan the MARC record for each of the possible mfhd fields,
+    # if any found, add to appropriate Holding
+    mfhd_fields.each_pair do |label, tag|
+       marc_record.each_by_tag(tag) do |mfhd_data_field|
+         mfhd_id = mfhd_data_field['0']
+         value = mfhd_data_field['a']
+         next unless mfhd_id and value
+         holdings[mfhd_id][label] << value
+       end
+    end
+
+    # Now add the list of items to each holding.
+    marc_record.each_by_tag('876') do |item_field|
+      # build the Item hash
+      item = {
+        item_id:            item_field['a'],
+        use_restriction:    item_field['h'],
+        temporary_location: item_field['l'],
+        barcode:            item_field['p'],
+        enum_chron:         item_field['3']
+      }
+      # Store this item hash in the apppropriate Holding
+      mfhd_id = item_field['0']
+      holdings[mfhd_id][:items] << item
+    end
+
+    # Now that all the data is matched up, we don't need
+    # the hash of mfhd_id ==> holdings_hash
+    # Just store an array of Holdings
+    @holdings = holdings.values
+  end
+
+  def fetch_barcodes
+    # Single array of barcodes from all holdings, all items
+    barcodes = @holdings.collect do |holdings|
+      holdings[:items].collect do |item|
+        item[:barcode]
+      end
+    end.flatten.uniq
+
+    @barcodes = barcodes
+  end
+
+  # Fetch availability for each barcode from SCSB
+  def fetch_availabilty
+    availabilities = {}
+    conn = Recap::ScsbApi.open_connection()
+    @barcodes.each do |barcode|
+      availability = Recap::ScsbApi.get_barcode_availability(barcode, conn)
+      availabilities[barcode] = availability
+    end
+
+    @availabilities = availabilities
+  end
+
+  def fetch_tocs
+    tocs = {}
+    conn = Columbia::Web.open_connection()
+    @barcodes.each do |barcode|
+      toc = Columbia::Web.get_toc_link(barcode, conn)
+      if toc.present?
+        tocs[barcode] = toc
+      end
+    end
+
+    @tocs = tocs
   end
 
 end
+
+
+

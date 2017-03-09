@@ -24,7 +24,7 @@ class OffsiteRequestsController < ApplicationController
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
 
     if @clio_record.blank?
-      flash[:notice] = "Cannot find record #{bib_id}"
+      flash[:error] = "Cannot find record #{bib_id}"
       return redirect_to action: 'bib'
     end
 

@@ -33,6 +33,15 @@ _all_environments:
     url: http://localhost:8901/solr/clio_dev
 
 
+  scsb_connection_details:
+    api_key: recap
+    url: http://uat-recap.htcinc.com:9093
+    item_availability_path: /sharedCollection/itemAvailabilityStatus
+    search_path: /searchService/search
+    search_by_param_path: /searchService/searchByParam
+    
+    
+    
 
 
 
