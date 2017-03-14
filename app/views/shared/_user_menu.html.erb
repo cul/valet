@@ -1,0 +1,41 @@
+
+<li class="dropdown">
+  <% if current_user %>
+    <a data-toggle="dropdown" href="#">
+      <%= current_user.login %>
+    </a>
+  <% else %>
+    <%= link_to "Log In", user_omniauth_authorize_path(:saml) %>
+  <% end %>
+
+  <ul class="dropdown-menu">
+    <% if current_user %>
+      <li>
+        <div class='well user-info'>
+          <%= current_user %>
+          <br>
+          Email: <%= current_user.email %>
+          <br>
+          Barcode: <%= current_user.barcode %>
+          <br>
+          <br>
+          Affiliations:
+          <div class='user-affil-list'>
+            <%= current_user.affils.join(',  ') %>
+          </div>
+          Offsite Elegable?  <%= current_user.offsite_eligible? %>
+          <br>
+          Offsite Blocked?  <%= current_user.offsite_blocked? %>
+        </div>
+      </li>
+
+      <li>
+        <%= link_to "Log Out", destroy_user_session_path %>
+      </li>
+    <% end %>
+    
+  </ul>
+  
+</li>
+
+

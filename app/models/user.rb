@@ -1,6 +1,8 @@
 class User < ActiveRecord::Base
   include Cul::Omniauth::Users
 
+  serialize :affils, Array
+
   # # Include default devise modules. Others available are:
   # # :confirmable, :lockable, :timeoutable and :omniauthable
   # devise :database_authenticatable, :registerable,
@@ -81,5 +83,20 @@ class User < ActiveRecord::Base
     # NOOP
   end
 
+  def offsite_eligible?
+    return false unless affils
+    affils.each do |affil|
+      return true if affil.match(/CUL_role-clio-...$/)
+    end
+    return false
+  end
+
+  def offsite_blocked?
+    return false unless affils
+    affils.each do |affil|
+      return true if affil.match(/CUL_role-clio-.*-blocked/)
+    end
+    return false
+  end
 
 end

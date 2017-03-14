@@ -1,6 +1,10 @@
 class OffsiteRequestsController < ApplicationController
   before_action :set_offsite_request, only: [:show, :edit, :update, :destroy]
 
+  # before_filter :authenticate_user!, if: :devise_controller?
+  before_filter :authenticate_user!
+
+
   # GET /offsite_requests
   # GET /offsite_requests.json
   def index

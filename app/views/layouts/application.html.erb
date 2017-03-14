@@ -9,19 +9,15 @@
 <body>
 <%= render :partial => 'shared/topnavbar' %>
 
-<div>
-  <%= current_user %>
-  <br>
-  Affils: <%= current_user.affils %>
-  <br>
-  Barcode: <%= current_user.barcode %>
-  <br>
-  <%= link_to "Log Out", destroy_user_session_path %> [<%= current_user.uid %>]
-</div>
-
 <div class="container">
+
+  <h1>Valet</h1>
+
   <%= render '/layouts/messages' %>
+
+  <br>
   <%= yield %>
+
 </div>
 
 </body>
