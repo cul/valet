@@ -2,7 +2,7 @@
 module Recap
   class ScsbApi
 
-    attr_reader :scsb_args
+    attr_reader :conn, :scsb_args
 
     # APP_CONFIG parameter block looks like this:
     # 
@@ -26,36 +26,109 @@ module Recap
       @scsb_args = scsb_args
     end
 
-    def self.open_connection
-      get_scsb_args
-      full_url = @scsb_args[:url] + @scsb_args[:item_availability_path]
-      conn = Faraday.new(url: full_url)
-      raise "Faraday.new(#{full_url}) failed!" unless conn
-      return conn
-    end
-
-    # Called like this:
-    # availability = Recap::ScsbApi.get_barcode_availability(barcode)
-    def self.get_barcode_availability(barcode = nil, conn = nil)
-      raise "Recap::ScsbApi.get_barcode_availability() got nil barcode" if barcode.blank?
-      get_scsb_args
-
-      full_url = @scsb_args[:url] + @scsb_args[:item_availability_path]
-
-      # rest-client - always gives me 401 Unauthorized?
-      # params = { itemBarcode: barcode }
-      # headers = { api_key: @scsb_args[:api_key], params: params }
-      # response = RestClient.get(full_url, headers)
-      # faraday
-      conn ||= Faraday.new(url: full_url)
-      raise "Faraday.new(#{full_url}) failed!" unless conn
-      response = conn.get do |req|
-        req.headers['api_key'] = @scsb_args[:api_key]
-        req.params['itemBarcode'] = barcode
+    def self.open_connection(url = nil)
+      if @conn
+        if url.nil?  || (@conn.url_prefix.to_s == url)
+          return @conn
+        end
       end
 
-      # status = response.status  # numeric http status code
-      availability = response.body
+      get_scsb_args
+      url ||= @scsb_args[:url]
+      Rails.logger.debug "- opening new connection to #{url}"
+      @conn = Faraday.new(url: url)
+      raise "Faraday.new(#{url}) failed!" unless @conn
+
+      @conn.headers['Content-Type'] = 'application/json'
+      @conn.headers['api_key'] = @scsb_args[:api_key]
+
+      return @conn
+    end
+
+    # NOTE: Currently bibAvailabilityStatus and itemAvailabilityStatus
+    # return the same response format:
+    # [
+    #   {
+    #     "itemBarcode": "CU10104704",
+    #     "itemAvailabilityStatus": "Available",
+    #     "errorMessage": null
+    #   },
+    #   {
+    #     "itemBarcode": "CU10104712",
+    #     "itemAvailabilityStatus": "Available",
+    #     "errorMessage": null
+    #   },
+    #   ...
+    # ]
+    # But the APIs are still under active development.  Response
+    # format may diverge in the future.
+
+
+    # Called like this:
+    # availability = Recap::ScsbApi.get_item_availability(barcodes)
+    def self.get_item_availability(barcodes = [], conn = nil)
+      raise "Recap::ScsbApi.get_item_availability() got blank barcodes" if barcodes.blank?
+      Rails.logger.debug "- get_item_availability(#{barcodes})"
+
+      conn ||= open_connection()
+      raise "get_item_availability() bad connection [#{conn.inspect}]" unless conn
+
+      get_scsb_args
+      path = @scsb_args[:item_availability_path]
+      params = {
+        barcodes: barcodes
+      }
+
+      response = conn.post path, params.to_json
+      if response.status != 200
+        # Raise or just log error?
+        Rails.logger.error "ERROR:  API response status #{response.status}"
+        Rails.logger.error "ERROR DETAILS: " + response.body
+        return ''
+      end
+
+      # parse returned array of item-info hashes into simple barcode->status hash
+      response_data = JSON.parse(response.body)
+      availabilities = Hash.new
+      response_data.each do |item|
+        availabilities[ item['itemBarcode'] ] = item['itemAvailabilityStatus']
+      end
+      return availabilities
+    end
+
+
+    # Return a hash:
+    #   { barcode: availability, barcode: availability, ...}
+    def self.get_bib_availability(bib_id = nil, institution_id = nil, conn = nil)
+      raise "Recap::ScsbApi.get_bib_availability() got nil bib_id" if bib_id.blank?
+      raise "Recap::ScsbApi.get_bib_availability() got nil institution_id" if bib_id.blank?
+      Rails.logger.debug "- get_bib_availability(#{bib_id}, #{institution_id})"
+
+      conn  ||= open_connection()
+      raise "get_bib_availability() bad connection [#{conn.inspect}]" unless conn
+
+      get_scsb_args
+      path = @scsb_args[:bib_availability_path]
+      params = {
+        bibliographicId: bib_id,
+        institutionId:   institution_id
+      }
+      response = conn.post path, params.to_json
+      response_data = JSON.parse(response.body)
+
+      if response.status != 200
+        # Raise or just log error?
+        Rails.logger.error "ERROR:  API response status #{response.status}"
+        Rails.logger.error "ERROR DETAILS: " + response_data.to_yaml
+        return
+      end
+
+      # parse returned array of item-info hashes into simple barcode->status hash
+      availabilities = Hash.new
+      response_data.each do |item|
+        availabilities[ item['itemBarcode'] ] = item['itemAvailabilityStatus']
+      end
+      return availabilities
     end
 
   end

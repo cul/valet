@@ -31,7 +31,7 @@
   <% @clio_record.holdings.each do |holdings| %>  
     <table class='offsite_request'>
       <tr>
-        <td colspan='6'>
+        <td colspan='7'>
           <%= holdings[:location_code].upcase %>
           &nbsp;  &nbsp;  &nbsp;  &nbsp;
           <%= holdings[:display_call_number].upcase %>
@@ -42,7 +42,8 @@
         <td>&nbsp;</td>
         <td>Vol/Part No.</td>
         <td>Barcode</td>
-        <td>Availability</td>
+        <td>Availability<br>(by items)<br><%=@clio_record.t1%> ms</td>
+        <td>Availability<br>(by bib)<br><%=@clio_record.t2%> ms</td>
         <td>Note</td>
         <td>Table of Contents (when available)</td>
       </tr>
@@ -52,7 +53,8 @@
         <td></td>
         <td><%= item[:enum_chron] %></td>
         <td><%= item[:barcode] %></td>
-        <td><%= @clio_record.availabilities[ item[:barcode] ] || '(unknown)' %></td>
+        <td><%= @clio_record.availabilities1[ item[:barcode] ] || '(unknown)' %></td>
+        <td><%= @clio_record.availabilities2[ item[:barcode] ] || '(unknown)' %></td>
         <td></td>
         <td><%= toc_link(@clio_record, item[:barcode]) %></td>
       <tr>

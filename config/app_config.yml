@@ -35,10 +35,14 @@ _all_environments:
 
   scsb_connection_details:
     api_key: recap
-    url: http://uat-recap.htcinc.com:9093
-    item_availability_path: /sharedCollection/itemAvailabilityStatus
-    search_path: /searchService/search
-    search_by_param_path: /searchService/searchByParam
+    # item-availability in UAT is a GET
+    # url: http://uat-recap.htcinc.com:9093
+    # item-availability in TST is a PUT
+    url: https://tst-recap.htcinc.com:9093/
+    item_availability_path: sharedCollection/itemAvailabilityStatus
+    bib_availability_path: sharedCollection/bibAvailabilityStatus
+    search_path: searchService/search
+    search_by_param_path: searchService/searchByParam
     
     
     
