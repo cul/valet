@@ -3,17 +3,14 @@ class User < ActiveRecord::Base
 
   serialize :affils, Array
 
-  # # Include default devise modules. Others available are:
-  # # :confirmable, :lockable, :timeoutable and :omniauthable
-  # devise :database_authenticatable, :registerable,
-  #        :recoverable, :rememberable, :trackable, :validatable
-
+  attr_reader :scsb_patron_information
 
   before_create :set_personal_info_via_ldap
   after_initialize :set_personal_info_via_ldap
 
-  before_create :set_barcode_via_oracle
+  # before_create :set_barcode_via_oracle
   after_initialize :set_barcode_via_oracle
+  after_initialize :get_scsb_patron_information
 
   def to_s
     if first_name
@@ -98,5 +95,13 @@ class User < ActiveRecord::Base
     end
     return false
   end
+
+
+  def get_scsb_patron_information
+    return {} if barcode.blank?
+    institution_id = 'CUL'
+    @scsb_patron_information = Recap::ScsbApi.get_patron_information(barcode, institution_id) || {}
+  end
+
 
 end

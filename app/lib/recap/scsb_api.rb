@@ -114,22 +114,54 @@ module Recap
         institutionId:   institution_id
       }
       response = conn.post path, params.to_json
-      response_data = JSON.parse(response.body)
 
       if response.status != 200
         # Raise or just log error?
         Rails.logger.error "ERROR:  API response status #{response.status}"
-        Rails.logger.error "ERROR DETAILS: " + response_data.to_yaml
+        Rails.logger.error "ERROR DETAILS: " + response.body
         return
       end
 
       # parse returned array of item-info hashes into simple barcode->status hash
+      response_data = JSON.parse(response.body)
       availabilities = Hash.new
       response_data.each do |item|
         availabilities[ item['itemBarcode'] ] = item['itemAvailabilityStatus']
       end
       return availabilities
     end
+
+
+    def self.get_patron_information(patron_barcode = nil, institution_id = nil, conn = nil)
+      raise "Recap::ScsbApi.get_patron_information() got blank patron_barcode" if patron_barcode.blank?
+      raise "Recap::ScsbApi.get_patron_information() got blank institution_id" if institution_id.blank?
+      Rails.logger.debug "- get_patron_information(#{patron_barcode}, #{institution_id})"
+
+      conn  ||= open_connection()
+      raise "get_bib_availability() bad connection [#{conn.inspect}]" unless conn
+
+      get_scsb_args
+      path = @scsb_args[:patron_information_path]
+      params = {
+        patronIdentifier:      patron_barcode,
+        itemOwningInstitution: institution_id
+      }
+      response = conn.post path, params.to_json
+
+      if response.status != 200
+        # Raise or just log error?
+        Rails.logger.error "ERROR:  API response status #{response.status}"
+        Rails.logger.error "ERROR DETAILS: " + response.body
+        return
+      end
+
+      # Rails.logger.debug "response.body=\n#{response.body}"
+      patron_information_hash = JSON.parse(response.body)
+      # Just return the full hash, let the caller pull out what they want
+      return patron_information_hash
+    end
+
+
 
   end
 end
