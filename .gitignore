@@ -24,4 +24,6 @@ config/secrets.yml
 # Don't need to commit localhost dev/test databases
 db/*.sqlite3
 
+# My own notes during localhost development
+NOTES.txt
 

@@ -17,4 +17,3 @@
 
 // Use Twitter Bootstrap for styling
 //= require bootstrap-sprockets
-

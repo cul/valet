@@ -16,16 +16,26 @@
           <br>
           Email: <%= current_user.email %>
           <br>
-          Barcode: <%= current_user.barcode %>
+          Patron Barcode: <%= current_user.barcode %>
           <br>
           <br>
           Affiliations:
           <div class='user-affil-list'>
             <%= current_user.affils.join(',  ') %>
           </div>
-          Offsite Elegable?  <%= current_user.offsite_eligible? %>
+          Offsite Eligible?  <%= current_user.offsite_eligible? %>
           <br>
           Offsite Blocked?  <%= current_user.offsite_blocked? %>
+          <br>
+          <br>
+          SCSB Patron Information:
+          <div class='user-affil-list'>
+            <% current_user.scsb_patron_information.each_pair do |key, value| %>
+              <%= key + ":   " + value.to_s %>
+              <br>
+            <% end %>
+          </div>
+          
         </div>
       </li>
 
