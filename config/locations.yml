@@ -1,0 +1,71 @@
+# Simple location code-to-label lookup table
+
+bc:  Bibliographic Control
+bt:  Butler Preservation
+ci:  Interlibrary Loan
+cv:  Milstein Reserves
+mp:  Monographic Recon -- for MRP
+mz:  ReCAP Coordinator
+il:  ReCAP Interlibrary Loan
+ar:  Avery Library
+bl:  Barnard Library
+ut:  Burke Library (UTS)
+bs:  Business/Econ Library
+bu:  Butler Library
+ea:  East Asian Library
+en:  Engineering Library
+ge:  Geology Library
+gs:  Lamont-Doherty Earth Observatory
+hs:  Health Sciences Library
+cj:  Journalism Library
+le:  Lehman Library
+rh:  Lehman Suite
+ml:  Mathematics Library
+cf:  401 Butler Library (Microform Reading Room)
+mr:  Music & Arts Library
+rs:  Rare Book Library
+ca:  Science & Engineering Lib (NWC Building)
+sw:  Social Work Library
+
+
+offsite_locations:
+  - off,ave
+  - off,bio
+  - off,bmc
+  - off,bssc
+  - off,bus
+  - off,che
+  - off,docs
+  - off,eal
+  - off,ean
+  - off,eax
+  - off,eng
+  - off,fax
+  - off,glg
+  - off,glx
+  - off,gsc
+  - off,hsl
+  - off,hsr
+  - off,jou
+  - off,leh
+  - off,les
+  - off,mat
+  - off,mrr
+  - off,msc
+  - off,msr
+  - off,mus
+  - off,mvr
+  - off,phy
+  - off,psy
+  - off,ref
+  - off,sci
+  - off,sls
+  - off,swx
+  - off,unr
+  - off,utmrl
+  - off,utn
+  - off,utp
+  - off,uts
+  - off,war
+
+

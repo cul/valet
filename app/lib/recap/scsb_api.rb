@@ -99,6 +99,15 @@ module Recap
 
     # Return a hash:
     #   { barcode: availability, barcode: availability, ...}
+
+    # BIB NOT FOUND - Response Code 200, Response Body:
+    # [
+    #   {
+    #     "itemBarcode": "",
+    #     "itemAvailabilityStatus": null,
+    #     "errorMessage": "Bib Id doesn't exist in SCSB database."
+    #   }
+    # ]
     def self.get_bib_availability(bib_id = nil, institution_id = nil, conn = nil)
       raise "Recap::ScsbApi.get_bib_availability() got nil bib_id" if bib_id.blank?
       raise "Recap::ScsbApi.get_bib_availability() got nil institution_id" if bib_id.blank?
@@ -161,6 +170,48 @@ module Recap
       return patron_information_hash
     end
 
+    # This is for RETRIEVAL / RECALL, not for EDD
+    def self.request_item(requestType = nil, itemBarcodes = [], deliveryLocation = nil, itemOwningInstitution = nil, conn = nil)
+      raise "Recap::ScsbApi.request_item() got invalid requestType" unless
+        requestType.present? &&
+        ['RETRIEVAL','RECALL'].include?(requestType)
+      raise "Recap::ScsbApi.request_item() got blank itemBarcodes" if itemBarcodes.blank?
+      raise "Recap::ScsbApi.request_item() got blank deliveryLocation" if deliveryLocation.blank?
+      raise "Recap::ScsbApi.request_item() got blank itemOwningInstitution" if itemOwningInstitution.blank?
+      Rails.logger.debug "- request_item(#{barcodes}, #{delivery_location}, #{owning_institution_id})"
+
+      conn  ||= open_connection()
+      raise "request_item() bad connection [#{conn.inspect}]" unless conn
+
+      # set values that aren't passed in as parameters
+      requestingInstitution = 'CUL'
+      emailAddress = current_user.email
+      patronBarcode = current_user.barcode
+
+      get_scsb_args
+      path = @scsb_args[:request_item_path]
+      params = {
+        requestingInstitution: requestingInstitution,
+        deliveryLocation: deliveryLocation,
+        itemBarcodes: itemBarcodes,
+        itemOwningInstitution: itemOwningInstitution,
+        patronBarcode: patronBarcode,
+        requestType: requestType
+      }
+      response = conn.post path, params.to_json
+
+      if response.status != 200
+        # Raise or just log error?
+        Rails.logger.error "ERROR:  API response status #{response.status}"
+        Rails.logger.error "ERROR DETAILS: " + response.body
+        return {}
+      end
+
+      # Rails.logger.debug "response.body=\n#{response.body}"
+      response_hash = JSON.parse(response.body)
+      # Just return the full hash, let the caller pull out what they want
+      return response_hash
+    end
 
 
   end

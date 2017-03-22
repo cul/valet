@@ -10,7 +10,8 @@ class User < ActiveRecord::Base
 
   # before_create :set_barcode_via_oracle
   after_initialize :set_barcode_via_oracle
-  after_initialize :get_scsb_patron_information
+  # we don't need this
+  # after_initialize :get_scsb_patron_information
 
   def to_s
     if first_name

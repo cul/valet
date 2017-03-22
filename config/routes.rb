@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :offsite_requests do
     collection do
       get 'bib'
+      get 'holding'
     end
   end
 

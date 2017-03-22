@@ -1,9 +1,9 @@
+
 <%= form_for(@offsite_request) do |f| %>
 
   <% if @offsite_request.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited tdis offsite_request from being saved:</h2>
-
+      <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited this offsite_request from being saved:</h2>
       <ul>
       <% @offsite_request.errors.full_messages.each do |message| %>
         <li><%= message %></li>
@@ -12,20 +12,32 @@
     </div>
   <% end %>
 
-  <% if @clio_record %>
-    <%= render 'record_form', f: f %>
-  <% else %>
-    <!-- should never happen -->
+  <!-- should never happen -->
+  <% if @clio_record.blank? %>
     <div class='alert alert-danger'>
       ERROR: No CLIO Record passed to view!
     </div>
   <% end %>
 
+  <br>
+  <%= render 'bib_form', f: f %>
+  <br>
+  <%= render 'holdings_form', f: f %>
+  <br>
   <%= render 'delivery_form', f: f %>
 
 
-  <div class="actions">
-    <%= f.submit %>
+  <br>
+
+  <div class='row'>
+    <div class='col-sm-6'>
+      <%= f.submit('Submit Offsite Request', style: 'btn btn-default') %>
+    </div>
+    <div class='col-sm-6'>
+      <span class='legacy-link bg-success xpull-right'>
+        <%= f.submit('Submit Legacy Offsite Request') %>
+      </span>
+    </div>
   </div>
 
 <% end %>

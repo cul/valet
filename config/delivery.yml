@@ -1,0 +1,165 @@
+
+standard_available_locations:
+  - ar
+  - bl
+  - bs
+  - bu
+  - ca
+  - cj
+  - ea
+  - ge
+  - gs
+  - hs
+  - le
+  - ml
+  - mr
+  - sw
+  - ut
+
+# configuration for each offsite location code
+# keys:
+#   default:  required key, sets a default on-campus delivery location
+#   available: optional key, sets a list of available on-campus 
+#      delivery locations.  if there is no specific list defined then
+#      the standard set (standard_available_locations) will be used.
+
+off,ave:
+  default:  ar
+  available:
+    -  ar
+
+off,bio:
+  default:  ca
+
+off,bmc:
+  default:  cv
+  available:
+    -  cv
+
+off,bssc:
+  default:  bs
+  available:
+    -  bs
+
+off,bus:
+  default:  bs
+
+off,che:
+  default:  ca
+
+off,docs:
+  default:  le
+
+off,eal:
+  default:  ea
+
+off,ean:
+  default:  ea
+  available:
+    -  ea
+
+off,eax:
+  default:  ea
+
+off,eng:
+  default:  ca
+
+off,fax:
+  default:  ar
+  available:
+    -  ar
+
+off,glg:
+  default:  ge
+
+off,glx:
+  default:  bu
+
+off,gsc:
+  default:  gs
+
+off,hsl:
+  default:  hs
+
+off,hsr:
+  default:  hs
+
+off,jou:
+  default:  cj
+
+off,leh:
+  default:  le
+
+off,les:
+  default:  le
+  available:
+    -  le
+
+off,mat:
+  default:  ml
+
+off,mrr:
+  default:  cf
+  available:
+    -  cf
+
+off,msc:
+  default:  mr
+  available:
+    -  mr
+
+off,msr:
+  default:  mr
+  available:
+    -  mr
+
+off,mus:
+  default:  mr
+
+off,mvr:
+  default:  mr
+  available:
+    -  mr
+
+off,phy:
+  default:  ca
+
+off,psy:
+  default:  ca
+
+off,ref:
+  default:  bu
+
+off,sci:
+  default:  ca
+
+off,swx:
+  default:  sw
+
+off,unr:
+  default:  ut
+  available:
+    -  ut
+
+off,utmrl:
+  default:  ut
+  available:
+    -  ut
+
+off,utn:
+  default:  ut
+
+off,utp:
+  default:  ut
+  available:
+    -  ut
+
+off,uts:
+  default:  ut
+
+off,war:
+  default:  ar
+  
+  
+  
+  

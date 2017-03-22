@@ -4,8 +4,8 @@
 
 
 table.offsite_request {
-/*  width: 610;*/
-  border: 2px solid black;
+  width: 600px;
+  border: 1px solid black;
   border-spacing: 0px;
   background-color: #F0F0F0;
   font-size: 90%;
@@ -19,3 +19,9 @@ table.offsite_request tr td {
 }
 
 
+table.offsite_request .form-group {
+  margin-bottom: 0px;
+}
+table.offsite_request label {
+  font-weight: normal;
+}

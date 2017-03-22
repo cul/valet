@@ -45,6 +45,7 @@ _all_environments:
     search_path: searchService/search
     search_by_param_path: searchService/searchByParam
     patron_information_path: requestItem/patronInformation
+    request_item_path: requestItem/requestItem
     
     
 # Active MQ configurations

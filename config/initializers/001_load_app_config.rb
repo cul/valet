@@ -15,3 +15,8 @@ rescue
   APP_CONFIG = {}
 end
 
+
+LOCATIONS ||= YAML.load(File.read(Rails.root.to_s + '/config/locations.yml'))
+
+DELIVERY ||= YAML.load(File.read(Rails.root.to_s + '/config/delivery.yml'))
+

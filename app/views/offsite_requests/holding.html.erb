@@ -1,0 +1,18 @@
+<h4>Offsite Request</h4>
+
+<br>
+
+Which holding of this record would you like to request?
+
+<br>
+<br>
+
+<%= form_tag(new_offsite_request_path, method: 'get') do %>
+
+  <%= render 'bib_form' %>
+
+
+  <%= text_field_tag(:mfhd_id) %>
+  <%= submit_tag('Ok') %>
+<% end %>
+

@@ -4,14 +4,13 @@
 # It is not a Blacklight Document.
 class ClioRecord
   attr_reader :marc_record, :holdings, :barcodes,
-              :availabilities1, :availabilities2, :tocs,
-              :t1, :t2
+              :availability, :tocs
 
   def initialize(marc_record = nil)
     @marc_record = marc_record
     self.populate_holdings
-    self.fetch_barcodes
-    self.fetch_availabilty
+    self.populate_barcodes
+    # self.fetch_availabilty
     self.fetch_tocs
     # self.fetch_locations
   end
@@ -104,7 +103,7 @@ class ClioRecord
     @marc_record.each_by_tag('852') do |tag852|
       mfhd_id = tag852['0']
       holdings[mfhd_id] = {
-        mfhd_id: mfhd_id,
+        mfhd_id:                  mfhd_id,
         location_display:         tag852['a'],
         location_code:            tag852['b'],
         display_call_number:      tag852['h'],
@@ -113,6 +112,12 @@ class ClioRecord
       # And fill in all possible mfhd fields with empty array
       mfhd_fields.each_pair do |label, tag|
         holdings[mfhd_id][label] = []
+      end
+    end
+
+    def offsite_holdings
+      holdings.select do |holding|
+        LOCATIONS['offsite_locations'].include? holding[:location_code]
       end
     end
 
@@ -148,7 +153,7 @@ class ClioRecord
     @holdings = holdings.values
   end
 
-  def fetch_barcodes
+  def populate_barcodes
     # Single array of barcodes from all holdings, all items
     barcodes = @holdings.collect do |holdings|
       holdings[:items].collect do |item|
@@ -161,26 +166,9 @@ class ClioRecord
 
   # Fetch availability for each barcode from SCSB
   def fetch_availabilty
-    availabilities = {}
-    # conn = Recap::ScsbApi.open_connection()
-
-    # @barcodes.each do |barcode|
-    #   availability = Recap::ScsbApi.get_barcode_availability(barcode, conn)
-    #   availabilities[barcode] = availability
-    # end
-    # @availabilities1 = availabilities
-    beginning_time = Time.now
-      @availabilities1 = Recap::ScsbApi.get_item_availability(barcodes) || {}
-    end_time = Time.now
-    @t1 = ((end_time - beginning_time)*1000).to_i
-
     # TODO - how to determine institution of current record?
-    beginning_time = Time.now
-      institution_id = 'CUL'
-      @availabilities2 = Recap::ScsbApi.get_bib_availability(key, institution_id) || {}
-    end_time = Time.now
-    @t2 = ((end_time - beginning_time)*1000).to_i
-
+    institution_id = 'CUL'
+    @availability = Recap::ScsbApi.get_bib_availability(key, institution_id) || {}
   end
 
   def fetch_tocs

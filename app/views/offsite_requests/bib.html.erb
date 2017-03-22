@@ -1,11 +1,10 @@
-<h4>New Offsite Request</h4>
+<h4>Offsite Request</h4>
 
+<br>
 
 Please specify a bib id
-<%= form_tag(new_offsite_request_path, method: 'get') do %>
+<%= form_tag(holding_offsite_requests_path, method: 'get') do %>
   <%= text_field_tag(:bib_id) %>
-  <%= submit_tag %>
+  <%= submit_tag('Ok') %>
 <% end %>
 
-
-<%= link_to 'Back', offsite_requests_path %>

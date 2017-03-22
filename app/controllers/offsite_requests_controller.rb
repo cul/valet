@@ -17,26 +17,123 @@ class OffsiteRequestsController < ApplicationController
   def show
   end
 
+  # Get a bib_id from the user
+  def bib
+  end
+
+  # Given a bib_id, get a mfhd_id
+  # Either select automatically,
+  # or get from the user
+  def holding
+    bib_id = params['bib_id']
+    if bib_id.blank?
+      flash[:error] = "Please supply a record number"
+      return redirect_to bib_offsite_requests_path
+    end
+
+    @clio_record = ClioRecord::new_from_bib_id(bib_id)
+    if @clio_record.blank?
+      flash[:error] = "Cannot find record #{bib_id}"
+      return redirect_to bib_offsite_requests_path
+    end
+
+    offsite_holdings = @clio_record.offsite_holdings
+    if offsite_holdings.size == 0
+      flash[:error] = "The requested record (#{bib_id}) has no offsite holdings."
+      return redirect_to bib_offsite_requests_path
+    end
+# raise
+    if @clio_record.offsite_holdings.size == 1
+      @holding = @clio_record.offsite_holdings.first
+      mfhd_id = @holding[:mfhd_id]
+      params = { bib_id: bib_id, mfhd_id: mfhd_id }
+      # clear any leftover error message, let new page figure it out.
+      flash[:error] = nil
+      return redirect_to new_offsite_request_path params
+    end
+
+  end
+
   # GET /offsite_requests/new
+  # Needs to have a bib_id and mfhd_id,
+  # if either is missing, bounce back to appropriate screen
   def new
     bib_id = params['bib_id']
+    mfhd_id = params['mfhd_id']
 
     if bib_id.blank?
-      return redirect_to action: 'bib'
+      flash[:error] = "Please supply a record number"
+      return redirect_to bib_offsite_requests_path
+    end
+    if mfhd_id.blank?
+      flash[:error] = "Please specify a holding"
+      return redirect_to holding_offsite_requests_path bib_id: bib_id
     end
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
 
-    if @clio_record.blank?
-      flash[:error] = "Cannot find record #{bib_id}"
-      return redirect_to action: 'bib'
-    end
+    # if @clio_record.blank?
+    #   flash[:error] = "Cannot find record #{bib_id}"
+    #   return redirect_to action: 'bib'
+    # end
+    # 
+    # #  Determine which Holding we're requesting
+    # offsite_holdings = @clio_record.offsite_holdings
+    # if offsite_holdings.size == 0
+    #   flash[:error] = "The requested record (#{bib_id}) has no offsite holdings."
+    #   return redirect_to action: 'bib'
+    # end
+    # if @clio_record.offsite_holdings.size == 1
+    #   @holding = @clio_record.offsite_holdings.first
+    # end
+    # 
+    # if @clio_record.offsite_holdings.size > 1
+    #   if mfhd_id.blank?
+    #     return redirect_to action: 'holding', bib_id: bib_id
+    #   end
+    #   # If mfhd_id passed in, it must be
+    #   # (1) found in the record, (2) offsite
+    # 
+    # end
+    # 
+    # # # Holdings conditions:
+    # # - invalid mfhd_id:
+    # #   - ERROR
+    # # - No offsite holdings (error)
+    # #   - mfhd_id passed?  ignore
+    # # - Single offsite holding (proceed)
+    # #   - mfhd_id passed?  ignore (? no validation ?)
+    # # - Multiple offsite holding (select)
+    # #   - mfhd_id passed?  validate:
+    # #       - valid?
+    # LOCATIONS['offsite_locations'].exclude?(@holding[:location_code])
+    # 
+    # 
+    # 
+    # if offsite_holdings.none? do |holding|
+    # 
+    # if mfhd_id = params['mfhd_id']
+    # 
+    # # Identify which holding we'll be requesting
+    # if @clio_record.offsite_holdings.size == 1
+    #   @holding = @clio_record.offsite_holdings.first
+    #   mfhd_id = @holding[:mfhd_id]
+    # else
+    #   mfhd_id = params['mfhd_id']
+    # end
+    # 
+    # if mfhd_id.blank? ||
+    #    LOCATIONS['offsite_locations'].exclude?(@holding[:location_code])
+    #   return redirect_to action: 'holding', bib_id: bib_id
+    # end
+    # 
 
+    @clio_record.fetch_availabilty
+    @holding = @clio_record.holdings.select { |h| h[:mfhd_id] = mfhd_id }.first
+    @offsite_location_code = @holding[:location_code]
     @offsite_request = OffsiteRequest.new
   end
 
-  def bib
-  end
 
   # GET /offsite_requests/1/edit
   def edit
