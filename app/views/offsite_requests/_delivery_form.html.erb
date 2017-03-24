@@ -5,8 +5,8 @@
 
   <tr>
     <td>
-      <%= radio_button_tag(:delivery_type, 'physical') %>
-      <%= label_tag(:delivery_type_physical, 'Item to Library') %>
+      <%= radio_button_tag(:requestType, 'RETRIEVAL', true) %>
+      <%= label_tag(:requestType_RETRIEVAL, 'Item to Library') %>
       <div class='offset-block'>
         <%= to_library_info_link %>
       </div>
@@ -34,8 +34,8 @@
       </td>
     <% else %>
       <td>
-        <%= radio_button_tag(:delivery_type, 'electronic') %>
-        <%= label_tag(:delivery_type_electronic, 'Electronic') %>
+        <%= radio_button_tag(:requestType, 'EDD') %>
+        <%= label_tag(:requestType_EDD, 'Electronic') %>
         <div class='offset-block'>
           <%= electronic_info_link %>
         </div>

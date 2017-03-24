@@ -1,0 +1,35 @@
+
+<h4>Offsite Request</h4>
+
+<br>
+
+Your request for 
+<strong>
+  <%= @request_item_response[:titleIdentifier] %>
+</strong>
+has been submitted.
+
+<br>
+<br>
+
+<div class='offset-block'>
+  <div class='well'>
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    &nbsp;
+    <%= @request_item_response['screenMessage'] %>
+  </div>
+</div>
+
+<br>
+<br>
+
+Notification of completed offsite requests will be sent to
+<strong>
+  <%= @request_item_response[:emailAddress] %>
+</strong>
+
+<br>
+<br>
+
+
+

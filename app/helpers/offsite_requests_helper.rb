@@ -54,7 +54,7 @@ module OffsiteRequestsHelper
     delivery_config = get_delivery_config(offsite_location_code)
     # Each location should have it's own default oncampus delivery
     # location defined.  But if it doesn't, fallback to Butler.
-    delivery_config['default'] || 'BU'
+    delivery_config['default'] || 'bu'
   end
 
   # For a given offsite location code ('OFF AVE', 'OFF BIO'),
@@ -67,15 +67,15 @@ module OffsiteRequestsHelper
     # return it.
     # Otherwise, just return the default list.
     delivery_config['available'] ||
-      DELIVERY['STANDARD_AVAILABLE_LOCATIONS']
+      DELIVERY['standard_available_locations']
   end
 
   def get_delivery_config(offsite_location_code)
-    delivery_config = DELIVERY[offsite_location_code.upcase]
+    delivery_config = DELIVERY[offsite_location_code]
 
     # If there are no specific delivery rules defined for 
     # this offsite location, treat it as if it were 'OFF GLX'
-    delivery_config = DELIVERY['OFF,GLX'] if delivery_config.blank?
+    delivery_config = DELIVERY['off,glx'] if delivery_config.blank?
 
     return delivery_config
   end
@@ -85,10 +85,16 @@ module OffsiteRequestsHelper
     delivery_options = get_delivery_options(offsite_location_code)
     delivery_default = get_delivery_default(offsite_location_code)
     options_array = delivery_options.map do |on_campus_code|
-      [LOCATIONS[on_campus_code], on_campus_code ]
+      [LOCATIONS[on_campus_code], on_campus_code.upcase ]
     end
 
     select_tag(:deliveryLocation, options_for_select(options_array, delivery_default))
+  end
+
+  def location_label(location_code)
+    return '' unless location_code
+    location_name = LOCATIONS[location_code] || 'Offsite'
+    return "#{location_name} (#{location_code.upcase})"
   end
 
 end

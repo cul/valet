@@ -55,11 +55,11 @@ _all_environments:
 # UAT Environment:  tcp://uat-recap.htcinc.com:61616
 # 
 # Topic names for subscription specific to institute and request type
-# For CUL (replace code for PUL or NYPL)
-# Retrieval: scsbactivemq:topic:CUL.RequestT
-# Recall:  scsbactivemq:topic:CUL.RecallT
-# EDD:  scsbactivemq:topic:CUL.EDDT
-# Borrow Direct:  scsbactivemq:topic:CUL.BorrowDirectT
+#   For CUL (replace code for PUL or NYPL)
+#     Retrieval:       scsbactivemq:topic:CUL.RequestT
+#     Recall:          scsbactivemq:topic:CUL.RecallT
+#     EDD:             scsbactivemq:topic:CUL.EDDT
+#     Borrow Direct:   scsbactivemq:topic:CUL.BorrowDirectT
 # 
     
 

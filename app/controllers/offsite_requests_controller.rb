@@ -8,8 +8,7 @@ class OffsiteRequestsController < ApplicationController
   # GET /offsite_requests
   # GET /offsite_requests.json
   def index
-    @offsite_requests = OffsiteRequest.all
-    # raise
+    redirect_to action: 'bib'
   end
 
   # GET /offsite_requests/1
@@ -71,63 +70,6 @@ class OffsiteRequestsController < ApplicationController
     end
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
-
-    # if @clio_record.blank?
-    #   flash[:error] = "Cannot find record #{bib_id}"
-    #   return redirect_to action: 'bib'
-    # end
-    # 
-    # #  Determine which Holding we're requesting
-    # offsite_holdings = @clio_record.offsite_holdings
-    # if offsite_holdings.size == 0
-    #   flash[:error] = "The requested record (#{bib_id}) has no offsite holdings."
-    #   return redirect_to action: 'bib'
-    # end
-    # if @clio_record.offsite_holdings.size == 1
-    #   @holding = @clio_record.offsite_holdings.first
-    # end
-    # 
-    # if @clio_record.offsite_holdings.size > 1
-    #   if mfhd_id.blank?
-    #     return redirect_to action: 'holding', bib_id: bib_id
-    #   end
-    #   # If mfhd_id passed in, it must be
-    #   # (1) found in the record, (2) offsite
-    # 
-    # end
-    # 
-    # # # Holdings conditions:
-    # # - invalid mfhd_id:
-    # #   - ERROR
-    # # - No offsite holdings (error)
-    # #   - mfhd_id passed?  ignore
-    # # - Single offsite holding (proceed)
-    # #   - mfhd_id passed?  ignore (? no validation ?)
-    # # - Multiple offsite holding (select)
-    # #   - mfhd_id passed?  validate:
-    # #       - valid?
-    # LOCATIONS['offsite_locations'].exclude?(@holding[:location_code])
-    # 
-    # 
-    # 
-    # if offsite_holdings.none? do |holding|
-    # 
-    # if mfhd_id = params['mfhd_id']
-    # 
-    # # Identify which holding we'll be requesting
-    # if @clio_record.offsite_holdings.size == 1
-    #   @holding = @clio_record.offsite_holdings.first
-    #   mfhd_id = @holding[:mfhd_id]
-    # else
-    #   mfhd_id = params['mfhd_id']
-    # end
-    # 
-    # if mfhd_id.blank? ||
-    #    LOCATIONS['offsite_locations'].exclude?(@holding[:location_code])
-    #   return redirect_to action: 'holding', bib_id: bib_id
-    # end
-    # 
-
     @clio_record.fetch_availabilty
     @holding = @clio_record.holdings.select { |h| h[:mfhd_id] = mfhd_id }.first
     @offsite_location_code = @holding[:location_code]
@@ -142,41 +84,100 @@ class OffsiteRequestsController < ApplicationController
   # POST /offsite_requests
   # POST /offsite_requests.json
   def create
-    @offsite_request = OffsiteRequest.new(offsite_request_params)
-
-    respond_to do |format|
-      if @offsite_request.save
-        format.html { redirect_to @offsite_request, notice: 'Offsite request was successfully created.' }
-        format.json { render :show, status: :created, location: @offsite_request }
-      else
-        format.html { render :new }
-        format.json { render json: @offsite_request.errors, status: :unprocessable_entity }
-      end
+    # Are we submitting to the new (SCSB) or legacy (cgi) request system?
+    # If legacy, pass control.
+    if params[:legacy_submit]
+      # Legacy system needs some extra fields
+      legacy_params = offsite_request_params
+      submit_legacy_offsite_request(legacy_params)
+      return
     end
+
+    @request_item_response = Recap::ScsbApi.request_item(offsite_request_params) || {}
+
+
   end
+
+
+
+  def submit_legacy_offsite_request(params)
+    # We need to map our Valet params to the params expected by
+    # the legacy CGI offsite request system, then 
+
+    # Delivery Type - "PHY" for physical, "WEB" for electronic
+    deltype = params[:requestType] == 'EDD' ? 'WEB' : 'PHY'
+
+    legacy_url = 'https://www1.columbia.edu/sec-cgi-bin' +
+                 '/cul/offsite/processformdata'
+    legacy_params = {
+      # Patron contact information
+      PATNAME:  current_user.name,
+      PATMAIL:  params[:emailAddress],
+      PATDEPT:  current_user.department,
+      PATFONE:  current_user.phone,
+      # PATNOTE:  '',  # omit
+      PATRUNI:  current_user.login,
+
+      # Citation details for Electronic Document Delivery (EDD)
+      ARTAUTH:  params[:author] || '',
+      ARTITLE:  params[:chapterTitle] || '',
+      ARTVOL1:  params[:volume] || '',
+      ARTVOL2:  params[:issue] || '',
+      ARTSTPG:  params[:startPage] || '',
+      ARTENPG:  params[:endPage] || '',
+      # This was "Other Identifying Info" in vie.  Omit for now.
+      # ARTINFO:  XXX,
+
+      # Info about the requested item(s)
+      CLIOKEY:  params[:bibId],
+      ITMBARC:  params[:itemBarcodes],
+
+      # Information about the request itself
+      DELTYPE:  deltype,
+      PICKUPL:  params[:deliveryLocation],
+
+      # DEFLOCA:  XXX,
+
+      # ITMAUTH:  XXX,
+      # ITMCALL:  XXX,
+      # ITMPART:  XXX,
+      # ITMTITL:  XXX,
+
+      # PRIORIT:  XXX,
+      # REQCODE:  XXX,
+      # REQDATE:  XXX,
+      REQNOTE:  'Testing!! Please disregard.',
+    }
+# raise
+
+    uri = URI(legacy_url)
+    uri.query = legacy_params.to_query
+    redirect_to uri.to_s
+  end
+
 
   # PATCH/PUT /offsite_requests/1
   # PATCH/PUT /offsite_requests/1.json
   def update
-    respond_to do |format|
-      if @offsite_request.update(offsite_request_params)
-        format.html { redirect_to @offsite_request, notice: 'Offsite request was successfully updated.' }
-        format.json { render :show, status: :ok, location: @offsite_request }
-      else
-        format.html { render :edit }
-        format.json { render json: @offsite_request.errors, status: :unprocessable_entity }
-      end
-    end
+    # respond_to do |format|
+    #   if @offsite_request.update(offsite_request_params)
+    #     format.html { redirect_to @offsite_request, notice: 'Offsite request was successfully updated.' }
+    #     format.json { render :show, status: :ok, location: @offsite_request }
+    #   else
+    #     format.html { render :edit }
+    #     format.json { render json: @offsite_request.errors, status: :unprocessable_entity }
+    #   end
+    # end
   end
 
   # DELETE /offsite_requests/1
   # DELETE /offsite_requests/1.json
   def destroy
-    @offsite_request.destroy
-    respond_to do |format|
-      format.html { redirect_to offsite_requests_url, notice: 'Offsite request was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    # @offsite_request.destroy
+    # respond_to do |format|
+    #   format.html { redirect_to offsite_requests_url, notice: 'Offsite request was successfully destroyed.' }
+    #   format.json { head :no_content }
+    # end
   end
 
   private
@@ -185,8 +186,36 @@ class OffsiteRequestsController < ApplicationController
       @offsite_request = OffsiteRequest.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+
+    # Never trust parameters from the scary internet, 
+    # only allow the white list through.
     def offsite_request_params
-      params.fetch(:offsite_request, {})
+      # Fill in ALL request params here, 
+      # permit some from form params,
+      # merge in others from other application state
+      application_params = {
+        patronBarcode:   current_user.barcode,
+        emailAddress:    current_user.email
+      }
+
+      params.permit(
+          # Information about the request
+          :requestType,
+          :deliveryLocation,
+          # Optional EDD params
+          :author,
+          :chapterTitle,
+          :volume,
+          :issue,
+          :startPage,
+          :endPage,
+          # Information about the requested item
+          :itemOwningInstitution,
+          :bibId,
+          :titleIdentifier,
+          :callNumber,
+          :itemBarcodes => [],
+        ).merge(application_params)
+
     end
 end

@@ -1,6 +1,13 @@
 
 <%= form_for(@offsite_request) do |f| %>
 
+  <%= hidden_field_tag(:itemOwningInstitution, @clio_record.owningInstitution) %>
+  <%= hidden_field_tag(:bibId, @clio_record.key) %>
+  <%= hidden_field_tag(:titleIdentifier, @clio_record.title) %>
+  <%= hidden_field_tag(:mfhd_id, @holding[:mfhd_id]) %>
+  <%= hidden_field_tag(:callNumber, @holding[:display_call_number]) %>
+  
+
   <% if @offsite_request.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited this offsite_request from being saved:</h2>
@@ -31,11 +38,11 @@
 
   <div class='row'>
     <div class='col-sm-6'>
-      <%= f.submit('Submit Offsite Request', style: 'btn btn-default') %>
+      <%= f.submit('Submit Offsite Request', name: 'submit') %>
     </div>
     <div class='col-sm-6'>
-      <span class='legacy-link bg-success xpull-right'>
-        <%= f.submit('Submit Legacy Offsite Request') %>
+      <span class='legacy-link bg-success'>
+        <%= f.submit('Submit Legacy Offsite Request', name: 'legacy_submit') %>
       </span>
     </div>
   </div>

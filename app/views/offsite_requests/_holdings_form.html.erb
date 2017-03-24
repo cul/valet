@@ -1,15 +1,15 @@
 <div class='holdings'>
 
   <% @clio_record.holdings.each do |holdings| %>  
-    <table class='offsite_request'>
-      <tr>
-        <td colspan='7'>
-          <%= holdings[:location_code].upcase %>
-          &nbsp;  &nbsp;  &nbsp;  &nbsp;
-          <%= holdings[:display_call_number].upcase %>
-        </td>
-      </tr>
 
+    <strong>
+      Items for 
+      call number <%= holdings[:display_call_number].upcase %>,
+      location <%= location_label(holdings[:location_code]) %>
+    </strong>
+    
+
+    <table class='offsite_request'>
       <tr>
         <td>&nbsp;</td>
         <td>Vol/Part No.</td>
@@ -21,7 +21,7 @@
 
       <% holdings[:items].each do |item| %>
       <tr>
-        <td></td>
+        <td><%= check_box_tag "itemBarcodes[]", item[:barcode] %></td>
         <td><%= item[:enum_chron] %></td>
         <td><%= item[:barcode] %></td>
         <td><%= @clio_record.availability[ item[:barcode] ] || '(unknown)' %></td>

@@ -88,7 +88,7 @@ module Recap
       end
 
       # parse returned array of item-info hashes into simple barcode->status hash
-      response_data = JSON.parse(response.body)
+      response_data = JSON.parse(response.body).with_indifferent_access
       availabilities = Hash.new
       response_data.each do |item|
         availabilities[ item['itemBarcode'] ] = item['itemAvailabilityStatus']
@@ -165,39 +165,37 @@ module Recap
       end
 
       # Rails.logger.debug "response.body=\n#{response.body}"
-      patron_information_hash = JSON.parse(response.body)
+      patron_information_hash = JSON.parse(response.body).with_indifferent_access
       # Just return the full hash, let the caller pull out what they want
       return patron_information_hash
     end
 
     # This is for RETRIEVAL / RECALL, not for EDD
-    def self.request_item(requestType = nil, itemBarcodes = [], deliveryLocation = nil, itemOwningInstitution = nil, conn = nil)
-      raise "Recap::ScsbApi.request_item() got invalid requestType" unless
-        requestType.present? &&
-        ['RETRIEVAL','RECALL'].include?(requestType)
-      raise "Recap::ScsbApi.request_item() got blank itemBarcodes" if itemBarcodes.blank?
-      raise "Recap::ScsbApi.request_item() got blank deliveryLocation" if deliveryLocation.blank?
-      raise "Recap::ScsbApi.request_item() got blank itemOwningInstitution" if itemOwningInstitution.blank?
-      Rails.logger.debug "- request_item(#{barcodes}, #{delivery_location}, #{owning_institution_id})"
+    # def self.request_item(requestType = nil, itemBarcodes = [], deliveryLocation = nil, itemOwningInstitution = nil, conn = nil)
+    def self.request_item(params, conn = nil)
+
+      # How much valet-side param validation should we do?
+      # raise "Recap::ScsbApi.request_item() got invalid requestType" unless
+      #   params[:requestType].present? &&
+      #   ['RETRIEVAL','RECALL'].include?(requestType)
+      # raise "Recap::ScsbApi.request_item() got blank itemBarcodes" if params[itemBarcodes].blank?
+      # raise "Recap::ScsbApi.request_item() got blank deliveryLocation" if params[deliveryLocation].blank?
+      # raise "Recap::ScsbApi.request_item() got blank itemOwningInstitution" if [itemOwningInstitution].blank?
+
+      Rails.logger.debug "- request_item(#{params.inspect})"
 
       conn  ||= open_connection()
       raise "request_item() bad connection [#{conn.inspect}]" unless conn
 
       # set values that aren't passed in as parameters
-      requestingInstitution = 'CUL'
-      emailAddress = current_user.email
-      patronBarcode = current_user.barcode
+      params.merge!(
+        {
+          requestingInstitution: 'CUL'
+        }
+      )
 
       get_scsb_args
       path = @scsb_args[:request_item_path]
-      params = {
-        requestingInstitution: requestingInstitution,
-        deliveryLocation: deliveryLocation,
-        itemBarcodes: itemBarcodes,
-        itemOwningInstitution: itemOwningInstitution,
-        patronBarcode: patronBarcode,
-        requestType: requestType
-      }
       response = conn.post path, params.to_json
 
       if response.status != 200
@@ -208,7 +206,7 @@ module Recap
       end
 
       # Rails.logger.debug "response.body=\n#{response.body}"
-      response_hash = JSON.parse(response.body)
+      response_hash = JSON.parse(response.body).with_indifferent_access
       # Just return the full hash, let the caller pull out what they want
       return response_hash
     end

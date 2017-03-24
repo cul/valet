@@ -4,10 +4,11 @@
 # It is not a Blacklight Document.
 class ClioRecord
   attr_reader :marc_record, :holdings, :barcodes,
-              :availability, :tocs
+              :availability, :tocs, :owningInstitution
 
   def initialize(marc_record = nil)
     @marc_record = marc_record
+    self.populate_owningInstitution
     self.populate_holdings
     self.populate_barcodes
     # self.fetch_availabilty
@@ -81,6 +82,11 @@ class ClioRecord
     return publisher.compact.join(' ')
   end
 
+
+  def populate_owningInstitution
+    # TODO
+    @owningInstitution = 'CUL'
+  end
 
   # Drill down into the MARC fields to build an
   # array of holdings.  See:

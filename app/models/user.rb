@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 
   serialize :affils, Array
 
-  attr_reader :scsb_patron_information
+  attr_reader :ldap_attributes, :scsb_patron_information
 
   before_create :set_personal_info_via_ldap
   after_initialize :set_personal_info_via_ldap
@@ -21,6 +21,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def name
+    self.to_s
+  end
+
   def set_personal_info_via_ldap
     if uid
 
@@ -34,6 +38,15 @@ class User < ActiveRecord::Base
       entry = entry.first
 
       if entry
+        # Copy all attributes of the LDAP entry to an instance variable,
+        # keeping them in list format
+        @ldap_attributes = Hash.new
+        entry.each_attribute do |attribute, value_list|
+          next if value_list.blank?
+          @ldap_attributes[attribute] = value_list
+        end
+
+        # Process certain raw attributes into cleaned up fields
         puts "\n\n#{entry.inspect}\n\n"
         _mail = (entry[:mail].kind_of?(Array) ? entry[:mail].first : entry[:mail]).to_s
         if _mail.length > 6 and _mail.match(/^[\w.]+[@][\w.]+$/)
@@ -79,6 +92,26 @@ class User < ActiveRecord::Base
 
   def password=(*val)
     # NOOP
+  end
+
+  def phone
+    get_first_ldap_value('telephonenumber', 'campusphone')
+  end
+
+  def department
+    get_first_ldap_value( 'ou' )
+  end
+
+  def get_first_ldap_value(*attribute_list)
+    # Try passed attributes in preference order
+    Array(attribute_list).each do |attribute|
+      value_list = @ldap_attributes[attribute]
+      Array(value_list).each do |value|
+        return value unless value.blank?
+      end
+    end
+    # fallback, return an empty string value
+    return ''
   end
 
   def offsite_eligible?
