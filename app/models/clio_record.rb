@@ -14,6 +14,7 @@ class ClioRecord
     # self.fetch_availabilty
     self.fetch_tocs
     # self.fetch_locations
+    @availability = {}
   end
 
   def self.new_from_bib_id(bib_id = nil)
@@ -121,14 +122,9 @@ class ClioRecord
       end
     end
 
-    def offsite_holdings
-      holdings.select do |holding|
-        LOCATIONS['offsite_locations'].include? holding[:location_code]
-      end
-    end
-
     # Scan the MARC record for each of the possible mfhd fields,
     # if any found, add to appropriate Holding
+    # (e.g., label :summary_holdings, tag '866')
     mfhd_fields.each_pair do |label, tag|
        @marc_record.each_by_tag(tag) do |mfhd_data_field|
          mfhd_id = mfhd_data_field['0']
@@ -159,6 +155,12 @@ class ClioRecord
     @holdings = holdings.values
   end
 
+  def offsite_holdings
+    holdings.select do |holding|
+      LOCATIONS['offsite_locations'].include? holding[:location_code]
+    end
+  end
+
   def populate_barcodes
     # Single array of barcodes from all holdings, all items
     barcodes = @holdings.collect do |holdings|
@@ -179,13 +181,14 @@ class ClioRecord
 
   def fetch_tocs
     tocs = {}
-    conn = Columbia::Web.open_connection()
-    @barcodes.each do |barcode|
-      toc = Columbia::Web.get_toc_link(barcode, conn)
-      if toc.present?
-        tocs[barcode] = toc
-      end
-    end
+# SLOW FOR SERIALS WITH MANY MANY BARCODES
+    # conn = Columbia::Web.open_connection()
+    # @barcodes.each do |barcode|
+    #   toc = Columbia::Web.get_toc_link(barcode, conn)
+    #   if toc.present?
+    #     tocs[barcode] = toc
+    #   end
+    # end
 
     @tocs = tocs
   end

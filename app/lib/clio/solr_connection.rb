@@ -40,7 +40,9 @@ module Clio
       #   e.g., http://SERVER:PORT/solr/CORE/select?qt=document&id=1234
       params = { qt: 'document', id: bib_id, fl: "id,#{MARC_FIELD}"}
 
+      Rails.logger.debug "fetch_solr_doc(#{bib_id}) calling Solr with params #{params.inspect}"
       response = @solr_connection.get 'select', params: params
+      Rails.logger.debug "Solr response status: #{response['responseHeader']['status']}"
 
       # May be nil if no doc not was found
       solr_doc = response['response']['docs'].first

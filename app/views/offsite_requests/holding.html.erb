@@ -1,6 +1,4 @@
-<h4>Offsite Request</h4>
-
-<br>
+<%= render 'header' %>
 
 Which holding of this record would you like to request?
 
@@ -9,10 +7,14 @@ Which holding of this record would you like to request?
 
 <%= form_tag(new_offsite_request_path, method: 'get') do %>
 
+  <%= hidden_field_tag(:bib_id, @clio_record.key) %>
+
   <%= render 'bib_form' %>
+  <%= render 'holdings_form' %>
 
+  <br>
 
-  <%= text_field_tag(:mfhd_id) %>
-  <%= submit_tag('Ok') %>
+  <%= submit_tag('Select') %>
+  
 <% end %>
 

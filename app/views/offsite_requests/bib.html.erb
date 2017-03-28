@@ -1,9 +1,9 @@
-<h4>Offsite Request</h4>
+<%= render 'header' %>
+
+Please specify a bib id
 
 <br>
 
-
-Please specify a bib id
 <%= form_tag(holding_offsite_requests_path, method: 'get') do %>
   <%= text_field_tag(:bib_id) %>
   <%= submit_tag('Ok') %>

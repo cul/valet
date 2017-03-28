@@ -41,7 +41,7 @@ class OffsiteRequestsController < ApplicationController
       flash[:error] = "The requested record (#{bib_id}) has no offsite holdings."
       return redirect_to bib_offsite_requests_path
     end
-# raise
+
     if @clio_record.offsite_holdings.size == 1
       @holding = @clio_record.offsite_holdings.first
       mfhd_id = @holding[:mfhd_id]
@@ -51,6 +51,8 @@ class OffsiteRequestsController < ApplicationController
       return redirect_to new_offsite_request_path params
     end
 
+    # If we haven't redirected, then we'll render
+    # a page to let the user pick which holding they want.
   end
 
   # GET /offsite_requests/new
@@ -71,7 +73,8 @@ class OffsiteRequestsController < ApplicationController
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
     @clio_record.fetch_availabilty
-    @holding = @clio_record.holdings.select { |h| h[:mfhd_id] = mfhd_id }.first
+
+    @holding = @clio_record.holdings.select { |h| h[:mfhd_id] == mfhd_id }.first
     @offsite_location_code = @holding[:location_code]
     @offsite_request = OffsiteRequest.new
   end
@@ -148,7 +151,6 @@ class OffsiteRequestsController < ApplicationController
       # REQDATE:  XXX,
       REQNOTE:  'Testing!! Please disregard.',
     }
-# raise
 
     uri = URI(legacy_url)
     uri.query = legacy_params.to_query

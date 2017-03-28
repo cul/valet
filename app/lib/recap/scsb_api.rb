@@ -122,7 +122,9 @@ module Recap
         bibliographicId: bib_id,
         institutionId:   institution_id
       }
+      Rails.logger.debug "get_bib_availability(#{bib_id}) calling SCSB API with params #{params.inspect}"
       response = conn.post path, params.to_json
+      Rails.logger.debug "SCSB response status: #{response.status}"
 
       if response.status != 200
         # Raise or just log error?

@@ -1,0 +1,32 @@
+<div class='holdings'>
+
+  <strong>
+    Items for 
+    call number <%= @holding[:display_call_number].upcase %>,
+    location <%= location_label(@holding[:location_code]) %>
+  </strong>
+
+  <table class='offsite_request'>
+    <tr>
+      <td>&nbsp;</td>
+      <td>Vol/Part No.</td>
+      <td>Barcode</td>
+      <td>Availability</td>
+      <td>Note</td>
+      <td>Table of Contents (when available)</td>
+    </tr>
+
+    <% @holding[:items].each do |item| %>
+    <tr>
+      <td><%= check_box_tag "itemBarcodes[]", item[:barcode] %></td>
+      <td><%= item[:enum_chron] %></td>
+      <td><%= item[:barcode] %></td>
+      <td><%= @clio_record.availability[ item[:barcode] ] || '(unknown)' %></td>
+      <td></td>
+      <td><%= toc_link(@clio_record, item[:barcode]) %></td>
+    <tr>
+    <% end %>
+
+  </table>
+
+</div>
