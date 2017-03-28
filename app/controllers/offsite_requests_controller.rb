@@ -18,12 +18,12 @@ class OffsiteRequestsController < ApplicationController
 
   # Get a bib_id from the user
   def bib
-    # If /bib is called with a bib_id arg, 
-    # don't ask, just process the passed-in value
-    if params['bib_id'].present?
-      return redirect_to holding_offsite_requests_path { bib_id: params['bib_id'] }
+    # If a bib is passed, use that instead of asking the user
+    bib_id = params['bib_id']
+    if bib_id.present?
+      params = { bib_id: bib_id }
+      return redirect_to holding_offsite_requests_path params
     end
-
   end
 
   # Given a bib_id, get a mfhd_id
@@ -74,7 +74,8 @@ class OffsiteRequestsController < ApplicationController
     end
     if mfhd_id.blank?
       flash[:error] = "Please specify a holding"
-      return redirect_to holding_offsite_requests_path bib_id: bib_id
+      params = { bib_id: bib_id }
+      return redirect_to holding_offsite_requests_path params
     end
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
