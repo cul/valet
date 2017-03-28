@@ -18,6 +18,12 @@ class OffsiteRequestsController < ApplicationController
 
   # Get a bib_id from the user
   def bib
+    # If /bib is called with a bib_id arg, 
+    # don't ask, just process the passed-in value
+    if params['bib_id'].present?
+      return redirect_to holding_offsite_requests_path { bib_id: params['bib_id'] }
+    end
+
   end
 
   # Given a bib_id, get a mfhd_id
