@@ -67,7 +67,7 @@ module OffsiteRequestsHelper
     # return it.
     # Otherwise, just return the default list.
     delivery_config['available'] ||
-      DELIVERY['standard_available_locations']
+      DELIVERY['standard_delivery_locations']
   end
 
   def get_delivery_config(offsite_location_code)
@@ -84,8 +84,8 @@ module OffsiteRequestsHelper
   def delivery_select_tag(offsite_location_code)
     delivery_options = get_delivery_options(offsite_location_code)
     delivery_default = get_delivery_default(offsite_location_code)
-    options_array = delivery_options.map do |on_campus_code|
-      [LOCATIONS[on_campus_code], on_campus_code.upcase ]
+    options_array = delivery_options.map do |delivery_location_code|
+      [LOCATIONS[delivery_location_code], delivery_location_code ]
     end
 
     select_tag(:deliveryLocation, options_for_select(options_array, delivery_default))
