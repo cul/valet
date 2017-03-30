@@ -36,6 +36,19 @@
 
   <br>
 
+  <div class='offset-block'>
+    <small>
+      <label for='emailAddress' class='control-label'>
+        Preferred contact email for this request:
+        &nbsp;
+      </label>
+      <%= text_field_tag(:emailAddress, current_user.email, size: '40') %>
+    </small>
+  </div>
+
+  <br>
+  <br>
+
   <div class='row'>
     <div class='col-sm-6'>
       <%= f.submit('Submit Offsite Request', name: 'submit') %>

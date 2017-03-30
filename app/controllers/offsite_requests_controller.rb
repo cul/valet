@@ -204,13 +204,13 @@ class OffsiteRequestsController < ApplicationController
       # merge in others from other application state
       application_params = {
         patronBarcode:   current_user.barcode,
-        emailAddress:    current_user.email
       }
 
       params.permit(
           # Information about the request
           :requestType,
           :deliveryLocation,
+          :emailAddress,
           # Optional EDD params
           :author,
           :chapterTitle,
