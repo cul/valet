@@ -11,7 +11,9 @@ class User < ActiveRecord::Base
   # before_create :set_barcode_via_oracle
   after_initialize :set_barcode_via_oracle
   # we don't need this
-  # after_initialize :get_scsb_patron_information
+  # but during initial development, let's fetch anyway,
+  # more info can't hurt.
+  after_initialize :get_scsb_patron_information
 
   def to_s
     if first_name

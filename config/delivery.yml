@@ -1,164 +1,179 @@
 
-standard_available_locations:
-  - ar
-  - bl
-  - bs
-  - bu
-  - ca
-  - cj
-  - ea
-  - ge
-  - gs
-  - hs
-  - le
-  - ml
-  - mr
-  - sw
-  - ut
+standard_delivery_locations:
+  - AR
+  - BL
+  - BS
+  - BU
+  - CA
+  - CJ
+  - EA
+  - GE
+  - GS
+  - HS
+  - LE
+  - ML
+  - MR
+  - SW
+  - UT
 
 # configuration for each offsite location code
 # keys:
 #   default:  required key, sets a default on-campus delivery location
 #   available: optional key, sets a list of available on-campus 
 #      delivery locations.  if there is no specific list defined then
-#      the standard set (standard_available_locations) will be used.
+#      the standard set (standard_delivery_locations) will be used.
+
+# Partner material
+# For now, Butler is the only valid delivery location.
+# This may change in the future.
+scsb-nypl:
+  default:  BU
+  available:
+    -  BU
+
+scsb-pul:
+  default:  BU
+  available:
+    -  BU
+
+# Columbia material
 
 off,ave:
-  default:  ar
+  default:  AR
   available:
-    -  ar
+    -  AR
 
 off,bio:
-  default:  ca
+  default:  CA
 
 off,bmc:
-  default:  cv
+  default:  CV
   available:
-    -  cv
+    -  CV
 
 off,bssc:
-  default:  bs
+  default:  BS
   available:
-    -  bs
+    -  BS
 
 off,bus:
-  default:  bs
+  default:  BS
 
 off,che:
-  default:  ca
+  default:  CA
 
 off,docs:
-  default:  le
+  default:  LE
 
 off,eal:
-  default:  ea
+  default:  EA
 
 off,ean:
-  default:  ea
+  default:  EA
   available:
-    -  ea
+    -  EA
 
 off,eax:
-  default:  ea
+  default:  EA
 
 off,eng:
-  default:  ca
+  default:  CA
 
 off,fax:
-  default:  ar
+  default:  AR
   available:
-    -  ar
+    -  AR
 
 off,glg:
-  default:  ge
+  default:  GE
 
 off,glx:
-  default:  bu
+  default:  BU
 
 off,gsc:
-  default:  gs
+  default:  GS
 
 off,hsl:
-  default:  hs
+  default:  HS
 
 off,hsr:
-  default:  hs
+  default:  HS
 
 off,jou:
-  default:  cj
+  default:  CJ
 
 off,leh:
-  default:  le
+  default:  LE
 
 off,les:
-  default:  le
+  default:  LE
   available:
-    -  le
+    -  LE
 
 off,mat:
-  default:  ml
+  default:  ML
 
 off,mrr:
-  default:  cf
+  default:  CF
   available:
-    -  cf
+    -  CF
 
 off,msc:
-  default:  mr
+  default:  MR
   available:
-    -  mr
+    -  MR
 
 off,msr:
-  default:  mr
+  default:  MR
   available:
-    -  mr
+    -  MR
 
 off,mus:
-  default:  mr
+  default:  MR
 
 off,mvr:
-  default:  mr
+  default:  MR
   available:
-    -  mr
+    -  MR
 
 off,phy:
-  default:  ca
+  default:  CA
 
 off,psy:
-  default:  ca
+  default:  CA
 
 off,ref:
-  default:  bu
+  default:  BU
 
 off,sci:
-  default:  ca
+  default:  CA
 
 off,swx:
-  default:  sw
+  default:  SW
 
 off,unr:
-  default:  ut
+  default:  UT
   available:
-    -  ut
+    -  UT
 
 off,utmrl:
-  default:  ut
+  default:  UT
   available:
-    -  ut
+    -  UT
 
 off,utn:
-  default:  ut
+  default:  UT
 
 off,utp:
-  default:  ut
+  default:  UT
   available:
-    -  ut
+    -  UT
 
 off,uts:
-  default:  ut
+  default:  UT
 
 off,war:
-  default:  ar
+  default:  AR
   
   
   

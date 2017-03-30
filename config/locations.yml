@@ -1,34 +1,38 @@
 # Simple location code-to-label lookup table
 
-bc:  Bibliographic Control
-bt:  Butler Preservation
-ci:  Interlibrary Loan
-cv:  Milstein Reserves
-mp:  Monographic Recon -- for MRP
-mz:  ReCAP Coordinator
-il:  ReCAP Interlibrary Loan
-ar:  Avery Library
-bl:  Barnard Library
-ut:  Burke Library (UTS)
-bs:  Business/Econ Library
-bu:  Butler Library
-ea:  East Asian Library
-en:  Engineering Library
-ge:  Geology Library
-gs:  Lamont-Doherty Earth Observatory
-hs:  Health Sciences Library
-cj:  Journalism Library
-le:  Lehman Library
-rh:  Lehman Suite
-ml:  Mathematics Library
-cf:  401 Butler Library (Microform Reading Room)
-mr:  Music & Arts Library
-rs:  Rare Book Library
-ca:  Science & Engineering Lib (NWC Building)
-sw:  Social Work Library
+BC:  Bibliographic Control
+BT:  Butler Preservation
+CI:  Interlibrary Loan
+CV:  Milstein Reserves
+MP:  Monographic Recon -- for MRP
+MZ:  ReCAP Coordinator
+IL:  ReCAP Interlibrary Loan
+AR:  Avery Library
+BL:  Barnard Library
+UT:  Burke Library (UTS)
+BS:  Business/Econ Library
+BU:  Butler Library
+EA:  East Asian Library
+EN:  Engineering Library
+GE:  Geology Library
+GS:  Lamont-Doherty Earth Observatory
+HS:  Health Sciences Library
+CJ:  Journalism Library
+LE:  Lehman Library
+RH:  Lehman Suite
+ML:  Mathematics Library
+CF:  401 Butler Library (Microform Reading Room)
+MR:  Music & Arts Library
+RS:  Rare Book Library
+CA:  Science & Engineering Lib (NWC Building)
+SW:  Social Work Library
 
 
 offsite_locations:
+  # location codes for the two ReCAP partners
+  - scsb-nypl
+  - scsb-pul
+  # Columbia's Voyager offsite location codes
   - off,ave
   - off,bio
   - off,bmc

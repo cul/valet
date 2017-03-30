@@ -20,12 +20,26 @@
           <br>
           <br>
           Affiliations:
-          <div class='user-affil-list'>
+          <div class='tight-list'>
             <%= current_user.affils.join(',  ') %>
           </div>
           Offsite Eligible?  <%= current_user.offsite_eligible? %>
           <br>
           Offsite Blocked?  <%= current_user.offsite_blocked? %>
+          
+          <br>
+          <br>
+
+          <button type='button' class="btn btn-default btn-xs" onclick="$('#scsb_patron_info').toggle()">
+            show SCSB patron information
+          </button>
+          <div id='scsb_patron_info' class='tight-list collapse'>
+            <% current_user.scsb_patron_information.each_pair do |key, value| %>
+              <%= key + ":   " + value.to_s %>
+              <br>
+            <% end %>
+          </div>
+
         </div>
       </li>
 
