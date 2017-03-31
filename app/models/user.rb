@@ -132,6 +132,9 @@ class User < ActiveRecord::Base
     return false
   end
 
+  def admin?
+    affils && affils.include?('CUNIX_litosys')
+  end
 
   def get_scsb_patron_information
     return {} if barcode.blank?

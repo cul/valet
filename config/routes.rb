@@ -17,6 +17,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # special admin page
+  get 'admin/system'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
