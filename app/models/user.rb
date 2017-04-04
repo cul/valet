@@ -120,7 +120,7 @@ class User < ActiveRecord::Base
     return false unless affils
     affils.each do |affil|
       # TODO
-      return true if affil.match(/CUL_role-clio-...$/)
+      return true if affil.match(/CUL_role-clio/)
     end
     return false
   end
