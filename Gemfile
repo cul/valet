@@ -91,12 +91,15 @@ gem 'marc'
 # Use Twitter Bootstrap for styling
 gem 'bootstrap-sass'
 
-# Talk to SCSB API
+# Talk to SCSB REST API
 # gem 'rest-client'
 gem 'faraday'
 
 # Use MySQL for deployed server environments
 gem 'mysql2'
+
+# Talk to SCSB ActiveMQ via STOMP
+gem 'stomp'
 
 
 

@@ -103,7 +103,7 @@ class OffsiteRequestsController < ApplicationController
       return
     end
 
-    @request_item_response = Recap::ScsbApi.request_item(offsite_request_params) || {}
+    @request_item_response = Recap::ScsbRest.request_item(offsite_request_params) || {}
 
 
   end

@@ -119,6 +119,7 @@ class User < ActiveRecord::Base
   def offsite_eligible?
     return false unless affils
     affils.each do |affil|
+      # TODO
       return true if affil.match(/CUL_role-clio-...$/)
     end
     return false
@@ -139,7 +140,7 @@ class User < ActiveRecord::Base
   def get_scsb_patron_information
     return {} if barcode.blank?
     institution_id = 'CUL'
-    @scsb_patron_information = Recap::ScsbApi.get_patron_information(barcode, institution_id) || {}
+    @scsb_patron_information = Recap::ScsbRest.get_patron_information(barcode, institution_id) || {}
   end
 
 

@@ -176,7 +176,7 @@ class ClioRecord
   def fetch_availabilty
     # TODO - how to determine institution of current record?
     institution_id = 'CUL'
-    @availability = Recap::ScsbApi.get_bib_availability(key, institution_id) || {}
+    @availability = Recap::ScsbRest.get_bib_availability(key, institution_id) || {}
   end
 
   def fetch_tocs

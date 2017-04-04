@@ -1,21 +1,12 @@
 
 module Recap
-  class ScsbApi
+  class ScsbRest
 
     attr_reader :conn, :scsb_args
 
-    # APP_CONFIG parameter block looks like this:
-    # 
-    # scsb_connection_details:
-    #   api_key: xxx
-    #   url: http://foo.bar.com:999
-    #   item_availability_path: /blah/itemAvailabilityStatus
-    #   search_path: /blah/search
-    #   search_by_param_path: /blah/searchByParam
-
-    def self.get_scsb_args
-      app_config_key = 'scsb_connection_details'
-      scsb_args = APP_CONFIG[app_config_key]
+    def self.get_scsb_rest_args
+      app_config_key = 'rest_connection_details'
+      scsb_args = APP_CONFIG['scsb'][app_config_key]
       raise "Cannot find #{app_config_key} in APP_CONFIG!" if scsb_args.blank?
       scsb_args.symbolize_keys!
 
@@ -26,6 +17,7 @@ module Recap
       @scsb_args = scsb_args
     end
 
+
     def self.open_connection(url = nil)
       if @conn
         if url.nil?  || (@conn.url_prefix.to_s == url)
@@ -33,7 +25,7 @@ module Recap
         end
       end
 
-      get_scsb_args
+      get_scsb_rest_args
       url ||= @scsb_args[:url]
       Rails.logger.debug "- opening new connection to #{url}"
       @conn = Faraday.new(url: url)
@@ -65,15 +57,15 @@ module Recap
 
 
     # Called like this:
-    # availability = Recap::ScsbApi.get_item_availability(barcodes)
+    # availability = Recap::ScsbRest.get_item_availability(barcodes)
     def self.get_item_availability(barcodes = [], conn = nil)
-      raise "Recap::ScsbApi.get_item_availability() got blank barcodes" if barcodes.blank?
+      raise "Recap::ScsbRest.get_item_availability() got blank barcodes" if barcodes.blank?
       Rails.logger.debug "- get_item_availability(#{barcodes})"
 
       conn ||= open_connection()
       raise "get_item_availability() bad connection [#{conn.inspect}]" unless conn
 
-      get_scsb_args
+      get_scsb_rest_args
       path = @scsb_args[:item_availability_path]
       params = {
         barcodes: barcodes
@@ -109,20 +101,20 @@ module Recap
     #   }
     # ]
     def self.get_bib_availability(bib_id = nil, institution_id = nil, conn = nil)
-      raise "Recap::ScsbApi.get_bib_availability() got nil bib_id" if bib_id.blank?
-      raise "Recap::ScsbApi.get_bib_availability() got nil institution_id" if bib_id.blank?
+      raise "Recap::ScsbRest.get_bib_availability() got nil bib_id" if bib_id.blank?
+      raise "Recap::ScsbRest.get_bib_availability() got nil institution_id" if bib_id.blank?
       Rails.logger.debug "- get_bib_availability(#{bib_id}, #{institution_id})"
 
       conn  ||= open_connection()
       raise "get_bib_availability() bad connection [#{conn.inspect}]" unless conn
 
-      get_scsb_args
+      get_scsb_rest_args
       path = @scsb_args[:bib_availability_path]
       params = {
         bibliographicId: bib_id,
         institutionId:   institution_id
       }
-      Rails.logger.debug "get_bib_availability(#{bib_id}) calling SCSB API with params #{params.inspect}"
+      Rails.logger.debug "get_bib_availability(#{bib_id}) calling SCSB REST API with params #{params.inspect}"
       response = conn.post path, params.to_json
       Rails.logger.debug "SCSB response status: #{response.status}"
 
@@ -144,14 +136,14 @@ module Recap
 
 
     def self.get_patron_information(patron_barcode = nil, institution_id = nil, conn = nil)
-      raise "Recap::ScsbApi.get_patron_information() got blank patron_barcode" if patron_barcode.blank?
-      raise "Recap::ScsbApi.get_patron_information() got blank institution_id" if institution_id.blank?
+      raise "Recap::ScsbRest.get_patron_information() got blank patron_barcode" if patron_barcode.blank?
+      raise "Recap::ScsbRest.get_patron_information() got blank institution_id" if institution_id.blank?
       Rails.logger.debug "- get_patron_information(#{patron_barcode}, #{institution_id})"
 
       conn  ||= open_connection()
       raise "get_bib_availability() bad connection [#{conn.inspect}]" unless conn
 
-      get_scsb_args
+      get_scsb_rest_args
       path = @scsb_args[:patron_information_path]
       params = {
         patronIdentifier:      patron_barcode,
@@ -177,12 +169,12 @@ module Recap
     def self.request_item(params, conn = nil)
 
       # How much valet-side param validation should we do?
-      # raise "Recap::ScsbApi.request_item() got invalid requestType" unless
+      # raise "Recap::ScsbRest.request_item() got invalid requestType" unless
       #   params[:requestType].present? &&
       #   ['RETRIEVAL','RECALL'].include?(requestType)
-      # raise "Recap::ScsbApi.request_item() got blank itemBarcodes" if params[itemBarcodes].blank?
-      # raise "Recap::ScsbApi.request_item() got blank deliveryLocation" if params[deliveryLocation].blank?
-      # raise "Recap::ScsbApi.request_item() got blank itemOwningInstitution" if [itemOwningInstitution].blank?
+      # raise "Recap::ScsbRest.request_item() got blank itemBarcodes" if params[itemBarcodes].blank?
+      # raise "Recap::ScsbRest.request_item() got blank deliveryLocation" if params[deliveryLocation].blank?
+      # raise "Recap::ScsbRest.request_item() got blank itemOwningInstitution" if [itemOwningInstitution].blank?
 
       Rails.logger.debug "- request_item(#{params.inspect})"
 
@@ -196,7 +188,7 @@ module Recap
         }
       )
 
-      get_scsb_args
+      get_scsb_rest_args
       path = @scsb_args[:request_item_path]
       response = conn.post path, params.to_json
 
