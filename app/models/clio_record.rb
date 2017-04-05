@@ -179,9 +179,16 @@ class ClioRecord
     @availability = Recap::ScsbRest.get_bib_availability(key, institution_id) || {}
   end
 
+  # For each of the barcodes in this record (@barcodes),
+  # check to see if there's a TOC.
+  # If so, add the toc URL to this record's tocs Hash:
+  # { 
+  # 'CU12731471' => 'http://www.columbia.edu/cgi-bin/cul/toc.pl?CU12731471',
+  #  ...etc...
+  # }
   def fetch_tocs
     tocs = {}
-# SLOW FOR SERIALS WITH MANY MANY BARCODES
+    # SLOW FOR SERIALS WITH MANY MANY BARCODES
     # conn = Columbia::Web.open_connection()
     # @barcodes.each do |barcode|
     #   toc = Columbia::Web.get_toc_link(barcode, conn)
@@ -189,7 +196,8 @@ class ClioRecord
     #     tocs[barcode] = toc
     #   end
     # end
-
+    # Hopefully faster?
+    tocs = Columbia::Web.get_bib_toc_links(key)
     @tocs = tocs
   end
 

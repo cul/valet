@@ -14,6 +14,7 @@ module Columbia
 
     HOST = 'http://www.columbia.edu'
     TOCURL = '/cgi-bin/cul/toc.pl'
+    TOCLISTURL = '/cgi-bin/cul/toclist.pl'
 
     def self.open_connection
       conn = Faraday.new(url: HOST)
@@ -40,6 +41,29 @@ module Columbia
       else
         return nil
       end
+    end
+
+    def self.get_bib_toc_links(bib = nil, conn = nil)
+      raise "Columbia::Web.get_bib_toc_links() got nil bib" if bib.blank?
+
+      conn ||= Faraday.new(url: HOST)
+      raise "Faraday.new(#{HOST}) failed!" unless conn
+
+      tocpath = "#{TOCLISTURL}?bib=#{bib}"
+      response = conn.get(tocpath)
+
+      if response.status != 200
+        Rails.logger.error "conn.get(#{TOCLISTURL}) got status #{response.status}"
+        return nil
+      end
+
+      barcodeList = JSON.parse(response.body)
+      tocLinkHash = {}
+      barcodeList.each { |barcode|
+        tocLinkHash[barcode] = "#{HOST}#{TOCURL}?#{barcode}"
+      }
+
+      return tocLinkHash
     end
 
   end

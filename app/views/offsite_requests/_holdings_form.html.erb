@@ -12,7 +12,10 @@
     <%= holding_radio_button_label(holding) %>
 
     <br>
-    <%= holding[:summary_holdings].join("<br>") %>
+    <% holding[:summary_holdings].each do |summary| %>
+      <%= summary%>
+      <br>
+    <% end %>
 
   </div>
 

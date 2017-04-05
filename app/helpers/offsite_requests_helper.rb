@@ -111,5 +111,24 @@ module OffsiteRequestsHelper
     return label_tag(radio_button_id, label)
   end
 
+  def use_restriction_note(holding, item)
+    return '' unless holding.present? &&
+                     item.present?
+
+    # UT Missionary Research Library is very special,
+    # they get their very own message.
+    nonCircLocations = [ 'off,utmrl' ]
+    if nonCircLocations.include?(holding[:location_code])
+      return 'In library use only.'
+    end
+
+    # Return special language for fragile material.
+    if item[:use_restriction].downcase == 'frgl'
+      return 'In library use only. "Item to Library" delivery only.'
+    end
+
+    # Otherwise, just return the use restrictions verbatim.
+    item[:use_restriction]
+  end
 
 end

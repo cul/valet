@@ -6,10 +6,10 @@
     location <%= location_label(@holding[:location_code]) %>
   </strong>
 
-  <table class='offsite_request'>
+  <table class='offsite_request table-hover'>
     <tr>
       <td>&nbsp;</td>
-      <td>Vol/Part No.</td>
+      <td>Vol / Part No.</td>
       <td>Barcode</td>
       <td>Availability</td>
       <td>Note</td>
@@ -17,14 +17,15 @@
     </tr>
 
     <% @holding[:items].each do |item| %>
-    <tr>
-      <td><%= check_box_tag "itemBarcodes[]", item[:barcode] %></td>
-      <td><%= item[:enum_chron] %></td>
-      <td><%= item[:barcode] %></td>
-      <td><%= @clio_record.availability[ item[:barcode] ] || '(unknown)' %></td>
-      <td></td>
-      <td><%= toc_link(@clio_record, item[:barcode]) %></td>
-    <tr>
+      <% next unless @clio_record.availability[ item[:barcode] ] %>
+      <tr>
+        <td><%= check_box_tag "itemBarcodes[]", item[:barcode] %></td>
+        <td><%= item[:enum_chron] %></td>
+        <td><%= item[:barcode] %></td>
+        <td><%= @clio_record.availability[ item[:barcode] ] || '(unknown)' %></td>
+        <td><%= use_restriction_note(@holding, item) %></td>
+        <td><%= toc_link(@clio_record, item[:barcode]) %></td>
+      <tr>
     <% end %>
 
   </table>
