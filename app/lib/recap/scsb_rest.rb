@@ -100,10 +100,10 @@ module Recap
     #     "errorMessage": "Bib Id doesn't exist in SCSB database."
     #   }
     # ]
-    def self.get_bib_availability(bib_id = nil, institution_id = nil, conn = nil)
-      raise "Recap::ScsbRest.get_bib_availability() got nil bib_id" if bib_id.blank?
-      raise "Recap::ScsbRest.get_bib_availability() got nil institution_id" if bib_id.blank?
-      Rails.logger.debug "- get_bib_availability(#{bib_id}, #{institution_id})"
+    def self.get_bib_availability(bibliographicId = nil, institutionId = nil, conn = nil)
+      raise "Recap::ScsbRest.get_bib_availability() got nil bibliographicId" if bibliographicId.blank?
+      raise "Recap::ScsbRest.get_bib_availability() got nil institutionId" if institutionId.blank?
+      Rails.logger.debug "- get_bib_availability(#{bibliographicId}, #{institutionId})"
 
       conn  ||= open_connection()
       raise "get_bib_availability() bad connection [#{conn.inspect}]" unless conn
@@ -111,10 +111,10 @@ module Recap
       get_scsb_rest_args
       path = @scsb_args[:bib_availability_path]
       params = {
-        bibliographicId: bib_id,
-        institutionId:   institution_id
+        bibliographicId: bibliographicId,
+        institutionId:   institutionId
       }
-      Rails.logger.debug "get_bib_availability(#{bib_id}) calling SCSB REST API with params #{params.inspect}"
+      Rails.logger.debug "get_bib_availability(#{bibliographicId}) calling SCSB REST API with params #{params.inspect}"
       response = conn.post path, params.to_json
       Rails.logger.debug "SCSB response status: #{response.status}"
 

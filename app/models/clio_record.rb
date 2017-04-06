@@ -8,12 +8,12 @@ class ClioRecord
 
   def initialize(marc_record = nil)
     @marc_record = marc_record
-    self.populate_owningInstitution
     self.populate_holdings
     self.populate_barcodes
     # self.fetch_availabilty
     self.fetch_tocs
     # self.fetch_locations
+    self.populate_owningInstitution
     @availability = {}
   end
 
@@ -44,7 +44,12 @@ class ClioRecord
   end
 
   def key
-    return @marc_record['001'].value
+    case owningInstitution
+    when 'CUL'
+      return @marc_record['001'].value
+    else
+      return @marc_record['009'].value
+    end
   end
 
   def title
@@ -85,8 +90,17 @@ class ClioRecord
 
 
   def populate_owningInstitution
-    # TODO
-    @owningInstitution = 'CUL'
+    return 'CUL' unless holdings.present?
+
+    case holdings.first[:location_code]
+    when 'scsb-nypl'
+      @owningInstitution = 'NYPL'
+    when 'scsb-pul'
+      @owningInstitution = 'PUL'
+    else
+      @owningInstitution = 'CUL'
+    end
+
   end
 
   # Drill down into the MARC fields to build an
@@ -174,9 +188,7 @@ class ClioRecord
 
   # Fetch availability for each barcode from SCSB
   def fetch_availabilty
-    # TODO - how to determine institution of current record?
-    institution_id = 'CUL'
-    @availability = Recap::ScsbRest.get_bib_availability(key, institution_id) || {}
+    @availability = Recap::ScsbRest.get_bib_availability(key, owningInstitution) || {}
   end
 
   # For each of the barcodes in this record (@barcodes),
