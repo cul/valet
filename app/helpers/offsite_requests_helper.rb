@@ -114,6 +114,7 @@ module OffsiteRequestsHelper
   def use_restriction_note(holding, item)
     return '' unless holding.present? &&
                      item.present?
+    return '' if item[:use_restriction].blank?
 
     # UT Missionary Research Library is very special,
     # they get their very own message.
