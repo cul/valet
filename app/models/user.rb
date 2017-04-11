@@ -134,7 +134,7 @@ class User < ActiveRecord::Base
   end
 
   def admin?
-    affils && affils.include?('CUNIX_litosys')
+    affils && (affils.include?('CUNIX_litosys') || affils.include?('CUL_dpts-dev'))
   end
 
   def get_scsb_patron_information
