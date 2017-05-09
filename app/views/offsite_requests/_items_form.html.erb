@@ -11,7 +11,7 @@
 
   <table class='offsite_request table-hover'>
     <tr>
-      <td colspan='6'>
+      <td colspan='5'>
         <strong>
           Items for 
           call number <%= @holding[:display_call_number].upcase %>,
@@ -23,18 +23,24 @@
       <td>&nbsp;</td>
       <td>Vol / Part No.</td>
       <td>Barcode</td>
-      <td>Availability</td>
       <td>Note</td>
       <td>Table of Contents (when available)</td>
     </tr>
 
     <% @holding[:items].each do |item| %>
-      <% next unless @clio_record.availability[ item[:barcode] ] %>
+      <% next unless availability = @clio_record.availability[ item[:barcode] ] %>
       <tr>
-        <td><%= check_box_tag "itemBarcodes[]", item[:barcode] %></td>
+        <td>
+          <% case availability
+             when 'Available' %>
+               <%= check_box_tag "itemBarcodes[]", item[:barcode] %>
+          <% else %>
+            OUT
+            <!-- <%= availability %> -->
+          <% end %>
+        </td>
         <td><%= item[:enum_chron] %></td>
         <td><%= item[:barcode] %></td>
-        <td><%= @clio_record.availability[ item[:barcode] ] || '(unknown)' %></td>
         <td><%= use_restriction_note(@holding, item) %></td>
         <td><%= toc_link(@clio_record, item[:barcode]) %></td>
       <tr>
