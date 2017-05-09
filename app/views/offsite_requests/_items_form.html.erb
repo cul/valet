@@ -1,12 +1,24 @@
-<div class='holdings'>
 
-  <strong>
-    Items for 
-    call number <%= @holding[:display_call_number].upcase %>,
-    location <%= location_label(@holding[:location_code]) %>
-  </strong>
+<div class='items_form'>
+
+  <div class='instructional_title'>
+    Please select one or more items:
+  </div>
+  <div class='instructional_description'>
+    (For electronic delivery service only one article may be requested at a time.)
+  </div>
+
 
   <table class='offsite_request table-hover'>
+    <tr>
+      <td colspan='6'>
+        <strong>
+          Items for 
+          call number <%= @holding[:display_call_number].upcase %>,
+          location <%= location_label(@holding[:location_code]) %>
+        </strong>
+      </td>
+    </tr>
     <tr>
       <td>&nbsp;</td>
       <td>Vol / Part No.</td>
