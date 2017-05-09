@@ -1,6 +1,11 @@
 class User < ActiveRecord::Base
   include Cul::Omniauth::Users
 
+  # cul_omniauth includes several options (:registerable, 
+  # :recoverable, :rememberable, :trackable, :validatable, ...)
+  # but we also want...
+  devise :timeoutable
+
   serialize :affils, Array
 
   attr_reader :ldap_attributes, :scsb_patron_information
