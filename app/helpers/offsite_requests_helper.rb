@@ -129,7 +129,9 @@ module OffsiteRequestsHelper
     end
 
     # Otherwise, just return the use restrictions verbatim.
-    item[:use_restriction]
+    # item[:use_restriction]
+    # Nope, ignore other conditions (see VALET-14, Use Restrictions)
+    return ''
   end
 
 end
