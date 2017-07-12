@@ -94,74 +94,9 @@ class OffsiteRequestsController < ApplicationController
   # POST /offsite_requests
   # POST /offsite_requests.json
   def create
-    # Are we submitting to the new (SCSB) or legacy (cgi) request system?
-    # If legacy, pass control.
-    if params[:legacy_submit]
-      # Legacy system needs some extra fields
-      legacy_params = offsite_request_params
-      submit_legacy_offsite_request(legacy_params)
-      return
-    end
 
     @request_item_response = Recap::ScsbRest.request_item(offsite_request_params) || {}
 
-
-  end
-
-
-
-  def submit_legacy_offsite_request(params)
-    # We need to map our Valet params to the params expected by
-    # the legacy CGI offsite request system, then 
-
-    # Delivery Type - "PHY" for physical, "WEB" for electronic
-    deltype = params[:requestType] == 'EDD' ? 'WEB' : 'PHY'
-
-    legacy_url = 'https://www1.columbia.edu/sec-cgi-bin' +
-                 '/cul/offsite/processformdata'
-    legacy_params = {
-      # Patron contact information
-      PATNAME:  current_user.name,
-      PATMAIL:  params[:emailAddress],
-      PATDEPT:  current_user.department,
-      PATFONE:  current_user.phone,
-      # PATNOTE:  '',  # omit
-      PATRUNI:  current_user.login,
-
-      # Citation details for Electronic Document Delivery (EDD)
-      ARTAUTH:  params[:author] || '',
-      ARTITLE:  params[:chapterTitle] || '',
-      ARTVOL1:  params[:volume] || '',
-      ARTVOL2:  params[:issue] || '',
-      ARTSTPG:  params[:startPage] || '',
-      ARTENPG:  params[:endPage] || '',
-      # This was "Other Identifying Info" in vie.  Omit for now.
-      # ARTINFO:  XXX,
-
-      # Info about the requested item(s)
-      CLIOKEY:  params[:bibId],
-      ITMBARC:  params[:itemBarcodes],
-
-      # Information about the request itself
-      DELTYPE:  deltype,
-      PICKUPL:  params[:deliveryLocation],
-
-      # DEFLOCA:  XXX,
-
-      # ITMAUTH:  XXX,
-      # ITMCALL:  XXX,
-      # ITMPART:  XXX,
-      # ITMTITL:  XXX,
-
-      # PRIORIT:  XXX,
-      # REQCODE:  XXX,
-      # REQDATE:  XXX,
-      REQNOTE:  'Testing!! Please disregard.',
-    }
-
-    uri = URI(legacy_url)
-    uri.query = legacy_params.to_query
-    redirect_to uri.to_s
   end
 
 
