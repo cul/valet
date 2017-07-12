@@ -1,6 +1,7 @@
 
 <%= form_for(@offsite_request) do |f| %>
 
+  <%= hidden_field_tag(:emailAddress, current_user.email) %>
   <%= hidden_field_tag(:itemOwningInstitution, @clio_record.owningInstitution) %>
   <%= hidden_field_tag(:bibId, @clio_record.key) %>
   <%= hidden_field_tag(:titleIdentifier, @clio_record.title) %>
@@ -32,19 +33,6 @@
   <%= render 'items_form', f: f %>
   <br>
   <%= render 'delivery_form', f: f %>
-
-
-  <br>
-
-  <div class='offset-block'>
-    <small>
-      <label for='emailAddress' class='control-label'>
-        Preferred contact email for this request:
-        &nbsp;
-      </label>
-      <%= text_field_tag(:emailAddress, current_user.email, size: '40') %>
-    </small>
-  </div>
 
   <br>
   <br>
