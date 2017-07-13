@@ -23,11 +23,13 @@ module Voyager
         # 
         # args = YAML.load_file(app_config)['oracle_connection_details'] if
         #         args == {} and File.exists?(app_config)
-        ora_args = APP_CONFIG['oracle_connection_details'].symbolize_keys!
+        ora_args = APP_CONFIG['oracle_connection_details']
 
         raise "Need argument 'user'" unless ora_args.has_key?(:user)
         raise "Need argument 'password'" unless ora_args.has_key?(:password)
         raise "Need argument 'service'" unless ora_args.has_key?(:service)
+
+        Rails.logger.debug "- opening Oracle connection #{ora_args.except('password')}"
 
         @connection = OCI8.new(ora_args[:user], ora_args[:password], ora_args[:service])
         # @connection.prefetch_rows = 1000
@@ -58,6 +60,7 @@ module Voyager
     # based on:
     #  https://www1.columbia.edu/sec-cgi-bin/cul/bd/BDauth
     def retrieve_patron_barcode(patron_id)
+      Rails.logger.debug "- retrieve_patron_barcode(patron_id=#{patron_id})"
 
       query = <<-HERE
         select patron_id, patron_barcode, patron_group_id, barcode_status

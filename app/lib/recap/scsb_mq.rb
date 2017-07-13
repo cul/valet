@@ -7,7 +7,6 @@ module Recap
       app_config_key = 'mq_connection_details'
       scsb_args = APP_CONFIG['scsb'][app_config_key]
       raise "Cannot find #{app_config_key} in APP_CONFIG!" if scsb_args.blank?
-      scsb_args.symbolize_keys!
 
       [:host, :port].each do |key|
         raise "SCSB config needs value for '#{key}'" unless scsb_args.has_key?(key)

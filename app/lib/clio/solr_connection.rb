@@ -9,7 +9,7 @@ module Clio
     MARC_FIELD = 'marc_display'
 
     def initialize
-      solr_args = APP_CONFIG['solr_connection_details'].symbolize_keys!
+      solr_args = APP_CONFIG['solr_connection_details']
       raise "Solr config missing!" unless solr_args.present?
       raise "Solr config missing 'url'" unless solr_args.has_key?(:url)
       @solr_connection = RSolr.connect url: solr_args[:url]
@@ -40,7 +40,7 @@ module Clio
       #   e.g., http://SERVER:PORT/solr/CORE/select?qt=document&id=1234
       params = { qt: 'document', id: bib_id, fl: "id,#{MARC_FIELD}"}
 
-      Rails.logger.debug "fetch_solr_doc(#{bib_id}) calling Solr with params #{params.inspect}"
+      Rails.logger.debug "- fetch_solr_doc(#{bib_id}), Solr params #{params.inspect}"
       response = @solr_connection.get 'select', params: params
       Rails.logger.debug "Solr response status: #{response['responseHeader']['status']}"
 

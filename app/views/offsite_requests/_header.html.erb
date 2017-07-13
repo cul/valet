@@ -3,7 +3,9 @@
     <h4>Offsite Request</h4>
   </div>
   <div class='col-sm-6'>
-    <%= legacy_offsite_request_link(@clio_record)%>
+    <% if Rails.env != 'valet_prod' %>
+      <%= legacy_offsite_request_link(@clio_record)%>
+    <% end %>
   </div>
 </div>
 

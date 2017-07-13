@@ -35,14 +35,16 @@ class User < ActiveRecord::Base
   def set_personal_info_via_ldap
     if uid
 
-      ldap_args = APP_CONFIG['ldap_connection_details'].symbolize_keys!
+      ldap_args = APP_CONFIG['ldap_connection_details']
 
       raise "LDAP config needs 'host'" unless ldap_args.has_key?(:host)
       raise "LDAP config needs 'port'" unless ldap_args.has_key?(:port)
       raise "LDAP config needs 'base'" unless ldap_args.has_key?(:base)
 
+      Rails.logger.debug "Querying LDAP #{ldap_args.inspect}"
       entry = Net::LDAP.new({host: ldap_args[:host], port: ldap_args[:port]}).search(base: ldap_args[:base], :filter => Net::LDAP::Filter.eq("uid", uid)) || []
       entry = entry.first
+      Rails.logger.debug "LDAP response: #{entry.inspect}"
 
       if entry
         # Copy all attributes of the LDAP entry to an instance variable,
@@ -54,7 +56,6 @@ class User < ActiveRecord::Base
         end
 
         # Process certain raw attributes into cleaned up fields
-        puts "\n\n#{entry.inspect}\n\n"
         _mail = (entry[:mail].kind_of?(Array) ? entry[:mail].first : entry[:mail]).to_s
         if _mail.length > 6 and _mail.match(/^[\w.]+[@][\w.]+$/)
           self.email = _mail
