@@ -1,4 +1,7 @@
 class OffsiteRequestsController < ApplicationController
+
+  before_action :confirm_offsite_eligibility!, except: [ :ineligible ]
+  
   before_action :set_offsite_request, only: [:show, :edit, :update, :destroy]
 
   # before_filter :authenticate_user!, if: :devise_controller?
@@ -124,7 +127,16 @@ class OffsiteRequestsController < ApplicationController
     # end
   end
 
+  def ineligible
+  end
+
   private
+    def confirm_offsite_eligibility!
+      redirect_to ineligible_offsite_requests_path unless current_user
+      redirect_to ineligible_offsite_requests_path unless current_user.offsite_eligible?
+    end
+
+
     # Use callbacks to share common setup or constraints between actions.
     def set_offsite_request
       @offsite_request = OffsiteRequest.find(params[:id])

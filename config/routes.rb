@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     collection do
       get 'bib'
       get 'holding'
+      get 'ineligible'
     end
   end
 
