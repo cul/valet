@@ -59,6 +59,8 @@ group :development do
 
   # Better error page for Rack apps
   gem "better_errors"
+  # And get a REPL
+  gem 'binding_of_caller'
 
   # Deployment with Capistrano
   gem 'capistrano', '~> 3.0', require: false

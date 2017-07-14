@@ -4,7 +4,9 @@
 # It is not a Blacklight Document.
 class ClioRecord
   attr_reader :marc_record, :holdings, :barcodes,
-              :availability, :tocs, :owningInstitution
+              :availability,
+              # :available_item_count,
+              :tocs, :owningInstitution
 
   def initialize(marc_record = nil)
     @marc_record = marc_record
@@ -196,8 +198,14 @@ class ClioRecord
   end
 
   # Fetch availability for each barcode from SCSB
+  # @availability format:
+  #   { barcode: availability, barcode: availability, ...}
   def fetch_availabilty
     @availability = Recap::ScsbRest.get_bib_availability(owningInstitutionBibId, owningInstitution) || {}
+
+    # @available_item_count = @availability.select{ |barcode, availability_status|
+    #   availability_status == 'Available'
+    # }.count
   end
 
   # For each of the barcodes in this record (@barcodes),

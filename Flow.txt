@@ -1,0 +1,64 @@
+Valet Application flow
+
+
+1) Valet Home Page
+https://valet-test.cul.columbia.edu/
+- Single button:  New Offsite Request
+(In the future Valet may include other request 
+ types, e.g. Aeon, BorrowDirect, ILL)
+
+
+2) Bib Page - "Please specify a bib id"
+https://valet-test.cul.columbia.edu/offsite_requests/bib
+- Simple form, requesting a Bib Id
+  Could be a Columbia Id (e.g., 123456)
+  or a Partner institution Id (e.g., SCSB-598473)
+
+
+3) Holdings Page - "Which holding would you like?"
+- The CLIO "Offsite Request" link points to here
+- Expects a Bib ID to be passed.  If not found, return to step #2
+https://valet-dev.cul.columbia.edu/offsite_requests/bib?bib_id=SCSB-1426
+- Lookup bib id in Solr search index (not Voyager)
+- Pull Holdings out from the retrieved Solr MARC record 
+
+- If there is only a single offsite holding, 
+  immediately redirect to step #4
+https://valet-test.cul.columbia.edu/offsite_requests/holding?bib_id=123456
+https://valet-dev.cul.columbia.edu/offsite_requests/bib?bib_id=SCSB-1426
+
+- If there are multiple offsite holdings, 
+  present a form asking "Which holding would you like?"
+https://valet-test.cul.columbia.edu/offsite_requests/holding?bib_id=200552
+https://valet-test.cul.columbia.edu/offsite_requests/holding?bib_id=SCSB-598473
+
+
+4) New Offsite Request
+Columbia example:
+https://valet-dev.cul.columbia.edu/offsite_requests/new?bib_id=402365&mfhd_id=536836
+Princeton example:
+https://valet-dev.cul.columbia.edu/offsite_requests/new?bib_id=SCSB-1426&mfhd_id=1441
+NYPL example:
+https://valet-dev.cul.columbia.edu/offsite_requests/new?bib_id=SCSB-767649&mfhd_id=782687
+- Expects both a Bib ID and a MFHD ID to be passed
+- Lookup Bib Id in Solr search index
+- Lookup availability in SCSB Availability API
+- Lookup TOC on Columbia Website
+- Present a multipart form,
+  "Select one or more items"
+     and
+  "Select delivery method"
+- Button to Submit
+
+5) Offsite Request Submission Confirmation Screen
+(No direct URL, has to be the result of form submission)
+- Expects a complex form to be submitted
+- Calls SCSB Request Item API to create a request
+- Tell patron "Your request for XXXXX has been submitted"
+- Echo back the response message from the SCSB API call
+  (Usually just 'Message recevied, your request will be processed' [sic])
+- Dead-end page
+
+
+
+

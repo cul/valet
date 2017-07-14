@@ -90,9 +90,9 @@ class OffsiteRequestsController < ApplicationController
   end
 
 
-  # GET /offsite_requests/1/edit
-  def edit
-  end
+  # # GET /offsite_requests/1/edit
+  # def edit
+  # end
 
   # POST /offsite_requests
   # POST /offsite_requests.json
@@ -106,7 +106,7 @@ class OffsiteRequestsController < ApplicationController
     subject = confirmation_email_subject(offsite_request_params, @request_item_response)
     body    = confirmation_email_body(offsite_request_params, @request_item_response)
     ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver
-    
+
     # Then continue on to render the page
   end
 

@@ -18,10 +18,12 @@ standard_delivery_locations:
 
 # configuration for each offsite location code
 # keys:
-#   default:  required key, sets a default on-campus delivery location
-#   available: optional key, sets a list of available on-campus 
-#      delivery locations.  if there is no specific list defined then
-#      the standard set (standard_delivery_locations) will be used.
+#   default:  required key, sets a default 
+#             on-campus delivery location
+#   available: optional key, a list of available
+#              on-campus delivery locations.  
+#   If there is no 'available' list then the
+#   standard set (standard_delivery_locations) will be used.
 
 # Partner material
 # For now, Butler is the only valid delivery location.
