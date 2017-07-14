@@ -100,6 +100,14 @@ class OffsiteRequestsController < ApplicationController
 
     @request_item_response = Recap::ScsbRest.request_item(offsite_request_params) || {}
 
+    # Send confirmation email to patron
+    from    = 'recap@libraries.cul.columbia.edu'
+    to      = current_user.email
+    subject = confirmation_email_subject(offsite_request_params, @request_item_response)
+    body    = confirmation_email_body(offsite_request_params, @request_item_response)
+    ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver
+    
+    # Then continue on to render the page
   end
 
 
@@ -174,4 +182,22 @@ class OffsiteRequestsController < ApplicationController
         ).merge(application_params)
 
     end
+
+
+    def confirmation_email_subject(offsite_request_params, @request_item_response)
+      subject = 'Offsite Request Submission Confirmation'
+      if @request_item_response[:titleIdentifier]
+        subject = subject + " [#{@request_item_response[:titleIdentifier]}]"
+      end
+      return subject
+    end
+    
+    def confirmation_email_body(offsite_request_params, @request_item_response)
+    end
+    
+
+
 end
+
+
+
