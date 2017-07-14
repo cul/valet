@@ -184,17 +184,38 @@ class OffsiteRequestsController < ApplicationController
     end
 
 
-    def confirmation_email_subject(offsite_request_params, @request_item_response)
+    def confirmation_email_subject(offsite_request_params, request_item_response)
       subject = 'Offsite Request Submission Confirmation'
       if @request_item_response[:titleIdentifier]
         subject = subject + " [#{@request_item_response[:titleIdentifier]}]"
       end
       return subject
     end
-    
-    def confirmation_email_body(offsite_request_params, @request_item_response)
+
+    def confirmation_email_body(offsite_request_params, request_item_response)
+      body = <<-EOT
+722409-VYF has requested the following from Offsite:
+
+TITLE : #{@request_item_response[:titleIdentifier]}
+CALL NO : #{@request_item_response[:callNumber]}
+BARCODE: #{@request_item_response[:itemBarcodes].join(', ')}
+
+The submission response status was:
+   #{@request_item_response['screenMessage']}
+
+Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
+
+You will be contacted by email (to #{@request_item_response[:emailAddress]}) when the item is available.
+
+In order to best serve the Columbia community, please request 20 items or fewer per day. Contact recap@libraries.cul.columbia.edu with questions and comments.
+
+Patrons can check the status of their pending requests at:
+  http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1
+
+Thank you for using Offsite collections.
+EOT
     end
-    
+
 
 
 end
