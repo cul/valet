@@ -12,33 +12,38 @@
     <% if current_user %>
       <li>
         <div class='well user-info'>
+          <% #raise %>
           <%= current_user %>
           <br>
+          UNI: <%= current_user.uid %>
+          <br>
           Email: <%= current_user.email %>
-          <br>
-          Patron Barcode: <%= current_user.barcode %>
-          <br>
-          <br>
-          Affiliations:
-          <div class='tight-list'>
-            <%= current_user.affils.join(',  ') %>
-          </div>
-          Offsite Eligible?  <%= current_user.offsite_eligible? %>
-          <br>
-          Offsite Blocked?  <%= current_user.offsite_blocked? %>
+          <% if Rails.env != 'valet_prod' %>
+            <br>
+            Patron Barcode: <%= current_user.barcode %>
+            <br>
+            <br>
+            Affiliations:
+            <div class='tight-list'>
+              <%= current_user.affils.join(',  ') %>
+            </div>
+            Offsite Eligible?  <%= current_user.offsite_eligible? %>
+            <br>
+            Offsite Blocked?  <%= current_user.offsite_blocked? %>
           
-          <br>
-          <br>
+            <br>
+            <br>
 
-          <button type='button' class="btn btn-default btn-xs" onclick="$('#scsb_patron_info').toggle()">
-            show SCSB patron information
-          </button>
-          <div id='scsb_patron_info' class='tight-list collapse'>
-            <% current_user.scsb_patron_information.each_pair do |key, value| %>
-              <%= key + ":   " + value.to_s %>
-              <br>
-            <% end %>
-          </div>
+            <button type='button' class="btn btn-default btn-xs" onclick="$('#scsb_patron_info').toggle()">
+              show SCSB patron information
+            </button>
+            <div id='scsb_patron_info' class='tight-list collapse'>
+              <% current_user.scsb_patron_information.each_pair do |key, value| %>
+                <%= key + ":   " + value.to_s %>
+                <br>
+              <% end %>
+            </div>
+          <% end %>
 
         </div>
       </li>
