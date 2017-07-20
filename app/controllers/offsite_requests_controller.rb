@@ -2,7 +2,7 @@ class OffsiteRequestsController < ApplicationController
   before_action :authenticate_user!
 
   before_action :confirm_offsite_eligibility!, except: [ :ineligible ]
-  
+
   before_action :set_offsite_request, only: [:show, :edit, :update, :destroy]
 
   # before_filter :authenticate_user!, if: :devise_controller?

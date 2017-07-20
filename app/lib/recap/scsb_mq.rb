@@ -75,8 +75,6 @@ module Recap
 
       return @conn
     end
-    
-
 
   end
 
