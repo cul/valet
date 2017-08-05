@@ -1,0 +1,21 @@
+
+<div class="row">
+  <div class="col-xs-6">
+    <h4>Valet Logs</h4>
+  </div>
+</div>
+
+<br>
+
+
+Log Directory:
+<%=  @log_dir %>
+
+<br>
+<br>
+
+<strong> Log Files: </strong>
+
+<% @log_files.each do |log_file| %>
+  <%= log_file_link(log_file)%>
+<% end %>

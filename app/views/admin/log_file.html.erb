@@ -1,0 +1,30 @@
+
+<div class='small'>
+
+<table class='table table-striped table-hover table-condensed table-bordered'>
+
+<!-- HEADER ROW -->
+<tr>
+<% @headers.each do |header| %>
+  <th>
+    <%= (header || "&nbsp;").underscore.humanize %>
+  </th>
+<% end %>
+</tr>
+
+<!-- DATA ROWS -->
+<% @rows.each do |row| %>
+  <tr>
+  <% row.each do |field| %>
+    <td>
+      <%= field || "&nbsp;" %>
+    </td>
+  <% end %>
+  </tr>
+<% end %>
+
+</table>
+
+</div>
+
+

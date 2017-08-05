@@ -100,12 +100,14 @@ class OffsiteRequestsController < ApplicationController
 
     @request_item_response = Recap::ScsbRest.request_item(offsite_request_params) || {}
 
+    log_request(offsite_request_params, @request_item_response)
+
     # Send confirmation email to patron
     from    = 'recap@libraries.cul.columbia.edu'
     to      = current_user.email
     subject = confirmation_email_subject(offsite_request_params, @request_item_response)
     body    = confirmation_email_body(offsite_request_params, @request_item_response)
-    ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver
+    ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver_now
 
     # Then continue on to render the page
   end
@@ -139,61 +141,63 @@ class OffsiteRequestsController < ApplicationController
   end
 
   private
-    def confirm_offsite_eligibility!
-      redirect_to ineligible_offsite_requests_path unless current_user
-      redirect_to ineligible_offsite_requests_path unless current_user.offsite_eligible?
+
+  def confirm_offsite_eligibility!
+    redirect_to ineligible_offsite_requests_path unless current_user
+    redirect_to ineligible_offsite_requests_path unless current_user.offsite_eligible?
+  end
+
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_offsite_request
+    @offsite_request = OffsiteRequest.find(params[:id])
+  end
+
+
+  # Never trust parameters from the scary internet, 
+  # only allow the white list through.
+  def offsite_request_params
+    # Fill in ALL request params here, 
+    # permit some from form params,
+    # merge in others from other application state
+    application_params = {
+      patronBarcode:   current_user.barcode,
+      requestingInstitution: 'CUL',
+    }
+
+    params.permit(
+        # Information about the request
+        :requestType,
+        :deliveryLocation,
+        :emailAddress,
+        # Optional EDD params
+        :author,
+        :chapterTitle,
+        :volume,
+        :issue,
+        :startPage,
+        :endPage,
+        # Information about the requested item
+        :itemOwningInstitution,
+        :bibId,
+        :titleIdentifier,
+        :callNumber,
+        :itemBarcodes => [],
+      ).merge(application_params)
+
+  end
+
+
+  def confirmation_email_subject(offsite_request_params, request_item_response)
+    subject = 'Offsite Request Submission Confirmation'
+    if @request_item_response[:titleIdentifier]
+      subject = subject + " [#{@request_item_response[:titleIdentifier]}]"
     end
+    return subject
+  end
 
-
-    # Use callbacks to share common setup or constraints between actions.
-    def set_offsite_request
-      @offsite_request = OffsiteRequest.find(params[:id])
-    end
-
-
-    # Never trust parameters from the scary internet, 
-    # only allow the white list through.
-    def offsite_request_params
-      # Fill in ALL request params here, 
-      # permit some from form params,
-      # merge in others from other application state
-      application_params = {
-        patronBarcode:   current_user.barcode,
-      }
-
-      params.permit(
-          # Information about the request
-          :requestType,
-          :deliveryLocation,
-          :emailAddress,
-          # Optional EDD params
-          :author,
-          :chapterTitle,
-          :volume,
-          :issue,
-          :startPage,
-          :endPage,
-          # Information about the requested item
-          :itemOwningInstitution,
-          :bibId,
-          :titleIdentifier,
-          :callNumber,
-          :itemBarcodes => [],
-        ).merge(application_params)
-
-    end
-
-
-    def confirmation_email_subject(offsite_request_params, request_item_response)
-      subject = 'Offsite Request Submission Confirmation'
-      if @request_item_response[:titleIdentifier]
-        subject = subject + " [#{@request_item_response[:titleIdentifier]}]"
-      end
-      return subject
-    end
-
-    def confirmation_email_body(offsite_request_params, request_item_response)
-      body = <<-EOT
+  def confirmation_email_body(offsite_request_params, request_item_response)
+    body = <<-EOT
 722409-VYF has requested the following from Offsite:
 
 TITLE : #{@request_item_response[:titleIdentifier]}
@@ -201,7 +205,7 @@ CALL NO : #{@request_item_response[:callNumber]}
 BARCODE: #{@request_item_response[:itemBarcodes].join(', ')}
 
 The submission response status was:
-   #{@request_item_response['screenMessage']}
+ #{@request_item_response[:screenMessage]}
 
 Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
 
@@ -210,13 +214,91 @@ You will be contacted by email (to #{@request_item_response[:emailAddress]}) whe
 In order to best serve the Columbia community, please request 20 items or fewer per day. Contact recap@libraries.cul.columbia.edu with questions and comments.
 
 Patrons can check the status of their pending requests at:
-  http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1
+http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1
 
 Thank you for using Offsite collections.
 EOT
+  end
+
+
+  def log_request(params, response)
+    log_dir = get_log_dir
+    return unless log_dir
+    
+    log_entry = get_log_entry(params, response)
+    return unless log_entry
+
+    log_file = [ 'valet', Date.today.strftime('%Y%m'), 'log' ].join('.')
+    File.open("#{log_dir}/#{log_file}", 'a') do |f|
+      f.puts log_entry
     end
 
+  end
 
+
+  def get_log_dir
+    log_dir = APP_CONFIG['log_directory']
+    unless log_dir
+      Rails.logger.error "cannot log request - log_dir not given in app_config"
+      return
+    end
+    unless Dir.exist?(log_dir)
+      Rails.logger.error "cannot log request - can't find log_dir [#{log_dir.to_s}]"
+      return
+    end
+
+    # # Full log_dir is top dir plus YYYY-MM subdir (e.g., "2017-07")
+    # log_dir = log_dir + '/' + Date.today.strftime('%Y-%m')
+
+    Dir.mkdir(log_dir) unless Dir.exist?(log_dir)
+    return log_dir
+  end
+  
+
+  # Given the request parameters and the SCSB API response,
+  # build the log entry - a single line string
+  def get_log_entry(params, response)
+    fields = []
+
+    # basic info
+    fields.push DateTime.now.strftime('%F %T')
+    fields.push current_user.login
+    fields.push request.env["HTTP_X_FORWARDED_FOR"]
+
+    # patron information
+    fields.push "patronBarcode=#{params[:patronBarcode]}"
+    fields.push "emailAddress=#{params[:emailAddress]}"
+
+    # Information about the request
+    fields.push "requestType=#{params[:requestType]}"
+    fields.push "deliveryLocation=#{params[:deliveryLocation]}"
+    fields.push "requestingInstitution=#{params[:requestingInstitution]}"
+
+    # Information about the requested item
+    fields.push "itemOwningInstitution=#{params[:itemOwningInstitution]}"
+    fields.push "bibId=#{params[:bibId]}"
+    fields.push "titleIdentifier=#{params[:titleIdentifier]}"
+    fields.push "callNumber=#{params[:callNumber]}"
+    fields.push "itemBarcodes=#{params[:itemBarcodes].join('/')}"
+
+    # Optional EDD params
+    fields.push "author=#{params[:author]}"
+    fields.push "chapterTitle=#{params[:chapterTitle]}"
+    fields.push "volume=#{params[:volume]}"
+    fields.push "issue=#{params[:issue]}"
+    fields.push "startPage=#{params[:startPage]}"
+    fields.push "endPage=#{params[:endPage]}"
+
+    # SCSB API Response information
+    fields.push "success=#{response[:success]}"
+    fields.push "screenMessage=#{response[:screenMessage]}"
+
+    # Data fields could contain commas, or just about anything
+    entry = fields.join('|')
+
+    return entry
+  end
+  
 
 end
 

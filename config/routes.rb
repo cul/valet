@@ -18,8 +18,10 @@ Rails.application.routes.draw do
     end
   end
 
-  # special admin page
+  # special admin pages
   get 'admin/system'
+  get 'admin/logs'
+  get 'admin/log_file'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

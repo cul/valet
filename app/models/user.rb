@@ -139,8 +139,16 @@ class User < ActiveRecord::Base
     return false
   end
 
+  # developers and sysadmins
   def admin?
     affils && (affils.include?('CUNIX_litosys') || affils.include?('CUL_dpts-dev'))
+  end
+
+  # application-level admin permissions
+  def valet_admin?
+    return true if self.admin?
+    valet_admins = Array(APP_CONFIG['valet_admins']) || []
+    return valet_admins.include? login
   end
 
   def get_scsb_patron_information

@@ -12,16 +12,26 @@
     <% if current_user %>
       <li>
         <div class='well user-info'>
-          <% #raise %>
           <%= current_user %>
           <br>
           UNI: <%= current_user.uid %>
           <br>
           Email: <%= current_user.email %>
+          <% if current_user.valet_admin? %>
+            <br>
+            <br>
+            <%= link_to "Valet Logs", admin_logs_path %>
+          <% end %>
+          <% if current_user.admin? %>
+            <br>
+            <br>
+            <%= link_to "System Configuration Details", admin_system_path %>
+          <% end %>
+
           <% if Rails.env != 'valet_prod' %>
             <br>
-            Patron Barcode: <%= current_user.barcode %>
             <br>
+            Patron Barcode: <%= current_user.barcode %>
             <br>
             Affiliations:
             <div class='tight-list'>
@@ -30,6 +40,11 @@
             Offsite Eligible?  <%= current_user.offsite_eligible? %>
             <br>
             Offsite Blocked?  <%= current_user.offsite_blocked? %>
+            <br>
+            <br>
+            Admin?  <%= current_user.admin? %>
+            <br>
+            Valet Admin?  <%= current_user.valet_admin? %>
           
             <br>
             <br>

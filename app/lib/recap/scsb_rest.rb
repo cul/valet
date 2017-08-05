@@ -180,12 +180,12 @@ module Recap
       conn  ||= open_connection()
       raise "request_item() bad connection [#{conn.inspect}]" unless conn
 
-      # set values that aren't passed in as parameters
-      params.merge!(
-        {
-          requestingInstitution: 'CUL'
-        }
-      )
+      # # set values that aren't passed in as parameters
+      # params.merge!(
+      #   {
+      #     requestingInstitution: 'CUL'
+      #   }
+      # )
 
       get_scsb_rest_args
       path = @scsb_args[:request_item_path]
