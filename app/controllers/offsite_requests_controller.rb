@@ -263,7 +263,7 @@ EOT
     # basic info
     fields.push DateTime.now.strftime('%F %T')
     fields.push current_user.login
-    fields.push request.env["HTTP_X_FORWARDED_FOR"]
+    fields.push request.remote_ip
 
     # patron information
     fields.push "patronBarcode=#{params[:patronBarcode]}"
