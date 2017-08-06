@@ -2,6 +2,8 @@ class AdminController < ApplicationController
 
   before_action :authenticate_user!
 
+  layout 'admin'
+
   def system
     return redirect_to root_path unless current_user.admin?
   end
