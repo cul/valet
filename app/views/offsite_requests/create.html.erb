@@ -3,33 +3,68 @@
 
 <br>
 
-Your request for 
+You have requested the following from Offsite:
+
+<br>
+<br>
+
 <strong>
-  <%= @request_item_response[:titleIdentifier] %>
+TITLE : 
+<%= @request_item_response[:titleIdentifier] %>
+<br>
+CALL NO : 
+<%= @request_item_response[:callNumber] %>
+<br>
+BARCODE: 
+<%= (@request_item_response[:itemBarcodes] || []).join(', ') %>
 </strong>
-has been submitted.
+
 
 <br>
 <br>
 
+<% if @request_item_response[:success] != 'true' %>
+<div class="alert alert-danger" role="alert">
+  <strong>ERROR : </strong> This submission was <u>not</u> successful.  Please check the message below.
+</div>
+<% end %>
+
+Submission status:
+<br>
 <div class='offset-block'>
   <div class='well'>
     <span class="glyphicon glyphicon-exclamation-sign"></span>
     &nbsp;
-    <%= @request_item_response['screenMessage'] %>
+    <%= @request_item_response[:screenMessage] %>
   </div>
+</div>
+
+
+<br>
+Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
+<br>
+<br>
+You will be contacted by email (to 
+<strong>
+<%= @request_item_response[:emailAddress] %>
+</strong>
+) when the item is available.
+<br>
+<br>
+In order to best serve the Columbia community, please request 20 items or fewer per day. 
+Contact recap@libraries.cul.columbia.edu with questions and comments.
+<br>
+<br>
+Patrons can check the status of their pending requests at:
+<div class='offset-block'>
+<%= link_to 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1', 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1', target: 'blank'%>
 </div>
 
 <br>
 <br>
-
-Notification of completed offsite requests will be sent to
-<strong>
-  <%= @request_item_response[:emailAddress] %>
-</strong>
-
+Thank you for using Offsite collections.
+You can now close this browser window.
 <br>
 <br>
-
 
 

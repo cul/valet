@@ -197,15 +197,32 @@ class OffsiteRequestsController < ApplicationController
   end
 
   def confirmation_email_body(offsite_request_params, request_item_response)
+
+    status = @request_item_response[:screenMessage]
+
+    if @request_item_response[:success] != 'true'
+      error = <<-EOT
+=============================================
+ERROR : This submission was not successful.  
+Please check the message below.
+=============================================
+EOT
+    else
+      error = ''
+    end
+    
+
     body = <<-EOT
-722409-VYF has requested the following from Offsite:
+You have requested the following from Offsite:
 
 TITLE : #{@request_item_response[:titleIdentifier]}
 CALL NO : #{@request_item_response[:callNumber]}
-BARCODE: #{@request_item_response[:itemBarcodes].join(', ')}
+BARCODE: #{(@request_item_response[:itemBarcodes] || []).join(', ')}
 
-The submission response status was:
- #{@request_item_response[:screenMessage]}
+#{@error}
+Response message:
+        #{@status}
+
 
 Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
 
@@ -279,7 +296,7 @@ EOT
     fields.push "bibId=#{params[:bibId]}"
     fields.push "titleIdentifier=#{params[:titleIdentifier]}"
     fields.push "callNumber=#{params[:callNumber]}"
-    fields.push "itemBarcodes=#{params[:itemBarcodes].join('/')}"
+    fields.push "itemBarcodes=#{(params[:itemBarcodes] || []).join('/')}"
 
     # Optional EDD params
     fields.push "author=#{params[:author]}"
