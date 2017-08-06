@@ -8,54 +8,44 @@
   <div class='form-group form-group-sm'>
     <label for='volume' class='col-sm-4 control-label'>Volume #:</label>
     <div class='col-sm-8'>
-      <input type='text' class='form-control' id='volume' size='30'>
+      <%= text_field_tag(:volume, '', size: '30', class: 'form-control') %>
     </div>
   </div>
 
   <div class='form-group form-group-sm'>
     <label for='issue' class='col-sm-4 control-label'>Issue #, Date:</label>
     <div class='col-sm-8'>
-      <input type='text' class='form-control' id='issue' size='30'>
+      <%= text_field_tag(:issue, '', size: '30', class: 'form-control') %>
     </div>
   </div>
 
   <div class='form-group form-group-sm'>
     <label for='author' class='col-sm-4 control-label'>Article Author:</label>
     <div class='col-sm-8'>
-      <input type='text' class='form-control' id='author' size='30'>
+      <%= text_field_tag(:author, '', size: '30', class: 'form-control') %>
     </div>
   </div>
 
   <div class='form-group form-group-sm'>
     <label for='chapterTitle' class='col-sm-4 control-label'>Chapter/Article Title:</label>
     <div class='col-sm-8'>
-      <input type='text' class='form-control' id='chapterTitle' size='30'>
+      <%= text_field_tag(:chapterTitle, '', size: '30', class: 'form-control') %>
     </div>
   </div>
 
   <div class='form-group form-group-sm'>
     <label for='startPage' class='col-sm-4 control-label'>Start Page:</label>
     <div class='col-sm-8'>
-      <input type='text' class='form-control' id='startPage' size='30'>
+      <%= text_field_tag(:startPage, '', size: '30', class: 'form-control') %>
     </div>
   </div>
 
   <div class='form-group form-group-sm'>
     <label for='endPage' class='col-sm-4 control-label'>End Page:</label>
     <div class='col-sm-8'>
-      <input type='text' class='form-control' id='endPage' size='30'>
+      <%= text_field_tag(:endPage, '', size: '30', class: 'form-control') %>
     </div>
   </div>
-
-<!-- Leave this out until we figure out what it's for, and how it
-   - might fit into the SCSB REST API call fields.
-  <div class='form-group form-group-sm'>
-    <label for='ARTINFO' class='col-sm-4 control-label'>Other Identifying Info:</label>
-    <div class='col-sm-8'>
-      <input type='text' class='form-control' id='ARTINFO' size='30'>
-    </div>
-  </div>
--->
 
 </div>
 
