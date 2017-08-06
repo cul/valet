@@ -97,10 +97,15 @@ class OffsiteRequestsController < ApplicationController
   # POST /offsite_requests
   # POST /offsite_requests.json
   def create
-
     @request_item_response = Recap::ScsbRest.request_item(offsite_request_params) || {}
 
     log_request(offsite_request_params, @request_item_response)
+
+    # Instead of raise/catch, just detect failed API call directly here
+    if status = @request_item_response[:status] && status != 200
+      render 'api_error' and return
+    end
+
 
     # Send confirmation email to patron
     from    = 'recap@libraries.cul.columbia.edu'
@@ -299,7 +304,7 @@ EOT
     fields.push "bibId=#{params[:bibId]}"
     fields.push "titleIdentifier=#{params[:titleIdentifier]}"
     fields.push "callNumber=#{params[:callNumber]}"
-    fields.push "itemBarcodes=#{(params[:itemBarcodes] || []).join('/')}"
+    fields.push "itemBarcodes=#{(params[:itemBarcodes] || []).join(' / ')}"
 
     # Optional EDD params
     fields.push "author=#{params[:author]}"
@@ -310,8 +315,11 @@ EOT
     fields.push "endPage=#{params[:endPage]}"
 
     # SCSB API Response information
-    fields.push "success=#{response[:success]}"
-    fields.push "screenMessage=#{(response[:screenMessage] || '').squish}"
+    # (also handle API failures, which return different fields)
+    status = response[:success] || response[:error]
+    fields.push "success=#{status}"
+    message = response[:screenMessage] || response[:message] || ''
+    fields.push "screenMessage=#{message.squish}"
 
     # Data fields could contain commas, or just about anything
     entry = fields.join('|')

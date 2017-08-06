@@ -1,0 +1,17 @@
+
+
+<div class="alert alert-danger" role="alert">
+  <strong>ERROR : </strong> API call failed.
+</div>
+
+<dl>
+<% @request_item_response.each_pair do |key, value| %>
+  <dt>
+    <%=key%>
+  </dt>
+  <dd>
+    <%=key%>
+  </dd>
+<% end %>
+</dl>
+

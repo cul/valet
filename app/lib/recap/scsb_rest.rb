@@ -156,7 +156,6 @@ module Recap
         # Raise or just log error?
         Rails.logger.error "ERROR:  API response status #{response.status}"
         Rails.logger.error "ERROR DETAILS: " + response.body
-        return
       end
 
       # Rails.logger.debug "response.body=\n#{response.body}"
@@ -165,39 +164,33 @@ module Recap
       return patron_information_hash
     end
 
-    # This is for RETRIEVAL / RECALL, not for EDD
-    # def self.request_item(requestType = nil, itemBarcodes = [], deliveryLocation = nil, itemOwningInstitution = nil, conn = nil)
+
+
     def self.request_item(params, conn = nil)
-
-      # How much valet-side param validation should we do?
-      # raise "Recap::ScsbRest.request_item() got invalid requestType" unless
-      #   params[:requestType].present? &&
-      #   ['RETRIEVAL','RECALL'].include?(requestType)
-      # raise "Recap::ScsbRest.request_item() got blank itemBarcodes" if params[itemBarcodes].blank?
-      # raise "Recap::ScsbRest.request_item() got blank deliveryLocation" if params[deliveryLocation].blank?
-      # raise "Recap::ScsbRest.request_item() got blank itemOwningInstitution" if [itemOwningInstitution].blank?
-
+      # Do we want to check params to see if what we need is in there?
       Rails.logger.debug "- request_item(#{params.inspect})"
 
       conn  ||= open_connection()
       raise "request_item() bad connection [#{conn.inspect}]" unless conn
-
-      # # set values that aren't passed in as parameters
-      # params.merge!(
-      #   {
-      #     requestingInstitution: 'CUL'
-      #   }
-      # )
 
       get_scsb_rest_args
       path = @scsb_args[:request_item_path]
       response = conn.post path, params.to_json
 
       if response.status != 200
-        # Raise or just log error?
+        # A SCSB-side error might look something like this:
+        # response.status: 500
+        # response.body: {
+        #   "timestamp":1502041272960,
+        #   "status":500,
+        #   "error":"Internal Server Error",
+        #   "exception":"org.springframework.web.client.ResourceAccessException",
+        #   "message":"I/O error on POST request for \"http://172.31.4.217:9095/requestItem/validateItemRequest\": Connection refused; nested exception is java.net.ConnectException: Connection refused","path":"/requestItem/requestItem"
+        # }
+        
+        # Log error, trust caller to look into response hash to do the right thing
         Rails.logger.error "ERROR:  API response status #{response.status}"
         Rails.logger.error "ERROR DETAILS: " + response.body
-        return {}
       end
 
       # Rails.logger.debug "response.body=\n#{response.body}"
