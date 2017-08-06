@@ -124,7 +124,7 @@ module OffsiteRequestsHelper
     end
 
     # Return special language for fragile material.
-    if item[:use_restriction].downcase == 'frgl'
+    if item[:use_restriction].upcase == 'FRGL'
       return 'In library use only. "Item to Library" delivery only.'
     end
 
@@ -132,6 +132,22 @@ module OffsiteRequestsHelper
     # item[:use_restriction]
     # Nope, ignore other conditions (see VALET-14, Use Restrictions)
     return ''
+  end
+
+  # Include extra attributes with the item barcode checkboxes via html data attribute
+  def item_data_hash(item)
+    datahash = {}
+
+    # We want to know if an item is fragile - to disallow EDD
+    if item[:use_restriction]
+      datahash[:use_restriction] = item[:use_restriction].upcase
+    end
+
+    # If we found any data elements, return a data hash
+    return { data: datahash } if datahash.size > 0
+    
+    # Otherwise, return nothing
+    return {}
   end
 
 end

@@ -28,12 +28,13 @@
     </tr>
 
     <% @holding[:items].each do |item| %>
+      <% datahash = item_data_hash(item) %>
       <% next unless availability = @clio_record.availability[ item[:barcode] ] %>
       <tr>
         <td>
           <% case availability
              when 'Available' %>
-               <%= check_box_tag "itemBarcodes[]", item[:barcode] %>
+               <%= check_box_tag "itemBarcodes[]", item[:barcode], false, datahash %>
           <% else %>
             OUT
             <!-- <%= availability %> -->
