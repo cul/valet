@@ -193,6 +193,10 @@ class OffsiteRequestsController < ApplicationController
     if @request_item_response[:titleIdentifier]
       subject = subject + " [#{@request_item_response[:titleIdentifier]}]"
     end
+    
+    if Rails.env != 'valet_prod'
+      subject = subject + " (#{Rails.env})"
+    end
     return subject
   end
 
@@ -200,6 +204,7 @@ class OffsiteRequestsController < ApplicationController
 
     status = @request_item_response[:screenMessage]
 
+    error = ''
     if @request_item_response[:success] != true
       error = <<-EOT
 =============================================
@@ -207,8 +212,6 @@ ERROR : This submission was not successful.
 Please check the message below.
 =============================================
 EOT
-    else
-      error = ''
     end
     
 
@@ -221,7 +224,7 @@ BARCODE: #{(@request_item_response[:itemBarcodes] || []).join(', ')}
 
 #{@error}
 Response message:
-        #{@status}
+        #{status}
 
 
 Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
@@ -308,7 +311,7 @@ EOT
 
     # SCSB API Response information
     fields.push "success=#{response[:success]}"
-    fields.push "screenMessage=#{response[:screenMessage]}"
+    fields.push "screenMessage=#{(response[:screenMessage] || '').squish}"
 
     # Data fields could contain commas, or just about anything
     entry = fields.join('|')
