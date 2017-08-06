@@ -227,7 +227,7 @@ TITLE : #{@request_item_response[:titleIdentifier]}
 CALL NO : #{@request_item_response[:callNumber]}
 BARCODE: #{(@request_item_response[:itemBarcodes] || []).join(', ')}
 
-#{@error}
+#{error}
 Response message:
         #{status}
 
