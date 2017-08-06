@@ -200,7 +200,7 @@ class OffsiteRequestsController < ApplicationController
 
     status = @request_item_response[:screenMessage]
 
-    if @request_item_response[:success] != 'true'
+    if @request_item_response[:success] != true
       error = <<-EOT
 =============================================
 ERROR : This submission was not successful.  

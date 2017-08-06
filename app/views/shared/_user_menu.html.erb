@@ -45,19 +45,6 @@
             Admin?  <%= current_user.admin? %>
             <br>
             Valet Admin?  <%= current_user.valet_admin? %>
-          
-            <br>
-            <br>
-
-            <button type='button' class="btn btn-default btn-xs" onclick="$('#scsb_patron_info').toggle()">
-              show SCSB patron information
-            </button>
-            <div id='scsb_patron_info' class='tight-list collapse'>
-              <% current_user.scsb_patron_information.each_pair do |key, value| %>
-                <%= key + ":   " + value.to_s %>
-                <br>
-              <% end %>
-            </div>
           <% end %>
 
         </div>

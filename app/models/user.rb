@@ -8,17 +8,20 @@ class User < ActiveRecord::Base
 
   serialize :affils, Array
 
-  attr_reader :ldap_attributes, :scsb_patron_information
+  # attr_reader :ldap_attributes, :scsb_patron_information
+  attr_reader :ldap_attributes
 
   before_create :set_personal_info_via_ldap
   after_initialize :set_personal_info_via_ldap
 
   # before_create :set_barcode_via_oracle
   after_initialize :set_barcode_via_oracle
+
   # we don't need this
   # but during initial development, let's fetch anyway,
   # more info can't hurt.
-  after_initialize :get_scsb_patron_information
+  # 8/5 - going prod, turn this off.
+  # after_initialize :get_scsb_patron_information
 
   def to_s
     if first_name
@@ -151,7 +154,9 @@ class User < ActiveRecord::Base
     return valet_admins.include? login
   end
 
+  # UNUSED
   def get_scsb_patron_information
+    raise # UNUSED
     return {} if barcode.blank?
     institution_id = 'CUL'
     @scsb_patron_information = Recap::ScsbRest.get_patron_information(barcode, institution_id) || {}

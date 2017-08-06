@@ -134,7 +134,9 @@ module Recap
     end
 
 
+    # UNUSED
     def self.get_patron_information(patron_barcode = nil, institution_id = nil, conn = nil)
+      raise # UNUSED
       raise "Recap::ScsbRest.get_patron_information() got blank patron_barcode" if patron_barcode.blank?
       raise "Recap::ScsbRest.get_patron_information() got blank institution_id" if institution_id.blank?
       Rails.logger.debug "- get_patron_information(#{patron_barcode}, #{institution_id})"
