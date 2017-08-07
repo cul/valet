@@ -212,10 +212,10 @@ class OffsiteRequestsController < ApplicationController
     error = ''
     if @request_item_response[:success] != true
       error = <<-EOT
-=============================================
+---------------------------------------------
 ERROR : This submission was not successful.  
 Please check the message below.
-=============================================
+---------------------------------------------
 EOT
     end
     
@@ -253,7 +253,10 @@ EOT
     log_entry = get_log_entry(params, response)
     return unless log_entry
 
-    log_file = [ 'valet', Date.today.strftime('%Y%m'), 'log' ].join('.')
+    # log_file = [ 'valet', Date.today.strftime('%Y%m'), 'log' ].join('.')
+    # %Y%m%d           => 20071119                  Calendar date (basic)
+    # %F               => 2007-11-19                Calendar date (extended)
+    log_file = [ 'valet-', Date.today.strftime('%F'), 'log' ].join('.')
     File.open("#{log_dir}/#{log_file}", 'a') do |f|
       f.puts log_entry
     end
