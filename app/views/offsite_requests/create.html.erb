@@ -13,10 +13,10 @@ TITLE :
 <%= @request_item_response[:titleIdentifier] %>
 <br>
 CALL NO : 
-<%= @request_item_response[:callNumber] %>
+<%= @offsite_request_params[:callNumber] %>
 <br>
 BARCODE: 
-<%= (@request_item_response[:itemBarcodes] || []).join(', ') %>
+<%= (@offsite_request_params[:itemBarcodes] || []).join(', ') %>
 </strong>
 
 

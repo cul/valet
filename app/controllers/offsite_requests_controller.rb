@@ -97,9 +97,10 @@ class OffsiteRequestsController < ApplicationController
   # POST /offsite_requests
   # POST /offsite_requests.json
   def create
-    @request_item_response = Recap::ScsbRest.request_item(offsite_request_params) || {}
+    @offsite_request_params = offsite_request_params
+    @request_item_response = Recap::ScsbRest.request_item(@offsite_request_params) || {}
 
-    log_request(offsite_request_params, @request_item_response)
+    log_request(@offsite_request_params, @request_item_response)
 
     # Instead of raise/catch, just detect failed API call directly here
     if status = @request_item_response[:status] && status != 200
@@ -110,8 +111,8 @@ class OffsiteRequestsController < ApplicationController
     # Send confirmation email to patron
     from    = 'recap@libraries.cul.columbia.edu'
     to      = current_user.email
-    subject = confirmation_email_subject(offsite_request_params, @request_item_response)
-    body    = confirmation_email_body(offsite_request_params, @request_item_response)
+    subject = confirmation_email_subject()
+    body    = confirmation_email_body()
     ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver_now
 
     # Then continue on to render the page
@@ -193,7 +194,7 @@ class OffsiteRequestsController < ApplicationController
   end
 
 
-  def confirmation_email_subject(offsite_request_params, request_item_response)
+  def confirmation_email_subject()
     subject = 'Offsite Request Submission Confirmation'
     if @request_item_response[:titleIdentifier]
       subject = subject + " [#{@request_item_response[:titleIdentifier]}]"
@@ -205,7 +206,7 @@ class OffsiteRequestsController < ApplicationController
     return subject
   end
 
-  def confirmation_email_body(offsite_request_params, request_item_response)
+  def confirmation_email_body()
 
     status = @request_item_response[:screenMessage]
 
@@ -224,8 +225,8 @@ EOT
 You have requested the following from Offsite:
 
 TITLE : #{@request_item_response[:titleIdentifier]}
-CALL NO : #{@request_item_response[:callNumber]}
-BARCODE: #{(@request_item_response[:itemBarcodes] || []).join(', ')}
+CALL NO : #{@offsite_request_params[:callNumber]}
+BARCODE: #{(@offsite_request_params[:itemBarcodes] || []).join(', ')}
 
 #{error}
 Response message:
