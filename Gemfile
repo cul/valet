@@ -104,7 +104,8 @@ gem 'mysql2'
 # Talk to SCSB ActiveMQ via STOMP
 gem 'stomp'
 
-
+# DataTables
+gem 'jquery-datatables-rails'
 
 
 

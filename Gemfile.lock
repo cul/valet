@@ -109,6 +109,11 @@ GEM
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
+    jquery-datatables-rails (3.4.0)
+      actionpack (>= 3.1)
+      jquery-rails
+      railties (>= 3.1)
+      sass-rails
     jquery-rails (4.3.1)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
@@ -262,6 +267,7 @@ DEPENDENCIES
   devise (~> 3.0)
   faraday
   jbuilder
+  jquery-datatables-rails
   jquery-rails
   marc
   mysql2

@@ -6,3 +6,11 @@
 $ -> 
   $('.user-info').click (e) ->
     e.stopPropagation()
+
+$ ->
+  $('#log_file_table').DataTable()
+
+
+
+
+  

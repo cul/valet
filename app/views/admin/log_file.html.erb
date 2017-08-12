@@ -1,27 +1,31 @@
 
 <div class='small'>
 
-<table class='table table-hover table-condensed table-bordered'>
+<table id="log_file_table" class='table table-hover table-condensed table-bordered'>
 
 <!-- HEADER ROW -->
-<tr>
-<% @headers.each do |header| %>
-  <th>
-    <%= (header || "&nbsp;").underscore.humanize %>
-  </th>
-<% end %>
-</tr>
+<thead>
+  <tr>
+    <% @headers.each do |header| %>
+      <th>
+        <%= (header || "&nbsp;").underscore.humanize %>
+      </th>
+    <% end %>
+  </tr>
+</thead>
 
 <!-- DATA ROWS -->
-<% @rows.each do |row| %>
-  <tr>
-  <% row.each do |field| %>
-    <td>
-      <%= field || "&nbsp;" %>
-    </td>
+<tbody>
+  <% @rows.each do |row| %>
+    <tr>
+    <% row.each do |field| %>
+      <td>
+        <%= field || "&nbsp;" %>
+      </td>
+    <% end %>
+    </tr>
   <% end %>
-  </tr>
-<% end %>
+</tbody>
 
 </table>
 
