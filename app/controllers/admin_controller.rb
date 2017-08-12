@@ -51,6 +51,10 @@ class AdminController < ApplicationController
           header = ''
           value = field
         end
+        
+        # Some fields are uninteresting, and don't need to be displayed
+        next if header == 'requestingInstitution'
+        
         row.push(value)
         # gather headers only when working on first row
         @headers.push(header) if @rows.size == 0

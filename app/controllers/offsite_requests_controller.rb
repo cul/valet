@@ -97,10 +97,14 @@ class OffsiteRequestsController < ApplicationController
   # POST /offsite_requests
   # POST /offsite_requests.json
   def create
-    @offsite_request_params = offsite_request_params
+    @offsite_request_params = offsite_request_params()
     @request_item_response = Recap::ScsbRest.request_item(@offsite_request_params) || {}
 
-    log_request(@offsite_request_params, @request_item_response)
+    begin
+      log_request(@offsite_request_params, @request_item_response)
+    rescue => ex
+      Rails.logger.error "log_request(@offsite_request_params, @request_item_response) failed: #{ex.message}"
+    end
 
     # Instead of raise/catch, just detect failed API call directly here
     if status = @request_item_response[:status] && status != 200
@@ -257,7 +261,7 @@ EOT
     # log_file = [ 'valet', Date.today.strftime('%Y%m'), 'log' ].join('.')
     # %Y%m%d           => 20071119                  Calendar date (basic)
     # %F               => 2007-11-19                Calendar date (extended)
-    log_file = [ 'valet-', Date.today.strftime('%F'), 'log' ].join('.')
+    log_file = [ 'valet', Date.today.strftime('%F'), 'log' ].join('.')
     File.open("#{log_dir}/#{log_file}", 'a') do |f|
       f.puts log_entry
     end
@@ -290,13 +294,20 @@ EOT
     fields = []
 
     # basic info
-    fields.push DateTime.now.strftime('%F %T')
-    fields.push current_user.login
-    fields.push request.remote_ip
+    fields.push "datestamp=" + DateTime.now.strftime('%F %T')
+    fields.push "remoteIP=" + request.remote_ip
 
     # patron information
+    fields.push "requestingUni=" + current_user.login
     fields.push "patronBarcode=#{params[:patronBarcode]}"
     fields.push "emailAddress=#{params[:emailAddress]}"
+
+    # SCSB API Response information
+    # (also handle API failures, which return different fields)
+    status = response[:success] || response[:error]
+    fields.push "success=#{status}"
+    message = response[:screenMessage] || response[:message] || ''
+    fields.push "screenMessage=#{message.squish}"
 
     # Information about the request
     fields.push "requestType=#{params[:requestType]}"
@@ -305,10 +316,10 @@ EOT
 
     # Information about the requested item
     fields.push "itemOwningInstitution=#{params[:itemOwningInstitution]}"
-    fields.push "bibId=#{params[:bibId]}"
-    fields.push "titleIdentifier=#{params[:titleIdentifier]}"
-    fields.push "callNumber=#{params[:callNumber]}"
     fields.push "itemBarcodes=#{(params[:itemBarcodes] || []).join(' / ')}"
+    fields.push "bibId=#{params[:bibId]}"
+    fields.push "callNumber=#{params[:callNumber]}"
+    fields.push "titleIdentifier=#{params[:titleIdentifier]}"
 
     # Optional EDD params
     fields.push "author=#{params[:author]}"
@@ -317,13 +328,6 @@ EOT
     fields.push "issue=#{params[:issue]}"
     fields.push "startPage=#{params[:startPage]}"
     fields.push "endPage=#{params[:endPage]}"
-
-    # SCSB API Response information
-    # (also handle API failures, which return different fields)
-    status = response[:success] || response[:error]
-    fields.push "success=#{status}"
-    message = response[:screenMessage] || response[:message] || ''
-    fields.push "screenMessage=#{message.squish}"
 
     # Data fields could contain commas, or just about anything
     entry = fields.join('|')
