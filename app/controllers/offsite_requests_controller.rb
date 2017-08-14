@@ -113,7 +113,7 @@ class OffsiteRequestsController < ApplicationController
 
 
     # Send confirmation email to patron
-    from    = 'recap@libraries.cul.columbia.edu'
+    from    = 'recap@library.columbia.edu'
     to      = current_user.email
     subject = confirmation_email_subject()
     body    = confirmation_email_body()
@@ -243,10 +243,10 @@ You will be contacted by email (to #{@request_item_response[:emailAddress]}) whe
 
 In order to best serve the Columbia community, please request 20 items or fewer per day. Contact recap@libraries.cul.columbia.edu with questions and comments.
 
-Patrons can check the status of their pending requests at:
+You can check the status of your request via My Library Account in CLIO:
 http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1
 
-Thank you for using Offsite collections.
+Thank you for using Offsite collections!
 EOT
   end
 
