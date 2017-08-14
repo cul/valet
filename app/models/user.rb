@@ -93,7 +93,8 @@ class User < ActiveRecord::Base
   end
 
   def email
-    super || "#{login}@columbia.edu"
+    email = super
+    email = "#{login}@columbia.edu" if email.blank?
   end
 
   # Password methods required by Devise.
