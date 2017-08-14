@@ -95,6 +95,8 @@ class User < ActiveRecord::Base
   def email
     email = super
     email = "#{login}@columbia.edu" if email.blank?
+    self.email = email
+    return email
   end
 
   # Password methods required by Devise.
