@@ -67,8 +67,10 @@ module Voyager
         from   columbiadb.patron_barcode
         where  patron_id = ~patron_id~
         and    barcode_status = '1'
-        and    patron_group_id in ('2','4','3','14','15')
       HERE
+      
+      # Nope, don't restrict, lookup barcode for anybody.
+      # and    patron_group_id in ('2','4','3','14','15')
 
       full_query = fill_in_query_placeholders(query, patron_id: patron_id)
       raw_results = execute_select_command(full_query)
