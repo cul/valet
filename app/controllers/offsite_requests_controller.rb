@@ -305,6 +305,7 @@ EOT
     # SCSB API Response information
     # (also handle API failures, which return different fields)
     status = response[:success] || response[:error]
+    status = 'false' if status.blank?
     fields.push "success=#{status}"
     message = response[:screenMessage] || response[:message] || ''
     fields.push "screenMessage=#{message.squish}"
