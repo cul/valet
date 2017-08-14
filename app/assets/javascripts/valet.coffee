@@ -8,7 +8,11 @@ $ ->
     e.stopPropagation()
 
 $ ->
-  $('#log_file_table').DataTable()
+  $('#log_file_table').DataTable( {
+    pageLength: 100,
+    lengthMenu: [ [20, 50, 100, -1], [20, 50, 100, "All"] ],
+    dom: '<"top"flip>'
+  } )
 
 
 
