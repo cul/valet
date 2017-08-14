@@ -21,6 +21,9 @@
             <br>
             <br>
             <%= link_to "Valet Logs", admin_logs_path %>
+            <br>
+            <br>
+            <%= recap_staff_link() %>
           <% end %>
           <% if current_user.admin? %>
             <br>
