@@ -230,81 +230,81 @@ class ClioRecord
     @tocs = tocs
   end
 
-  def public_locations
-    # basic set of public delivery locations
-    basic_set = ['AR', 'BL', 'UT', 'BS', 'BU', 'EA', 'GE', 'HS', 'CJ', 'GS', 'LE', 'ML', 'MR', 'CA', 'SW']
-
-    locations = {
-      'OFF AVE'   => { default: 'AR', available: ['AR']},
-      'OFF BIO'   => { default: 'CA', available: basic_set},
-      'OFF BMC'   => { default: 'CV', available: ['CV']},
-      'OFF BSSC'  => { default: 'BS', available: ['BS']},
-      'OFF BUS'   => { default: 'BS', available: basic_set},
-      'OFF CHE'   => { default: 'CA', available: basic_set},
-      'OFF DOCS'  => { default: 'LE', available: basic_set},
-      'OFF EAL'   => { default: 'EA', available: basic_set},
-      'OFF EAN'   => { default: 'EA', available: ['EA']},
-      'OFF EAX'   => { default: 'EA', available: basic_set},
-      'OFF ENG'   => { default: 'CA', available: basic_set},
-      'OFF FAX'   => { default: 'AR', available: ['AR']},
-      'OFF GLG'   => { default: 'GE', available: basic_set},
-      'OFF GLX'   => { default: 'BU', available: basic_set},
-      'OFF GSC'   => { default: 'GS', available: basic_set},
-      'OFF HSL'   => { default: 'HS', available: basic_set},
-      'OFF HSR'   => { default: 'HS', available: basic_set},
-      'OFF JOU'   => { default: 'CJ', available: basic_set},
-      'OFF LEH'   => { default: 'LE', available: basic_set},
-      'OFF LES'   => { default: 'LE', available: ['LE']},
-      'OFF MAT'   => { default: 'ML', available: basic_set},
-      'OFF MRR'   => { default: 'CF', available: ['CF']},
-      'OFF MSC'   => { default: 'MR', available: ['MR']},
-      'OFF MSR'   => { default: 'MR', available: ['MR']},
-      'OFF MUS'   => { default: 'MR', available: basic_set},
-      'OFF MVR'   => { default: 'MR', available: ['MR']},
-      'OFF PHY'   => { default: 'CA', available: basic_set},
-      'OFF PSY'   => { default: 'CA', available: basic_set},
-      'OFF REF'   => { default: 'BU', available: basic_set},
-      'OFF SCI'   => { default: 'CA', available: basic_set},
-      'OFF SWX'   => { default: 'SW', available: basic_set},
-      'OFF UNR'   => { default: 'UT', available: ['UT']},
-      'OFF UTMRL' => { default: 'UT', available: ['UT']},
-      'OFF UTN'   => { default: 'UT', available: basic_set},
-      'OFF UTP'   => { default: 'UT', available: ['UT']},
-      'OFF UTS'   => { default: 'UT', available: basic_set},
-      'OFF WAR'   => { default: 'AR', available: basic_set}
-    }
-  end
-
-  def location_labels
-    labels = {
-    'BC' => 'Bibliographic Control',
-    'BT' => 'Butler Preservation',
-    'CI' => 'Interlibrary Loan<',
-    'CV' => 'Milstein Reserves',
-    'MP' => 'Monographic Recon -- for MRP',
-    'MZ' => 'ReCAP Coordinator',
-    'IL' => 'ReCAP Interlibrary Loan',
-    'AR' => 'Avery Library',
-    'BL' => 'Barnard Library',
-    'UT' => 'Burke Library (UTS)',
-    'BS' => 'Business/Econ Library',
-    'BU' => 'Butler Library',
-    'EA' => 'East Asian Library',
-    'EN' => 'Engineering Library',
-    'GE' => 'Geology Library',
-    'GS' => 'Lamont-Doherty Earth Observatory',
-    'HS' => 'Health Sciences Library',
-    'CJ' => 'Journalism Library',
-    'LE' => 'Lehman Library',
-    'RH' => 'Lehman Suite',
-    'ML' => 'Mathematics Library',
-    'CF' => '401 Butler Library (Microform Reading Room)',
-    'MR' => 'Music &amp; Arts Library',
-    'RS' => 'Rare Book Library',
-    'CA' => 'Science &amp; Engineering Lib (NWC Building)',
-    'SW' => 'Social Work Library'
-  }
-  end
+  # def public_locations
+  #   # basic set of public delivery locations
+  #   basic_set = ['AR', 'BL', 'UT', 'BS', 'BU', 'EA', 'GE', 'HS', 'CJ', 'GS', 'LE', 'ML', 'MR', 'CA', 'SW']
+  # 
+  #   locations = {
+  #     'OFF AVE'   => { default: 'AR', available: ['AR']},
+  #     'OFF BIO'   => { default: 'CA', available: basic_set},
+  #     'OFF BMC'   => { default: 'CV', available: ['CV']},
+  #     'OFF BSSC'  => { default: 'BS', available: ['BS']},
+  #     'OFF BUS'   => { default: 'BS', available: basic_set},
+  #     'OFF CHE'   => { default: 'CA', available: basic_set},
+  #     'OFF DOCS'  => { default: 'LE', available: basic_set},
+  #     'OFF EAL'   => { default: 'EA', available: basic_set},
+  #     'OFF EAN'   => { default: 'EA', available: ['EA']},
+  #     'OFF EAX'   => { default: 'EA', available: basic_set},
+  #     'OFF ENG'   => { default: 'CA', available: basic_set},
+  #     'OFF FAX'   => { default: 'AR', available: ['AR']},
+  #     'OFF GLG'   => { default: 'GE', available: basic_set},
+  #     'OFF GLX'   => { default: 'BU', available: basic_set},
+  #     'OFF GSC'   => { default: 'GS', available: basic_set},
+  #     'OFF HSL'   => { default: 'HS', available: basic_set},
+  #     'OFF HSR'   => { default: 'HS', available: basic_set},
+  #     'OFF JOU'   => { default: 'CJ', available: basic_set},
+  #     'OFF LEH'   => { default: 'LE', available: basic_set},
+  #     'OFF LES'   => { default: 'LE', available: ['LE']},
+  #     'OFF MAT'   => { default: 'ML', available: basic_set},
+  #     'OFF MRR'   => { default: 'CF', available: ['CF']},
+  #     'OFF MSC'   => { default: 'MR', available: ['MR']},
+  #     'OFF MSR'   => { default: 'MR', available: ['MR']},
+  #     'OFF MUS'   => { default: 'MR', available: basic_set},
+  #     'OFF MVR'   => { default: 'MR', available: ['MR']},
+  #     'OFF PHY'   => { default: 'CA', available: basic_set},
+  #     'OFF PSY'   => { default: 'CA', available: basic_set},
+  #     'OFF REF'   => { default: 'BU', available: basic_set},
+  #     'OFF SCI'   => { default: 'CA', available: basic_set},
+  #     'OFF SWX'   => { default: 'SW', available: basic_set},
+  #     'OFF UNR'   => { default: 'UT', available: ['UT']},
+  #     'OFF UTMRL' => { default: 'UT', available: ['UT']},
+  #     'OFF UTN'   => { default: 'UT', available: basic_set},
+  #     'OFF UTP'   => { default: 'UT', available: ['UT']},
+  #     'OFF UTS'   => { default: 'UT', available: basic_set},
+  #     'OFF WAR'   => { default: 'AR', available: basic_set}
+  #   }
+  # end
+  # 
+  # def location_labels
+  #   labels = {
+  #   'BC' => 'Bibliographic Control',
+  #   'BT' => 'Butler Preservation',
+  #   'CI' => 'Interlibrary Loan<',
+  #   'CV' => 'Milstein Reserves',
+  #   'MP' => 'Monographic Recon -- for MRP',
+  #   'MZ' => 'ReCAP Coordinator',
+  #   'IL' => 'ReCAP Interlibrary Loan',
+  #   'AR' => 'Avery Library',
+  #   'BL' => 'Barnard Library',
+  #   'UT' => 'Burke Library (UTS)',
+  #   'BS' => 'Business/Econ Library',
+  #   'BU' => 'Butler Library',
+  #   'EA' => 'East Asian Library',
+  #   'EN' => 'Engineering Library',
+  #   'GE' => 'Geology Library',
+  #   'GS' => 'Lamont-Doherty Earth Observatory',
+  #   'HS' => 'Health Sciences Library',
+  #   'CJ' => 'Journalism Library',
+  #   'LE' => 'Lehman Library',
+  #   'RH' => 'Lehman Suite',
+  #   'ML' => 'Mathematics Library',
+  #   'CF' => '401 Butler Library (Microform Reading Room)',
+  #   'MR' => 'Music &amp; Arts Library',
+  #   'RS' => 'Rare Book Library',
+  #   'CA' => 'Science &amp; Engineering Lib (NWC Building)',
+  #   'SW' => 'Social Work Library'
+  # }
+  # end
 
 end
 
