@@ -10,6 +10,10 @@ class User < ActiveRecord::Base
 
   # attr_reader :ldap_attributes, :scsb_patron_information
   attr_reader :ldap_attributes
+  
+  # cul_omniauth sets "devise :recoverable", and that requires
+  # that the following user attributes be available.
+  attr_accessor :reset_password_token, :reset_password_sent_at
 
   before_create :set_personal_info_via_ldap
   after_initialize :set_personal_info_via_ldap
