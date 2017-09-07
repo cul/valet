@@ -100,8 +100,6 @@ off,hsl:
 
 off,hsr:
   default:  HS
-  available:
-    - HS
 
 off,jou:
   default:  CJ
