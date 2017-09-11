@@ -16,13 +16,6 @@ module Voyager
       @connection = args[:connection]
 
       unless args.has_key?(:connection)
-        # app_config = File.join(File.dirname(__FILE__),
-        #                                 "../../..",
-        #                                 "config",
-        #                                 "app_config.yml")
-        # 
-        # args = YAML.load_file(app_config)['oracle_connection_details'] if
-        #         args == {} and File.exists?(app_config)
         ora_args = APP_CONFIG['oracle_connection_details']
 
         raise "Need argument 'user'" unless ora_args.has_key?(:user)
@@ -40,6 +33,7 @@ module Voyager
 
 
     def retrieve_patron_id(uni)
+      Rails.logger.debug "- retrieve_patron_id(uni=#{uni})"
       query = <<-HERE
         select institution_id, patron_id, expire_date, total_fees_due
         from   patron
@@ -48,12 +42,28 @@ module Voyager
 
       full_query = fill_in_query_placeholders(query, uni: uni)
       raw_results = execute_select_command(full_query)
+      patron_id = raw_results.first['PATRON_ID']
 
-      return raw_results.first['PATRON_ID']
+      Rails.logger.debug "  found patron_id [#{patron_id}]"
+      return patron_id
+    end
 
-      # parse_results(raw_results, name: 'retrieve_patron_id',
-      #               hash_by: 'INSTITUTION_ID')
+    def retrieve_patron_email(patron_id)
+      Rails.logger.debug "- retrieve_patron_email(patron_id=#{patron_id})"
+      query = <<-HERE
+        select address_line1
+        from   patron_address
+        where  patron_id = ~patron_id~
+        and    address_type = 3
+        and (expire_date > sysdate OR expire_date is null)
+      HERE
 
+      full_query = fill_in_query_placeholders(query, patron_id: patron_id)
+      raw_results = execute_select_command(full_query)
+      patron_email = raw_results.first['ADDRESS_LINE1']
+
+      Rails.logger.debug "  found patron_email [#{patron_email}]"
+      return patron_email
     end
 
 
@@ -74,10 +84,10 @@ module Voyager
 
       full_query = fill_in_query_placeholders(query, patron_id: patron_id)
       raw_results = execute_select_command(full_query)
+      patron_barcode = raw_results.first['PATRON_BARCODE']
 
-      return raw_results.first['PATRON_BARCODE']
-
-      # parse_results(raw_results, name: 'retrieve_patron_barcode', hash_by: 'PATRON_ID')
+      Rails.logger.debug "  found patron_barcode [#{patron_barcode}]"
+      return patron_barcode
     end
 
 

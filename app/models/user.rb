@@ -8,23 +8,21 @@ class User < ActiveRecord::Base
 
   serialize :affils, Array
 
-  # attr_reader :ldap_attributes, :scsb_patron_information
-  attr_reader :ldap_attributes
+  attr_reader :ldap_attributes, :patron_id, :oracle_connection
   
   # cul_omniauth sets "devise :recoverable", and that requires
   # that the following user attributes be available.
   attr_accessor :reset_password_token, :reset_password_sent_at
 
-  before_create :set_personal_info_via_ldap
-  after_initialize :set_personal_info_via_ldap
+  # Before first-time User record creation...
+  before_create :set_personal_info_via_ldap, :set_email
 
-  # before_create :set_barcode_via_oracle
+  # Every user-object instantiation...
+  after_initialize :set_personal_info_via_ldap
+  after_initialize :set_email
   after_initialize :set_barcode_via_oracle
 
   # we don't need this
-  # but during initial development, let's fetch anyway,
-  # more info can't hurt.
-  # 8/5 - going prod, turn this off.
   # after_initialize :get_scsb_patron_information
 
   def to_s
@@ -40,8 +38,10 @@ class User < ActiveRecord::Base
   end
 
   def set_personal_info_via_ldap
-    if uid
+    # return if the ldap attributes have already been filled in
+    return unless @ldap_attributes.nil?
 
+    if uid
       ldap_args = APP_CONFIG['ldap_connection_details']
 
       raise "LDAP config needs 'host'" unless ldap_args.has_key?(:host)
@@ -63,32 +63,49 @@ class User < ActiveRecord::Base
         end
 
         # Process certain raw attributes into cleaned up fields
-        _mail = (entry[:mail].kind_of?(Array) ? entry[:mail].first : entry[:mail]).to_s
-        if _mail.length > 6 and _mail.match(/^[\w.]+[@][\w.]+$/)
-          self.email = _mail
-        else
-          self.email = uid + '@columbia.edu'
-        end
-        self.last_name = (entry[:sn].kind_of?(Array) ? entry[:sn].first : entry[:sn]).to_s
-        self.first_name = (entry[:givenname].kind_of?(Array) ? entry[:givenname].first : entry[:givenname]).to_s
+        self.last_name  = Array(entry[:sn]).first.to_s
+        self.first_name = Array(entry[:givenname]).first.to_s
       end
     end
 
     return self
   end
 
+  def set_email
+    # Try to find email via LDAP
+    if @ldap_attributes && ldap_mail = @ldap_attributes[:mail]
+      ldap_mail = Array(ldap_mail).first.to_s
+      if ldap_mail.length > 6 and ldap_mail.match(/^[\w.]+[@][\w.]+$/)
+        self.email = ldap_mail
+        return self
+      end
+    end
+    
+    # Try to find email via Voyager
+    @oracle_connection ||= Voyager::OracleConnection.new()
+    @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+    if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
+      if voyager_email.length > 6 and voyager_email.match(/^[\w.]+[@][\w.]+$/)
+        self.email = voyager_email
+        return self
+      end
+    end
+    
+    # No email!  Fill in guess.
+    Rails.logger.error "ERROR: Cannot find email address via LDAP or Voyager for uid [#{uid}], assuming @columbia.edu"
+    self.email = "#{uid}@columbia.edu"
+    return self
+  end
+
   def set_barcode_via_oracle
     if uid
-      # connection_details = APP_CONFIG['voyager_connection']['oracle']
-      # oracle_connection = Voyager::OracleConnection.new(connection_details)
-      oracle_connection = Voyager::OracleConnection.new()
-      patron_id = oracle_connection.retrieve_patron_id(uid)
-      patron_barcode = oracle_connection.retrieve_patron_barcode(patron_id)
+      @oracle_connection ||= Voyager::OracleConnection.new()
+      @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+      patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id)
       self.barcode = patron_barcode
     end
 
     return self
-
   end
 
 
@@ -98,7 +115,6 @@ class User < ActiveRecord::Base
 
   def email
     email = super
-    email = "#{login}@columbia.edu" if email.blank?
     self.email = email
     return email
   end
@@ -161,13 +177,13 @@ class User < ActiveRecord::Base
     return valet_admins.include? login
   end
 
-  # UNUSED
-  def get_scsb_patron_information
-    raise # UNUSED
-    return {} if barcode.blank?
-    institution_id = 'CUL'
-    @scsb_patron_information = Recap::ScsbRest.get_patron_information(barcode, institution_id) || {}
-  end
+  # # UNUSED
+  # def get_scsb_patron_information
+  #   raise # UNUSED
+  #   return {} if barcode.blank?
+  #   institution_id = 'CUL'
+  #   @scsb_patron_information = Recap::ScsbRest.get_patron_information(barcode, institution_id) || {}
+  # end
 
 
 end
