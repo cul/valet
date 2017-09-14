@@ -75,7 +75,7 @@ class User < ActiveRecord::Base
     # Try to find email via LDAP
     if @ldap_attributes && ldap_mail = @ldap_attributes[:mail]
       ldap_mail = Array(ldap_mail).first.to_s
-      if ldap_mail.length > 6 and ldap_mail.match(/^[\w.]+[@][\w.]+$/)
+      if ldap_mail.length > 6 and ldap_mail.match(/^.+@.+$/)
         self.email = ldap_mail
         return self
       end
@@ -85,7 +85,7 @@ class User < ActiveRecord::Base
     @oracle_connection ||= Voyager::OracleConnection.new()
     @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
     if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
-      if voyager_email.length > 6 and voyager_email.match(/^[\w.]+[@][\w.]+$/)
+      if voyager_email.length > 6 and voyager_email.match(/^.+@.+$/)
         self.email = voyager_email
         return self
       end
