@@ -47,7 +47,7 @@ class OffsiteRequestsController < ApplicationController
 
     offsite_holdings = @clio_record.offsite_holdings
     if offsite_holdings.size == 0
-      flash[:error] = "The requested record (#{bib_id}) has no offsite holdings."
+      flash[:error] = "The requested record (#{bib_id}) has no offsite holdings available."
       return redirect_to bib_offsite_requests_path
     end
 
