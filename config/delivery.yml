@@ -28,6 +28,16 @@ standard_delivery_locations:
 # Partner material
 # For now, Butler is the only valid delivery location.
 # This may change in the future.
+scsbnypl:
+  default:  BU
+  available:
+    -  BU
+
+scsbpul:
+  default:  BU
+  available:
+    -  BU
+# (hyphens are old pattern - no longer used?)
 scsb-nypl:
   default:  BU
   available:

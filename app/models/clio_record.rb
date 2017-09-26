@@ -104,9 +104,9 @@ class ClioRecord
     return 'CUL' unless holdings.present?
 
     case holdings.first[:location_code]
-    when 'scsb-nypl'
+    when 'scsb-nypl', 'scsbnypl'
       @owningInstitution = 'NYPL'
-    when 'scsb-pul'
+    when 'scsb-pul', 'scsbpul'
       @owningInstitution = 'PUL'
     else
       @owningInstitution = 'CUL'

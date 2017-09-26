@@ -30,6 +30,9 @@ SW:  Social Work Library
 
 offsite_locations:
   # location codes for the two ReCAP partners
+  - scsbnypl
+  - scsbpul
+  # (hyphens are old pattern - no longer used?)
   - scsb-nypl
   - scsb-pul
   # Columbia's Voyager offsite location codes
