@@ -16,6 +16,20 @@ standard_delivery_locations:
   - SW
   - UT
 
+# CUSTOMER CODES
+# there are some customer codes which have special delivery rules
+QK:
+  default:  MR
+  available:
+    # - BC
+    # - BT
+    # - BZ
+    # - MP
+    - MR
+    # - MZ
+    # - QP
+
+
 # configuration for each offsite location code
 # keys:
 #   default:  required key, sets a default 
@@ -30,23 +44,10 @@ standard_delivery_locations:
 # This may change in the future.
 scsbnypl:
   default:  BU
-  available:
-    -  BU
 
 scsbpul:
   default:  BU
-  available:
-    -  BU
-# (hyphens are old pattern - no longer used?)
-scsb-nypl:
-  default:  BU
-  available:
-    -  BU
 
-scsb-pul:
-  default:  BU
-  available:
-    -  BU
 
 # Columbia material
 

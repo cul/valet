@@ -54,19 +54,21 @@ module OffsiteRequestsHelper
   end
 
   # For a given offsite location code ('OFF AVE', 'OFF BIO'),
+  # (or a customer code, e.g., 'QK')
   # return the default on-campus delivery location ('AR', 'CA')
-  def get_delivery_default(offsite_location_code)
-    delivery_config = get_delivery_config(offsite_location_code)
+  def get_delivery_default(code)
+    delivery_config = get_delivery_config(code)
     # Each location should have it's own default oncampus delivery
     # location defined.  But if it doesn't, fallback to Butler.
     delivery_config['default'] || 'bu'
   end
 
   # For a given offsite location code ('OFF AVE', 'OFF BIO'),
+  # (or a customer code, e.g., 'QK')
   # return an array of available on-campus delivery locations.
   #   (by code, e.g., ['AR'] or ['AR', 'BL','UT'])
-  def get_delivery_options(offsite_location_code)
-    delivery_config = get_delivery_config(offsite_location_code)
+  def get_delivery_options(code)
+    delivery_config = get_delivery_config(code)
 
     # If this config has an 'available' list defined,
     # return it.
@@ -75,8 +77,9 @@ module OffsiteRequestsHelper
       DELIVERY['standard_delivery_locations']
   end
 
-  def get_delivery_config(offsite_location_code)
-    delivery_config = DELIVERY[offsite_location_code]
+  # code may be a location code or a customer code
+  def get_delivery_config(code)
+    delivery_config = DELIVERY[code]
 
     # If there are no specific delivery rules defined for 
     # this offsite location, treat it as if it were 'OFF GLX'
@@ -85,10 +88,22 @@ module OffsiteRequestsHelper
     return delivery_config
   end
 
-  # def delivery_select_tag(delivery_options = [], delivery_default = nil)
-  def delivery_select_tag(offsite_location_code)
-    delivery_options = get_delivery_options(offsite_location_code)
-    delivery_default = get_delivery_default(offsite_location_code)
+  # offsite_location_code is the location code of the holding
+  # customer_code, if present, is a single string.
+  # We're assuming a single customer code for all items within a holding.
+  def delivery_select_tag(offsite_location_code, customer_code)
+    delivery_options = []
+    delivery_default = ''
+
+    if customer_code.present?
+      delivery_options = get_delivery_options(customer_code)
+      delivery_default = get_delivery_default(customer_code)
+    end
+
+    # If the customer-code logic didn't set these, lookup by location code
+    delivery_options ||= get_delivery_options(offsite_location_code)
+    delivery_default ||= get_delivery_default(offsite_location_code)
+
     options_array = delivery_options.map do |delivery_location_code|
       [LOCATIONS[delivery_location_code], delivery_location_code ]
     end

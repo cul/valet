@@ -139,7 +139,7 @@ class ClioRecord
         location_display:         tag852['a'],
         location_code:            tag852['b'],
         display_call_number:      tag852['h'],
-        items:                    [],
+        items:                    []
       }
       # And fill in all possible mfhd fields with empty array
       mfhd_fields.each_pair do |label, tag|
@@ -168,10 +168,15 @@ class ClioRecord
         temporary_location: item_field['l'],
         barcode:            item_field['p'],
         enum_chron:         item_field['3']
+        # customer_code:      item_field['z']
       }
       # Store this item hash in the apppropriate Holding
       mfhd_id = item_field['0']
       holdings[mfhd_id][:items] << item
+      # Assume a single customer code per holding.  
+      if item_field['z'].present?
+        holdings[mfhd_id][:customer_code] = item_field['z']
+      end
     end
 
     # Now that all the data is matched up, we don't need

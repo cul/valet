@@ -86,6 +86,7 @@ class OffsiteRequestsController < ApplicationController
 
     @holding = @clio_record.holdings.select { |h| h[:mfhd_id] == mfhd_id }.first
     @offsite_location_code = @holding[:location_code]
+    @customer_code = @holding[:customer_code]
     @offsite_request = OffsiteRequest.new
   end
 
