@@ -2,19 +2,19 @@
 standard_delivery_locations:
   - AR
   - BL
+  - UT
   - BS
   - BU
-  - CA
-  - CJ
   - EA
   - GE
-  - GS
   - HS
+  - CJ
+  - GS
   - LE
   - ML
   - MR
+  - CA
   - SW
-  - UT
 
 # CUSTOMER CODES
 # there are some customer codes which have special delivery rules
