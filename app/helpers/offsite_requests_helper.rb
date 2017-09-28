@@ -143,10 +143,14 @@ module OffsiteRequestsHelper
       return 'In library use only. "Item to Library" delivery only.'
     end
 
-    # Otherwise, just return the use restrictions verbatim.
-    # item[:use_restriction]
-    # Nope, ignore other conditions (see VALET-14, Use Restrictions)
-    return ''
+    # We need to show Use Restrictions from partners.
+    # But Columbia uses staff-only codes ("TIED", "ENVE") which we don't
+    # want to show to patrons.
+    
+    # Explicitly suppress Columbia codes, but show any other note verbatim
+    return '' if ['TIED','ENVE'].include?(item[:use_restriction])
+
+    item[:use_restriction]
   end
 
   # Include extra attributes with the item barcode checkboxes via html data attribute
