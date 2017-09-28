@@ -92,8 +92,8 @@ module OffsiteRequestsHelper
   # customer_code, if present, is a single string.
   # We're assuming a single customer code for all items within a holding.
   def delivery_select_tag(offsite_location_code, customer_code)
-    delivery_options = []
-    delivery_default = ''
+    delivery_options = nil
+    delivery_default = nil
 
     if customer_code.present?
       delivery_options = get_delivery_options(customer_code)
