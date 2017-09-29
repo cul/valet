@@ -45,7 +45,7 @@
 
     # Start Page and End Page must both be filled in
     if $('#startPage').val().length == 0 || $('#endPage').val().length == 0
-      errors.push "  * When choosing 'Electronic' delivery, you must include a Start Page.  If that information is not available, please enter 0."
+      errors.push "  * When choosing 'Electronic' delivery, you must include both a Start Page and an End Page.  If that information is not available, please enter 0."
   # ==================================================
 
 
