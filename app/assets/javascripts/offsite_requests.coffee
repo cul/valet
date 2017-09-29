@@ -44,8 +44,13 @@
       errors.push "  * When choosing 'Electronic' delivery, you must include a Title."
 
     # Start Page and End Page must both be filled in
-    if $('#startPage').val().length == 0 || $('#endPage').val().length == 0
+    # Start Page...
+    if $('#startPage').val().length == 0
       errors.push "  * When choosing 'Electronic' delivery, you must include a Start Page.  If that information is not available, please enter 0."
+
+    # End Page...
+    if $('#endPage').val().length == 0
+      errors.push "  * When choosing 'Electronic' delivery, you must include an End Page.  If that information is not available, please enter 0."
   # ==================================================
 
 
