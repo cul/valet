@@ -129,7 +129,6 @@ module OffsiteRequestsHelper
   def use_restriction_note(holding, item)
     return '' unless holding.present? &&
                      item.present?
-    return '' if item[:use_restriction].blank?
 
     # UT Missionary Research Library is very special,
     # they get their very own message.
@@ -137,6 +136,8 @@ module OffsiteRequestsHelper
     if nonCircLocations.include?(holding[:location_code])
       return 'In library use only.'
     end
+
+    return '' if item[:use_restriction].blank?
 
     # Return special language for fragile material.
     if item[:use_restriction].upcase == 'FRGL'
