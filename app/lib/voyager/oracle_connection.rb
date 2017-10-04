@@ -60,6 +60,10 @@ module Voyager
 
       full_query = fill_in_query_placeholders(query, patron_id: patron_id)
       raw_results = execute_select_command(full_query)
+      if raw_results.size == 0
+        Rails.logger.debug "  no patron_email found in patron_address table!"
+        return nil
+      end
       patron_email = raw_results.first['ADDRESS_LINE1']
 
       Rails.logger.debug "  found patron_email [#{patron_email}]"
