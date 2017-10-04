@@ -107,5 +107,8 @@ gem 'stomp'
 # DataTables
 gem 'jquery-datatables-rails'
 
+# Send notifications when application errors occur
+gem 'exception_notification'
+
 
 

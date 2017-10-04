@@ -39,3 +39,13 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end
+
+
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  #   ignore_exceptions: ['ActionView::TemplateError'] + ExceptionNotifier.ignored_exceptions,
+  #   ignore_crawlers: %w(Googlebot bingbot archive.org_bot Blogtrottr Sogou Baidu Yandex),
+  :email => {
+    :email_prefix => "[#{Rails.env.titleize}] ",
+    :sender_address => %{"notifier" <no-reply@libraries.cul.columbia.edu>},
+    :exception_recipients => %w{clio-dev@libraries.cul.columbia.edu}
+  }
