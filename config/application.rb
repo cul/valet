@@ -25,5 +25,9 @@ module Valet
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
+    
+    # https://mattbrictson.com/dynamic-rails-error-pages
+    config.exceptions_app = self.routes
+    
   end
 end
