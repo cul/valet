@@ -82,12 +82,14 @@ class User < ActiveRecord::Base
     end
     
     # Try to find email via Voyager
-    @oracle_connection ||= Voyager::OracleConnection.new()
-    @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-    if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
-      if voyager_email.length > 6 and voyager_email.match(/^.+@.+$/)
-        self.email = voyager_email
-        return self
+    if @oracle_connection ||= Voyager::OracleConnection.new()
+      if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+        if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
+          if voyager_email.length > 6 and voyager_email.match(/^.+@.+$/)
+            self.email = voyager_email
+            return self
+          end
+        end
       end
     end
     
@@ -99,10 +101,13 @@ class User < ActiveRecord::Base
 
   def set_barcode_via_oracle
     if uid
-      @oracle_connection ||= Voyager::OracleConnection.new()
-      @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-      patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id)
-      self.barcode = patron_barcode
+      if @oracle_connection ||= Voyager::OracleConnection.new()
+        if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+          if patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id)
+            self.barcode = patron_barcode
+          end
+        end
+      end
     end
 
     return self

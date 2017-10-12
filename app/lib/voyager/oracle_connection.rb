@@ -34,6 +34,8 @@ module Voyager
 
     def retrieve_patron_id(uni)
       Rails.logger.debug "- retrieve_patron_id(uni=#{uni})"
+      return nil unless uni.present?
+
       query = <<-HERE
         select institution_id, patron_id, expire_date, total_fees_due
         from   patron
@@ -50,6 +52,8 @@ module Voyager
 
     def retrieve_patron_email(patron_id)
       Rails.logger.debug "- retrieve_patron_email(patron_id=#{patron_id})"
+      return nil unless patron_id.present?
+
       query = <<-HERE
         select address_line1
         from   patron_address
@@ -75,6 +79,7 @@ module Voyager
     #  https://www1.columbia.edu/sec-cgi-bin/cul/bd/BDauth
     def retrieve_patron_barcode(patron_id)
       Rails.logger.debug "- retrieve_patron_barcode(patron_id=#{patron_id})"
+      return nil unless patron_id.present?
 
       query = <<-HERE
         select patron_id, patron_barcode, patron_group_id, barcode_status
