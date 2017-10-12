@@ -18,6 +18,7 @@ Rails.application.routes.draw do
       get 'bib'
       get 'holding'
       get 'ineligible'
+      get 'error'
     end
   end
 

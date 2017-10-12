@@ -1,7 +1,7 @@
 class OffsiteRequestsController < ApplicationController
   before_action :authenticate_user!
 
-  before_action :confirm_offsite_eligibility!, except: [ :ineligible ]
+  before_action :confirm_offsite_eligibility!, except: [ :ineligible, :error ]
 
   before_action :set_offsite_request, only: [:show, :edit, :update, :destroy]
 
@@ -151,11 +151,20 @@ class OffsiteRequestsController < ApplicationController
   def ineligible
   end
 
+  def error
+  end
+
   private
 
   def confirm_offsite_eligibility!
     redirect_to ineligible_offsite_requests_path unless current_user
     redirect_to ineligible_offsite_requests_path unless current_user.offsite_eligible?
+    
+    # Some other basic conditions need to be satisfied....
+    if current_user.barcode.blank?
+      flash[:error] = "ERROR -- Unable to determine barcode for current user"
+      redirect_to error_offsite_requests_path
+    end
   end
 
 

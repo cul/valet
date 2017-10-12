@@ -100,6 +100,8 @@ class User < ActiveRecord::Base
   end
 
   def set_barcode_via_oracle
+    self.barcode = ''
+
     if uid
       if @oracle_connection ||= Voyager::OracleConnection.new()
         if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
