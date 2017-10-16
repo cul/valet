@@ -93,6 +93,7 @@ module Voyager
 
       full_query = fill_in_query_placeholders(query, patron_id: patron_id)
       raw_results = execute_select_command(full_query)
+      return nil if raw_results.nil?  || raw_results.size == 0
       patron_barcode = raw_results.first['PATRON_BARCODE']
 
       Rails.logger.debug "  found patron_barcode [#{patron_barcode}]"
