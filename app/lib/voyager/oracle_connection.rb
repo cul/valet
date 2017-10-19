@@ -44,6 +44,10 @@ module Voyager
 
       full_query = fill_in_query_placeholders(query, uni: uni)
       raw_results = execute_select_command(full_query)
+      if raw_results.size == 0
+        Rails.logger.debug "  no patron_id found in patron table for uni #{uni}!"
+        return nil
+      end
       patron_id = raw_results.first['PATRON_ID']
 
       Rails.logger.debug "  found patron_id [#{patron_id}]"
@@ -65,7 +69,7 @@ module Voyager
       full_query = fill_in_query_placeholders(query, patron_id: patron_id)
       raw_results = execute_select_command(full_query)
       if raw_results.size == 0
-        Rails.logger.debug "  no patron_email found in patron_address table!"
+        Rails.logger.debug "  no patron_email found in patron_address table for patron_id #{patron_id}!"
         return nil
       end
       patron_email = raw_results.first['ADDRESS_LINE1']
@@ -93,7 +97,10 @@ module Voyager
 
       full_query = fill_in_query_placeholders(query, patron_id: patron_id)
       raw_results = execute_select_command(full_query)
-      return nil if raw_results.nil?  || raw_results.size == 0
+      if raw_results.size == 0
+        Rails.logger.debug "  no patron_barcode found in patron_barcode table for patron_id #{patron_id}!"
+        return nil
+      end
       patron_barcode = raw_results.first['PATRON_BARCODE']
 
       Rails.logger.debug "  found patron_barcode [#{patron_barcode}]"
