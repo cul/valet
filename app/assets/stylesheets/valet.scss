@@ -45,6 +45,15 @@ div.legacy-link, span.legacy-link {
   display: inline-block;
 }
 
+.danger-block {
+  @extend .alert;
+  @extend .alert-danger;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 20px;
+  display: inline-block;
+}
+
 a.info-link {
   font-style: italic;
 }

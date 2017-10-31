@@ -85,6 +85,10 @@ class OffsiteRequestsController < ApplicationController
     @clio_record.fetch_availabilty
 
     @holding = @clio_record.holdings.select { |h| h[:mfhd_id] == mfhd_id }.first
+
+    # There's special view logic if the available-item list is empty.
+    @available_items = get_available_items(@clio_record, @holding)
+
     @offsite_location_code = @holding[:location_code]
     @customer_code = @holding[:customer_code]
     @offsite_request = OffsiteRequest.new
@@ -167,6 +171,16 @@ class OffsiteRequestsController < ApplicationController
     end
   end
 
+  def get_available_items(clio_record = nil, holding = nil)
+    return [] if clio_record.blank? || holding.blank?
+    
+    available_items = []
+    holding[:items].each do |item|
+      availability = clio_record.availability[ item[:barcode] ]
+      available_items << item if availability == 'Available'
+    end
+    return available_items
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_offsite_request
