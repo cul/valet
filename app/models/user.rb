@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
       raise "LDAP config needs 'port'" unless ldap_args.has_key?(:port)
       raise "LDAP config needs 'base'" unless ldap_args.has_key?(:base)
 
-      Rails.logger.debug "Querying LDAP #{ldap_args.inspect}"
+      Rails.logger.debug "Querying LDAP #{ldap_args.inspect} for uid=#{uid}"
       entry = Net::LDAP.new({host: ldap_args[:host], port: ldap_args[:port]}).search(base: ldap_args[:base], :filter => Net::LDAP::Filter.eq("uid", uid)) || []
       entry = entry.first
       Rails.logger.debug "LDAP response: #{entry.inspect}"
