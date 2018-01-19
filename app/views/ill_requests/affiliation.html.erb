@@ -1,0 +1,54 @@
+<%= render 'header' %>
+
+<% if @clio_record.present? %>
+  <table class='offsite_request'>
+    <tr><td>
+      Processing request for:
+      <br>
+      <div class='offset-block'>
+        <%= @clio_record.title%>
+        /
+        <%= @clio_record.author%>
+      </div>
+    </td></tr>
+  </table>
+
+  <br>
+<% end %>
+
+There are several Interlibrary Loan (ILL) offices within the Columbia University Libraries system, each providing services to a specific university community. Please select your affiliation below to route a request to <strong>place, renew, or check the status of</strong> an ILL request to the appropriate office.
+
+<br>
+<br>
+
+Please select your affiliation and click Continue.
+
+<br>
+<br>
+
+<%= form_tag(bib_ill_requests_path, method: 'get') do %>
+
+  <%= hidden_field_tag(:bib_id, @bib_id) %>
+
+  <%= radio_button_tag(:affiliation, 'law') %>
+  <%= label_tag(:affiliation_law, 'Columbia Law School') %>
+  <br>
+  <%= radio_button_tag(:affiliation, 'geo') %>
+  <%= label_tag(:affiliation_geo, 'Lamont-Doherty Earth Observatory') %>
+  <br>
+  <%= radio_button_tag(:affiliation, 'mcc') %>
+  <%= label_tag(:affiliation_mcc, 'Medical Center Campus') %>
+  <br>
+  <%= radio_button_tag(:affiliation, 'mbuts') %>
+  <%= label_tag(:affiliation_mbuts, 'Columbia (Morningside) / Barnard / Union Theological Seminary') %>
+  <br>
+  <%= radio_button_tag(:affiliation, 'tc') %>
+  <%= label_tag(:affiliation_tc, 'Teachers College') %>
+
+  <br>
+  <br>
+
+  <%= submit_tag('Continue') %>
+  
+<% end %>
+

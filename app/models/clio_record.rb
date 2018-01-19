@@ -49,6 +49,13 @@ class ClioRecord
     ClioRecord.new(marc_record)
   end
 
+  # Ruby MARC field access methods:
+  #     record.fields("500")  # returns an array
+  #     record.each_by_tag("500") {|field| ... }
+  # You can iterate through the subfields in a Field:
+  #   field.each {|s| print s}
+
+
   def key
     return @marc_record['001'].value
   end
@@ -61,7 +68,6 @@ class ClioRecord
       return @marc_record['009'].value
     end
   end
-
 
   def title
     title ||= []
@@ -99,6 +105,67 @@ class ClioRecord
     return publisher.compact.join(' ')
   end
 
+  def pub_place
+    return '' unless pub_field = @marc_record['260']
+    return '' unless pub_place = pub_field['a']
+    return pub_place.sub(/\s*[:;,]$/, '')
+  end
+  
+  def pub_name
+    return '' unless pub_field = @marc_record['260']
+    return '' unless pub_name = pub_field['b']
+    return pub_name.sub(/\s*[:;,]$/, '')
+  end
+
+  def pub_date
+    return '' unless pub_field = @marc_record['260']
+    return '' unless pub_date = pub_field['c']
+    return pub_date.sub(/\s*[:;,]$/, '')
+  end
+  
+  def edition
+    edition ||= []
+    'ab'.split(//).each do |subfield|
+      if @marc_record['250']
+        edition << @marc_record['250'][subfield]
+      end
+    end
+    return edition.compact.join(' ')
+  end
+
+  def lc_call_number
+    tag050 = @marc_record['050']
+    return '' unless tag050
+
+    subfield_values = Array.new()
+    tag050.each { |subfield|
+      subfield_values.push subfield.value
+    }
+    lc_call_number = subfield_values.join(' ') || ''
+    return lc_call_number
+  end
+  
+  def oclc_number
+    # 035 - System Control Number, may be OCLC or something else
+    @marc_record.fields('035').each { |field|
+      next unless number = field['a']
+
+      oclc_regexp = /OCoLC[^0-9A-Za-z]*([0-9A-Za-z]*)/
+      next unless oclc_match = number.match(oclc_regexp)
+      oclc_number = oclc_match[1]
+      return oclc_number
+    }
+  end
+
+  def isbn
+    isbn = @marc_record.fields('020').map { |field| field['a'] }
+    return isbn.join(' ')
+  end
+
+  def issn
+    issn = @marc_record.fields('022').map { |field| field['a'] }
+    return issn.join(' ')
+  end
 
   def populate_owningInstitution
     return 'CUL' unless holdings.present?
@@ -234,6 +301,68 @@ class ClioRecord
     tocs = Columbia::Web.get_bib_toc_links(key)
     @tocs = tocs
   end
+
+  def openurl
+    openurl = Hash.new
+    
+    # The OpenURL keys are fixed by Illiad servce.
+    # We re-purpose some fields for other purposes.
+    # (E.g., "loadplace", "loandate")
+    openurl[:title]      = self.title
+    openurl[:author]     = self.author
+    openurl[:publisher]  = self.pub_name
+    openurl[:loanplace]  = self.pub_place
+    openurl[:loandate]   = self.pub_date
+    openurl[:isbn]       = self.isbn
+    if self.issn.present?
+      openurl[:issn]       = self.issn
+      openurl[:genre]      = 'article'
+    end
+    openurl[:CallNumber] = self.lc_call_number
+    openurl[:edition]    = self.edition
+    # "External Service Provider Number"
+    # (Illiad only wants the numeric portion, not any ocm/ocn prefix)
+    openurl[:ESPNumber]  = self.oclc_number.gsub(/\D/, '')
+    openurl[:sid]        = 'CLIO OPAC'
+    openurl[:notes]      = 'http://clio.columbia.edu/catalog/' + self.key
+
+    openurl_string = openurl.map { |key, value|
+      # puts "key=[#{key}] value=[#{value}]"
+      "#{ key }=#{ CGI::escape(value) }"
+    }.join('&')
+    
+    # puts "-- openurl params as string:"
+    # puts openurl_string
+    # puts "--"
+    return openurl_string
+  end
+
+# OpenURL generation code, from /wwws/cgi/cul/forms/illiad CGI 
+  # sub printout {
+  # 
+  #   my $out = shift;
+  # 
+  #   if ($out->{'issn'})      {$open .= "genre=article&issn="       . $out->{'issn'}      . "&"};
+  #   if ($out->{'LCcall'})    {$open .= "CallNumber=" . $out->{'LCcall'}    . "&"};
+  #   if ($out->{'isbn'})      {$open .= "isbn="       . $out->{'isbn'}      . "&"};
+  #   if ($out->{'edition'})   {$open .= "edition="    . $out->{'edition'}   . "&"};
+  #   if ($out->{'author'})    {$open .= "author="     . $out->{'author'}    . "&"};
+  #   if ($out->{'oclc'})      {$oclc = $out->{'oclc'};  $oclc =~ s/\D//g;
+  #                             $open .= "ESPNumber="  . $oclc . "&"};
+  #   if ($out->{'publisher'}) {$open .= "publisher="  . $out->{'publisher'} . "&"};
+  #   if ($out->{'pub_place'}) {$open .= "loanplace="  . $out->{'pub_place'} . "&"};
+  #   if ($out->{'pub_date'})  {$date = $out->{'pub_date'}; $date =~ s/\D//g;
+  #                             $open .= "loandate="   . $date . "&"};
+  #   $open .= "title=" . $out->{'title'} . "&";
+  #   $open .= "sid=CLIO OPAC&notes=http://clio.columbia.edu/catalog/$bib_id&";
+  # 
+  # 
+  # $open =~ s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
+  # 
+  # 
+  # }
+
+
 
   # def public_locations
   #   # basic set of public delivery locations

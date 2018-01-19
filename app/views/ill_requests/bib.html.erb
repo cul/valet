@@ -1,0 +1,16 @@
+<%= render 'header' %>
+
+Please specify a bib id
+
+<br>
+
+<%= form_tag(new_ill_request_path, method: 'get') do %>
+  
+  <%= hidden_field_tag(:affiliation, @affiliation) %>
+
+  <%= text_field_tag(:bib_id) %>
+  
+  <%= submit_tag('Ok') %>
+
+<% end %>
+

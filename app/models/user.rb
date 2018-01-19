@@ -172,6 +172,17 @@ class User < ActiveRecord::Base
     return false
   end
 
+  def ill_eligible?
+    return false unless affils
+    affils.each do |affil|
+      # TODO
+      # Are there any restrictions at all?
+      # return true if affil.match(/CUL_role-clio/)
+      return true
+    end
+    return false
+  end
+
   # developers and sysadmins
   def admin?
     affils && (affils.include?('CUNIX_litosys') || affils.include?('CUL_dpts-dev'))

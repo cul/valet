@@ -22,6 +22,15 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :ill_requests do
+    collection do
+      get 'affiliation'
+      get 'bib'
+      get 'ineligible'
+      get 'error'
+    end
+  end
+
   # special admin pages
   get 'admin/system'
   get 'admin/logs'
