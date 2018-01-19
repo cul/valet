@@ -83,6 +83,8 @@ class IllRequestsController < ApplicationController
      illiad_url  = 'https://columbia.illiad.oclc.org/illiad/' + 
                    @affiliation_code + '/illiad.dll/OpenURL'
      @redirect_url = ezproxy_url + '?url=' + illiad_url + '?' + openurl
+     
+     return redirect_to @redirect_url
   end
 
   def ineligible
