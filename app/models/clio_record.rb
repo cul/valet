@@ -105,20 +105,24 @@ class ClioRecord
     return publisher.compact.join(' ')
   end
 
+  def pub_field
+    pub_field = @marc_record['260'] || @marc_record['264'] || nil
+  end
+
   def pub_place
-    return '' unless pub_field = @marc_record['260']
+    return '' unless pub_field = self.pub_field
     return '' unless pub_place = pub_field['a']
     return pub_place.sub(/\s*[:;,]$/, '')
   end
   
   def pub_name
-    return '' unless pub_field = @marc_record['260']
+    return '' unless pub_field = self.pub_field
     return '' unless pub_name = pub_field['b']
     return pub_name.sub(/\s*[:;,]$/, '')
   end
 
   def pub_date
-    return '' unless pub_field = @marc_record['260']
+    return '' unless pub_field = self.pub_field
     return '' unless pub_date = pub_field['c']
     return pub_date.sub(/\s*[:;,]$/, '')
   end
