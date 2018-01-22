@@ -15,20 +15,6 @@ module OffsiteRequestsHelper
     link_to label, url, target: '_blank'
   end
 
-
-  def legacy_offsite_request_link(clio_record = nil)
-    return '' unless clio_record.present? &&
-                     clio_record.key.present?
-    label = 'Legacy Offsite Request Form'
-    url   = "#{CGI}/cul/offsite2?#{clio_record.key}"
-
-    # Wrap the link in a colored box, 
-    # to highlight it as not a part of standard application
-    content_tag :span, class: 'legacy-link bg-success' do
-      link_to label, url, target: '_blank'
-    end
-  end
-
   def my_library_account_link
     label = 'My Library Account'
     url   = "#{CGI}/cul/resolve?lweb0087"

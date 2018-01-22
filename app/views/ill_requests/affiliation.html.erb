@@ -30,17 +30,14 @@ Please select your affiliation and click Continue.
 
   <%= hidden_field_tag(:bib_id, @bib_id) %>
 
-  <%= radio_button_tag(:affiliation, 'law') %>
-  <%= label_tag(:affiliation_law, 'Columbia Law School') %>
+  <%= radio_button_tag(:affiliation, 'zcu') %>
+  <%= label_tag(:affiliation_mbuts, 'Columbia (Morningside) / Barnard / Union Theological Seminary / Lamont-Doherty Earth Observatory') %>
   <br>
-  <%= radio_button_tag(:affiliation, 'geo') %>
-  <%= label_tag(:affiliation_geo, 'Lamont-Doherty Earth Observatory') %>
-  <br>
-  <%= radio_button_tag(:affiliation, 'mcc') %>
+  <%= radio_button_tag(:affiliation, 'zch') %>
   <%= label_tag(:affiliation_mcc, 'Medical Center Campus') %>
   <br>
-  <%= radio_button_tag(:affiliation, 'mbuts') %>
-  <%= label_tag(:affiliation_mbuts, 'Columbia (Morningside) / Barnard / Union Theological Seminary') %>
+  <%= radio_button_tag(:affiliation, 'law') %>
+  <%= label_tag(:affiliation_law, 'Columbia Law School') %>
   <br>
   <%= radio_button_tag(:affiliation, 'tc') %>
   <%= label_tag(:affiliation_tc, 'Teachers College') %>

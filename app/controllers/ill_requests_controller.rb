@@ -68,9 +68,9 @@ class IllRequestsController < ApplicationController
      # we can create a new ILL request
     
      @affiliation_code = case affiliation
-     when /geo|mbuts/
+     when /geo|mbuts|zcu/
        'zcu'
-     when /mcc/
+     when /mcc|zch/
        'zch'
      else
        raise 'IllRequestsController#new() unexpected affiliation value [affiliation]'

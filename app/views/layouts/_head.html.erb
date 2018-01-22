@@ -2,7 +2,10 @@
   <!-- 
   <title>Valet</title>
    -->
+   <!--
   <title>Offsite Request</title>
+  -->
+  <title><%= content_for(:title) || 'Valet' %></title>
   <%= favicon_link_tag asset_path('favicon-crown.png'), rel: 'icon', type: 'image/png' %>
   <%= stylesheet_link_tag    'application', media: 'all' %>
   <%= javascript_include_tag 'application' %>
