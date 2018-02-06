@@ -225,7 +225,7 @@ class ClioRecord
        @marc_record.each_by_tag(tag) do |mfhd_data_field|
          mfhd_id = mfhd_data_field['0']
          value = mfhd_data_field['a']
-         next unless mfhd_id and value
+         next unless mfhd_id and holdings[mfhd_id] and value
          holdings[mfhd_id][label] << value
        end
     end
