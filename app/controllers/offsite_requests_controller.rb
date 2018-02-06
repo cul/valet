@@ -11,7 +11,7 @@ class OffsiteRequestsController < ApplicationController
   # GET /offsite_requests
   # GET /offsite_requests.json
   def index
-    redirect_to action: 'bib'
+    return redirect_to(action: 'bib')
   end
 
   # GET /offsite_requests/1
@@ -161,13 +161,13 @@ class OffsiteRequestsController < ApplicationController
   private
 
   def confirm_offsite_eligibility!
-    redirect_to ineligible_offsite_requests_path unless current_user
-    redirect_to ineligible_offsite_requests_path unless current_user.offsite_eligible?
+    return redirect_to(ineligible_offsite_requests_path) unless current_user
+    return redirect_to(ineligible_offsite_requests_path) unless current_user.offsite_eligible?
     
     # Some other basic conditions need to be satisfied....
     if current_user.barcode.blank?
       flash[:error] = "ERROR -- Unable to determine barcode for current user"
-      redirect_to error_offsite_requests_path
+      redirect_to error_offsite_requests_path and return
     end
   end
 

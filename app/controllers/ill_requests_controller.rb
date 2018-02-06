@@ -4,7 +4,7 @@ class IllRequestsController < ApplicationController
   before_action :confirm_ill_eligibility!, except: [ :ineligible, :error ]
 
   def index
-    redirect_to action: 'affiliation'
+    return redirect_to(action: 'affiliation')
   end
 
   # 1) Collect affiliation
@@ -96,8 +96,8 @@ class IllRequestsController < ApplicationController
   private
 
   def confirm_ill_eligibility!
-    redirect_to ineligible_ill_requests_path unless current_user
-    redirect_to ineligible_ill_requests_path unless current_user.ill_eligible?
+    return redirect_to(ineligible_ill_requests_path) unless current_user
+    return redirect_to(ineligible_ill_requests_path) unless current_user.ill_eligible?
   end
 
 
