@@ -154,8 +154,8 @@ class ClioRecord
     @marc_record.fields('035').each { |field|
       next unless number = field['a']
 
-      oclc_regexp = /OCoLC[^0-9A-Za-z]*([0-9A-Za-z]*)/
-      next unless oclc_match = number.match(oclc_regexp)
+      oclc_regex = /OCoLC[^0-9A-Za-z]*([0-9A-Za-z]*)/
+      next unless oclc_match = number.match(oclc_regex)
       oclc_number = oclc_match[1]
       return oclc_number
     }

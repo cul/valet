@@ -157,15 +157,22 @@ class User < ActiveRecord::Base
 
   def offsite_eligible?
     return false unless affils
-    affils.each do |affil|
-      # TODO
-      return true if affil.match(/CUL_role-clio/)
+
+    # Offsite eligibility set via app_config
+    config = APP_CONFIG['offsite'] || {}
+
+    # But hardcode a default, in case it's not set in app_config
+    if config['permitted_affil_regex'].blank?
+      config['permitted_affil_regex'] = [ 'CUL_role-clio' ]
     end
-    return false
+
+    return eligible?(config, affils)
   end
 
   def offsite_blocked?
     return false unless affils
+    # This is not a "denied" affiliation, 
+    # because blocked users can still request physical delivery.
     affils.each do |affil|
       return true if affil.match(/CUL_role-clio-.*-blocked/)
     end
@@ -174,15 +181,57 @@ class User < ActiveRecord::Base
 
   def ill_eligible?
     return false unless affils
-    affils.each do |affil|
-      # TODO
-      # Are there any restrictions at all?
-      # return true if affil.match(/CUL_role-clio/)
-      return true
-    end
-    return false
+
+    # Default to allow users with any 'CUL_role-clio*' affil,
+    # but override with the app_config setting, if present
+    config = APP_CONFIG['offsite'] || {}
+
+    return eligible?(config, affils)
   end
 
+  def eligible?(config, affils)
+    unless config.present? && affils.present?
+      Rails.logger.error "elibible?(config,affils) needs valid input args"
+      return false
+    end
+    
+    denied_affils         = config['denied_affils']         || []
+    permitted_affils      = config['permitted_affils']      || []
+    permitted_affil_regex = config['permitted_affil_regex'] || []
+
+    [ denied_affils, permitted_affils, permitted_affil_regex ].each do |f|
+      raise "#{f.to_s} must be an array!" unless f.is_a? Array
+    end
+
+    unless permitted_affils.present? || permitted_affil_regex.present?
+      Rails.log.error "Cannot find ANY permitted_affils - no access allowed!" 
+      return false
+    end
+    
+    # Immediate rejection
+    denied_affils.each do |bad_affil|
+      Rails.logger.debug "#{login} has bad_affil #{bad_affil}" if
+          affils.include?(bad_affil)
+      return false if affils.include?(bad_affil)
+    end
+    permitted_affils.each do |good_affil|
+      Rails.logger.debug "#{login} has good_affil #{good_affil}" if
+          affils.include?(good_affil)
+      return true if affils.include?(good_affil)
+    end
+    permitted_affil_regex.each do |good_regex|
+      affils.each do |affil|
+        Rails.logger.debug "affil #{affil} matches regexp #{good_regex}" if
+            affil.match(/#{good_regex}/)
+        return true if affil.match(/#{good_regex}/)
+      end
+    end
+
+    # Default, if not explicitly permitted, return elible == false
+    return false
+  end
+  
+  
   # developers and sysadmins
   def admin?
     affils && (affils.include?('CUNIX_litosys') || affils.include?('CUL_dpts-dev'))
