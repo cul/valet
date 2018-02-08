@@ -161,8 +161,8 @@ class User < ActiveRecord::Base
     # Offsite eligibility set via app_config
     config = APP_CONFIG['offsite'] || {}
 
-    # But hardcode a default, in case it's not set in app_config
-    if config['permitted_affil_regex'].blank?
+    # But hardcode a default, in case nothing is set in app_config
+    if config['permitted_affils'].blank? && config['permitted_affil_regex'].blank?
       config['permitted_affil_regex'] = [ 'CUL_role-clio' ]
     end
 
