@@ -54,13 +54,16 @@ You will be contacted by email (to
 In order to best serve the Columbia community, please request 20 items or fewer per day. 
 Contact recap@libraries.cul.columbia.edu with questions and comments.
 <br>
-<br>
-You can check the status of your request via My Library Account in CLIO:
-<div class='offset-block'>
-<%= link_to 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1', 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1', target: 'blank'%>
-</div>
 
-<br>
+<% if @offsite_request_params[:requestType] == 'RETRIEVAL' %>
+  <br>
+  You can check the status of your request via My Library Account in CLIO:
+  <div class='offset-block'>
+  <%= link_to 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087', 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087', target: 'blank'%>
+  </div>
+  <br>
+<% end %>
+
 <br>
 Thank you for using Offsite collections!
 <br>

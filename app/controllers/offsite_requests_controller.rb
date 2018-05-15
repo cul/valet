@@ -248,6 +248,16 @@ Please check the message below.
 EOT
     end
     
+    my_account_link = if (params[:requestType] == 'RETRIEVAL')
+      %q(
+You can check the status of your request via My Library Account in CLIO:
+http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087
+
+)
+    else
+      ''
+    end
+    
 
     body = <<-EOT
 You have requested the following from Offsite:
@@ -266,10 +276,7 @@ Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all
 You will be contacted by email (to #{@request_item_response[:emailAddress]}) when the item is available.
 
 In order to best serve the Columbia community, please request 20 items or fewer per day. Contact recap@libraries.cul.columbia.edu with questions and comments.
-
-You can check the status of your request via My Library Account in CLIO:
-http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087-1
-
+#{my_account_link}
 Thank you for using Offsite collections!
 EOT
   end
