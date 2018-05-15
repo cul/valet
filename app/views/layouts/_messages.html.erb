@@ -1,4 +1,6 @@
 
+<% flash[:error] = "Warning:  email not found - assuming #{current_user.email}" if current_user.present? && current_user.email_source = 'fallback' %>
+
 <!-- Map Rails Flash types to Bootstrap 3 style colors -->
 <% flash_map = {success: 'success', notice: 'info', alert: 'warning', error: 'danger'}.with_indifferent_access %>
 
