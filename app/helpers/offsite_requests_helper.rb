@@ -29,13 +29,13 @@ module OffsiteRequestsHelper
 
   def to_library_info_link
     label = 'more info...'
-    url = "#{LWEB}/find/request/off-site.html"
+    url = "#{LWEB}/find/request/off-site/item_to_library.html"
     link_to label, url, target: '_blank', class: 'info-link'
   end
 
   def electronic_info_link
     label = 'more info...'
-    url = "#{LWEB}/find/request/off-site.html"
+    url = "#{LWEB}/find/request/off-site/electronic.html"
     link_to label, url, target: '_blank', class: 'info-link'
   end
 

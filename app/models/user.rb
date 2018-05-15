@@ -13,8 +13,6 @@ class User < ActiveRecord::Base
   # cul_omniauth sets "devise :recoverable", and that requires
   # that the following user attributes be available.
   attr_accessor :reset_password_token, :reset_password_sent_at
-  
-  attr_accessor :email_source
 
   # Before first-time User record creation...
   before_create :set_personal_info_via_ldap, :set_email
@@ -74,32 +72,29 @@ class User < ActiveRecord::Base
   end
 
   def set_email
-    # # Try to find email via LDAP
-    # if @ldap_attributes && ldap_mail = @ldap_attributes[:mail]
-    #   ldap_mail = Array(ldap_mail).first.to_s
-    #   if ldap_mail.length > 6 and ldap_mail.match(/^.+@.+$/)
-    #     self.email_source = 'ldap'
-    #     self.email = ldap_mail
-    #     return self
-    #   end
-    # end
-    # 
-    # # Try to find email via Voyager
-    # if @oracle_connection ||= Voyager::OracleConnection.new()
-    #   if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-    #     if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
-    #       if voyager_email.length > 6 and voyager_email.match(/^.+@.+$/)
-    #         self.email_source = 'voyager'
-    #         self.email = voyager_email
-    #         return self
-    #       end
-    #     end
-    #   end
-    # end
+    # Try to find email via LDAP
+    if @ldap_attributes && ldap_mail = @ldap_attributes[:mail]
+      ldap_mail = Array(ldap_mail).first.to_s
+      if ldap_mail.length > 6 and ldap_mail.match(/^.+@.+$/)
+        self.email = ldap_mail
+        return self
+      end
+    end
+    
+    # Try to find email via Voyager
+    if @oracle_connection ||= Voyager::OracleConnection.new()
+      if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+        if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
+          if voyager_email.length > 6 and voyager_email.match(/^.+@.+$/)
+            self.email = voyager_email
+            return self
+          end
+        end
+      end
+    end
     
     # No email!  Fill in guess.
     Rails.logger.error "ERROR: Cannot find email address via LDAP or Voyager for uid [#{uid}], assuming @columbia.edu"
-    self.email_source = 'fallback'
     self.email = "#{uid}@columbia.edu"
     return self
   end
