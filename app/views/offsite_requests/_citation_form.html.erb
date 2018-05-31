@@ -8,7 +8,7 @@
   <div class='form-group form-group-sm'>
     <label for='chapterTitle' class='col-sm-4 control-label'>Chapter/Article Title:</label>
     <div class='col-sm-8'>
-      <%= text_field_tag(:chapterTitle, '', size: '30', class: 'form-control') %>
+      <%= text_field_tag(:chapterTitle, @wanted_title || '', size: '30', class: 'form-control') %>
     </div>
   </div>
 
@@ -43,7 +43,7 @@
   <div class='form-group form-group-sm'>
     <label for='issue' class='col-sm-4 control-label'>Issue #, Date:</label>
     <div class='col-sm-8'>
-      <%= text_field_tag(:issue, '', size: '30', class: 'form-control') %>
+      <%= text_field_tag(:issue, @wanted_enum_chron || '', size: '30', class: 'form-control') %>
     </div>
   </div>
 

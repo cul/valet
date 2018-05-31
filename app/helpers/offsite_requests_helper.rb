@@ -140,6 +140,30 @@ module OffsiteRequestsHelper
     item[:use_restriction]
   end
 
+  # There's a bit of complexity in the offsite request item checkboxes.
+  # The barcode filter is for when the request is for a precise barcode,
+  # for example, requesting the container item of a bound-with relationship.
+  def offsite_item_check_box_tag(item, barcode_filter = nil)
+    return '' unless item.present?
+    # if we have a barcode filter, skip anything that doesn't match the filter
+    return '' if barcode_filter.present? && item[:barcode] != barcode_filter
+
+    # Normally unchecked, unless this item matches the barcode filter
+    checked_state = false
+    checked_state = true if item[:barcode] == barcode_filter
+
+    # Setup data attributes
+    options = item_data_hash(item)
+    
+    # Checkbox state immutable if barcode filter is active
+    if barcode_filter.present?
+      options.merge!( { onclick: 'return false;' } )
+    end
+
+    return check_box_tag("itemBarcodes[]", item[:barcode], checked_state, options)
+  end
+    
+    
   # Include extra attributes with the item barcode checkboxes via html data attribute
   def item_data_hash(item)
     datahash = {}

@@ -12,35 +12,40 @@ module Clio
       solr_args = APP_CONFIG['solr_connection_details']
       raise "Solr config missing!" unless solr_args.present?
       raise "Solr config missing 'url'" unless solr_args.has_key?(:url)
+      Rails.logger.debug "Clio::SolrConnection#initialize: solr_args:#{solr_args}"
       @solr_connection = RSolr.connect url: solr_args[:url]
     end
 
-    def retrieve_marcxml(bib_id = nil)
-      raise "retrieve_marc() needs bib_id" unless bib_id.present?
 
-      solr_doc = fetch_solr_doc(bib_id)
+    def retrieve_marcxml_by_query(query = nil)
+      raise "retrieve_marcxml_by_query() needs query" unless query.present?
+
+      solr_doc = fetch_solr_doc_by_query(query)
       if solr_doc.blank?
-        Rails.logger.info "Clio::Solr::retrieve_marcxml(#{bib_id}) retrieved nil solr_doc!"
+        Rails.logger.info "Clio::Solr::retrieve_marcxml_by_query(#{query}) retrieved nil solr_doc!"
         return nil
       end
 
       marc = solr_doc_to_marcxml(solr_doc)
       if marc.blank?
-        Rails.logger.info "Clio::Solr::retrieve_marcxml(#{bib_id}) retrieved nil marc!"
+        Rails.logger.info "Clio::Solr::retrieve_marcxml_by_query(#{query}) retrieved nil marc!"
       end
       return marc
     end
 
-    def fetch_solr_doc(bib_id = nil)
-      raise "fetch_solr_doc() needs bib_id" unless bib_id.present?
 
-      # Use the traditional 'select' handler to query for the id
-      #   params = { q: "id:#{bib_id}", fl: 'marc_display', facet: 'off'}
-      # Use the 'document' handler to fetch a specific document by id
+    def fetch_solr_doc_by_query(query = nil)
+      raise "fetch_solr_doc_by_query() needs {key => value} query" unless 
+          query.present? && query.is_a?(Hash) && query.size == 1
+
+      # query hash { bib_id: 1234 } becomes string "bibid:1234"
+      q = "#{query.keys.first}:#{query.values.first}"
+
+      # Use the 'document' handler to fetch a specific document
       #   e.g., http://SERVER:PORT/solr/CORE/select?qt=document&id=1234
-      params = { qt: 'document', id: bib_id, fl: "id,#{MARC_FIELD}"}
+      params = { qt: 'document', fl: "id,#{MARC_FIELD}", q: q}
 
-      Rails.logger.debug "- fetch_solr_doc(#{bib_id}), Solr params #{params.inspect}"
+      Rails.logger.debug "- fetch_solr_doc_by_query(#{query}), Solr params #{params.inspect}"
       response = @solr_connection.get 'select', params: params
       Rails.logger.debug "Solr response status: #{response['responseHeader']['status']}"
 

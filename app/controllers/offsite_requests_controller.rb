@@ -47,7 +47,7 @@ class OffsiteRequestsController < ApplicationController
 
     offsite_holdings = @clio_record.offsite_holdings
     if offsite_holdings.size == 0
-      flash[:error] = "The requested record (#{bib_id}) has no offsite holdings available."
+      flash[:error] = "The requested record (bib id #{bib_id}) has no offsite holdings available."
       return redirect_to bib_offsite_requests_path
     end
 
@@ -64,12 +64,69 @@ class OffsiteRequestsController < ApplicationController
     # a page to let the user pick which holding they want.
   end
 
+
+  # Offsite Requests can be called with just barcode(s).
+  # (E.g., for bound-with requsts)
+  # Valet will then lookup the appropriate bib_id & mfhd_id
+  def barcode
+    barcode = params['barcode']
+    wanted_title = params['wanted_title']
+    wanted_enum_chron = params['wanted_enum_chron']
+
+    if barcode.blank?
+      flash[:error] = "ERROR -- Not enough details to proceed with barcode request"
+      redirect_to error_offsite_requests_path and return
+    end
+
+    @clio_record = ClioRecord::new_from_barcode(barcode)
+    if @clio_record.blank?
+      flash[:error] = "Cannot find any record for barcode #{barcode}"
+      redirect_to error_offsite_requests_path and return
+    end
+    bib_id = @clio_record.key
+    
+    offsite_holdings = @clio_record.offsite_holdings
+    if offsite_holdings.size == 0
+      flash[:error] = "The requested record (bib id #{bib_id}) has no offsite holdings available."
+      redirect_to error_offsite_requests_path and return
+    end
+    
+    # Identify the holding that contain an item with the passed-in barcode
+    @holding = offsite_holdings.select do |holding|
+      holding[:items].any? { |item| item[:barcode] == barcode }
+    end.first  # 'first' because select from array always returns array
+    if @holding.blank?
+      flash[:error] = "Cannot find any holding within bib #{bib_id} with the barcode #{barcode}."
+      redirect_to error_offsite_requests_path and return
+    end
+    mfhd_id = @holding[:mfhd_id]
+    
+    # I now have my bib, holding, and barcode.
+    # Pass all of it along to build the request form
+    params = { bib_id: bib_id, mfhd_id: mfhd_id, barcode: barcode }
+    if wanted_title.present?
+      params[:wanted_title] = wanted_title || ''
+      params[:wanted_enum_chron] = wanted_enum_chron || ''
+    end
+    return redirect_to new_offsite_request_path params
+  end
+
+
   # GET /offsite_requests/new
   # Needs to have a bib_id and mfhd_id,
   # if either is missing, bounce back to appropriate screen
   def new
     bib_id = params['bib_id']
     mfhd_id = params['mfhd_id']
+
+    # These other params may be present, and need to be available in the form
+    # For bound-with request, which title/enum_chron was actually wanted by patron?
+    if params['wanted_title'].present?
+      @wanted_title = params['wanted_title'] 
+      @wanted_enum_chron = params['wanted_enum_chron'] || ''
+    end
+    # For barcode-targetted requests (like bound-with), which barcode(s)?
+    @barcode = params['barcode'] if params['barcode'].present?
 
     if bib_id.blank?
       flash[:error] = "Please supply a record number"

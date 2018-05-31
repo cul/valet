@@ -15,8 +15,12 @@ Rails.application.routes.draw do
 
   resources :offsite_requests do
     collection do
+      # different entry points to the request workflow
       get 'bib'
       get 'holding'
+      get 'barcode'
+
+      # exception conditions
       get 'ineligible'
       get 'error'
     end

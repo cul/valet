@@ -28,12 +28,29 @@ class ClioRecord
       Rails.logger.error "ClioRecord::new_from_bib_id() missing bib_id!"
       return nil
     end
-    return nil unless bib_id.present?
+    query = { id: bib_id }
+    new_from_query(query)
+  end
+
+  def self.new_from_barcode(barcode = nil)
+    if barcode.blank?
+      Rails.logger.error "ClioRecord::new_from_barcode() missing barcode!"
+      return nil
+    end
+    query = { barcode_txt: barcode }
+    new_from_query(query)
+  end
+
+  def self.new_from_query(query = nil)
+    if query.blank?
+      Rails.logger.error "ClioRecord::new_from_query() missing query!"
+      return nil
+    end
 
     solr_connection = Clio::SolrConnection.new()
     raise "Clio::SolrConnection failed!" unless solr_connection
 
-    marcxml = solr_connection.retrieve_marcxml(bib_id)
+    marcxml = solr_connection.retrieve_marcxml_by_query(query)
     if marcxml.blank?
       Rails.logger.error "ClioRecord::new_from_bib_id() marcxml nil!"
       return nil

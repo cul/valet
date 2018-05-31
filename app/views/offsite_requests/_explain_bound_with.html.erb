@@ -1,0 +1,28 @@
+
+<% if @wanted_title.present? %>
+
+  <div id='bound_with_explanation' class='alert alert-danger'>
+
+    The item which you've selected:
+    <br>
+    <div class='offset-block'>
+      <%= @wanted_title %>
+      <% if @wanted_enum_chron.present? %>
+        /
+        <%= @wanted_enum_chron %>
+      <% end %>
+    </div>
+    <br>
+    is <em>bound with</em> another title.
+    <br> <br>
+
+    The offsite request form below has been pre-filled with the container title.
+    <br> <br>
+
+    When the material arrives, please examine closely to locate your desired item.
+
+  </div>
+
+<% end %>
+
+

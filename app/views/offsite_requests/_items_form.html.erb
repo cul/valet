@@ -28,13 +28,15 @@
     </tr>
 
     <% @holding[:items].each do |item| %>
-      <% datahash = item_data_hash(item) %>
+      <!-- Do we have a barcode filter in effect? -->
+      <!-- If so, pre-select that item, and hide all other items. -->
+      <% next if @barcode && item[:barcode] != @barcode %>
       <% next unless availability = @clio_record.availability[ item[:barcode] ] %>
       <tr>
         <td>
           <% case availability
              when 'Available' %>
-               <%= check_box_tag "itemBarcodes[]", item[:barcode], false, datahash %>
+               <%= offsite_item_check_box_tag(item, @barcode) %>
           <% else %>
             OUT
             <!-- <%= availability %> -->

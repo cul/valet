@@ -1,4 +1,8 @@
 
+<% if @wanted_title.present? %>
+  <%= render 'explain_bound_with' %>
+<% end %>
+
 <%= form_for(@offsite_request) do |f| %>
 
   <%= hidden_field_tag(:emailAddress, current_user.email) %>
