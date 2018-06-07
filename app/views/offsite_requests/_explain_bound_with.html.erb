@@ -6,17 +6,19 @@
     The item which you've selected:
     <br>
     <div class='offset-block'>
+      <b>
       <%= @wanted_title %>
       <% if @wanted_enum_chron.present? %>
         /
         <%= @wanted_enum_chron %>
       <% end %>
+      </b>
     </div>
     <br>
     is <em>bound with</em> another title.
     <br> <br>
 
-    The offsite request form below has been pre-filled with the container title.
+    The offsite request form below will request the title to which this is bound.
     <br> <br>
 
     When the material arrives, please examine closely to locate your desired item.

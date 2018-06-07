@@ -36,6 +36,8 @@ offsite_locations:
   - scsb-nypl
   - scsb-pul
   # Columbia's Voyager offsite location codes
+  #   N.B., this list does NOT include ALL Voyager offsite location codes.
+  #   For example, RBML offsite (off,rbx) is not directly requestable by patrons.
   - off,ave
   - off,bio
   - off,bmc
