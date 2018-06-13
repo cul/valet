@@ -1,2 +1,2 @@
-class IllRequest < ActiveRecord::Base
+class IllRequest < ApplicationRecord
 end

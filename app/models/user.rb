@@ -1,4 +1,4 @@
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   include Cul::Omniauth::Users
 
   # cul_omniauth includes several options (:registerable, 

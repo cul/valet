@@ -1,2 +1,2 @@
-class OffsiteRequest < ActiveRecord::Base
+class OffsiteRequest < ApplicationRecord
 end
