@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 4'
+gem 'rails', '~> 5'
 
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
@@ -76,8 +76,11 @@ group :development do
 end
 
 # # Authentication
-gem 'devise', '~> 3.0'
-gem 'cul_omniauth'
+# gem 'devise', '~> 3.0'
+gem 'devise', '~> 4.4.0'
+
+# gem 'cul_omniauth'
+gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
 
 # Fetch ldap details - first name, last name, etc.
 gem 'net-ldap'
