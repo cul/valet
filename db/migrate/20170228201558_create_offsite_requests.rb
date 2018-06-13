@@ -1,4 +1,4 @@
-class CreateOffsiteRequests < ActiveRecord::Migration
+class CreateOffsiteRequests < ActiveRecord::Migration[5.2]
   def change
     create_table :offsite_requests do |t|
 
