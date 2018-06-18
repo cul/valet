@@ -5,7 +5,7 @@
       <%= current_user.login %>
     </a>
   <% else %>
-    <%= link_to "Log In", user_omniauth_authorize_path(:saml) %>
+    <%= link_to "Log In", user_saml_omniauth_authorize_path %>
   <% end %>
 
   <ul class="dropdown-menu">

@@ -179,7 +179,7 @@ class OffsiteRequestsController < ApplicationController
     to      = current_user.email
     subject = confirmation_email_subject()
     body    = confirmation_email_body()
-    ApplicationMailer.mail(from: from, to: to, subject: subject, body: body).deliver_now
+    ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver_now
 
     # Then continue on to render the page
   end
