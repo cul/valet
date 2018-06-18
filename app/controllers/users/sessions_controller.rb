@@ -8,11 +8,11 @@ class Users::SessionsController < Devise::SessionsController
     # there is support for :wind, :cas, and :saml in Cul::Omniauth
   end
 
-  # In AC, not in cul-omniauth docs
-  # # GET /resource/sign_in
-  # def new
-  #   redirect_to user_saml_omniauth_authorize_path
-  # end
+  # (Without this, visit /users/auth/saml explicitly)
+  # GET /resource/sign_in
+  def new
+    redirect_to user_saml_omniauth_authorize_path
+  end
 
 end
 
