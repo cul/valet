@@ -8,7 +8,8 @@ standard_delivery_locations:
   - EA
   # - GE
   - HS
-  - CJ
+  # LIBSYS-1446 - summertime closure of Journalism library
+  # - CJ
   - GS
   - LE
   - ML
@@ -114,7 +115,9 @@ off,hsr:
   default:  HS
 
 off,jou:
-  default:  CJ
+  # LIBSYS-1446 - summertime closure of Journalism library
+  # default:  CJ
+  default:  BU
 
 off,leh:
   default:  LE
