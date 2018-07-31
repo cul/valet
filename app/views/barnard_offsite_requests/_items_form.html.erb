@@ -31,7 +31,7 @@
       <!-- Do we have a barcode filter in effect? -->
       <!-- If so, pre-select that item, and hide all other items. -->
       <% next if @barcode && item[:barcode] != @barcode %>
-      <% next unless availability = @clio_record.scsb_availability[ item[:barcode] ] %>
+      <% next unless availability = @clio_record.availability[ item[:barcode] ] %>
       <tr>
         <td>
           <% case availability

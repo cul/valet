@@ -56,7 +56,7 @@ module Recap
 
 
     # Called like this:
-    # availability = Recap::ScsbRest.get_item_availability(barcodes)
+    # scsb_availability = Recap::ScsbRest.get_item_availability(barcodes)
     def self.get_item_availability(barcodes = [], conn = nil)
       raise "Recap::ScsbRest.get_item_availability() got blank barcodes" if barcodes.blank?
       Rails.logger.debug "- get_item_availability(#{barcodes})"

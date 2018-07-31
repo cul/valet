@@ -1,0 +1,64 @@
+
+<div class='delivery_form'>
+
+
+  <div class='instructional_title'>
+    Please select a delivery method:
+  </div>
+  <div class='instructional_description'>
+    (Requests submitted before 2:30pm Mon-Fri 
+    will be filled in one business day;
+    all requests filled in two business days.)
+  </div>
+
+
+  <table class='offsite_request'>
+
+    <tr>
+      <td>
+        <%= radio_button_tag(:requestType, 'RETRIEVAL', true) %>
+        <%= label_tag(:requestType_RETRIEVAL, 'Item to Library') %>
+        <div class='offset-block'>
+          <%= to_library_info_link %>
+        </div>
+      <td>
+        <p class="text-center">
+          <strong>Preferred Campus Delivery Location</strong>
+        </p>
+        <%= delivery_select_tag(@offsite_location_code, @customer_code) %>
+      </td>
+    </tr>
+
+    <% if current_user.offsite_eligible? %>
+      <tr>
+      <% if current_user.offsite_blocked? %>
+        <td colspan='2'>
+          <div class='offset-block'>
+            Electronic delivery is not available 
+            due to suspension of borrowing privileges
+            <div class='offset-block'>
+              <%= my_library_account_link %>
+              <br>
+              <%= borrowing_info_link %>
+            </div>
+          </div>
+        </td>
+      <% else %>
+        <td>
+          <%= radio_button_tag(:requestType, 'EDD') %>
+          <%= label_tag(:requestType_EDD, 'Electronic') %>
+          <div class='offset-block'>
+            <%= electronic_info_link %>
+          </div>
+        </td>
+        <td>
+          <%= render 'citation_form', f: f %>
+        </td>
+      <% end %>
+      </tr>
+    <% end %>
+  
+  </table>
+
+</div>
+

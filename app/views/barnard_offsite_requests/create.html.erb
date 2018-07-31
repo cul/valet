@@ -1,0 +1,74 @@
+
+<h4>Offsite Request</h4>
+
+<br>
+
+You have requested the following from Offsite:
+
+<br>
+<br>
+
+<strong>
+TITLE : 
+<%= @request_item_response[:titleIdentifier] %>
+<br>
+CALL NO : 
+<%= @offsite_request_params[:callNumber] %>
+<br>
+BARCODE: 
+<%= (@offsite_request_params[:itemBarcodes] || []).join(', ') %>
+</strong>
+
+
+<br>
+<br>
+
+<% if @request_item_response[:success] != true %>
+<div class="alert alert-danger" role="alert">
+  <strong>ERROR : </strong> This submission was <u>not</u> successful.  Please check the message below.
+</div>
+<% end %>
+
+Submission status:
+<br>
+<div class='offset-block'>
+  <div class='well'>
+    <span class="glyphicon glyphicon-exclamation-sign"></span>
+    &nbsp;
+    <%= @request_item_response[:screenMessage] %>
+  </div>
+</div>
+
+
+<br>
+Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
+<br>
+<br>
+You will be contacted by email (to 
+<strong>
+<%= @request_item_response[:emailAddress] %>
+</strong>
+) when the item is available.
+<br>
+<br>
+In order to best serve the Columbia community, please request 20 items or fewer per day. 
+Contact recap@libraries.cul.columbia.edu with questions and comments.
+<br>
+
+<% if @offsite_request_params[:requestType] == 'RETRIEVAL' %>
+  <br>
+  You can check the status of your request via My Library Account in CLIO:
+  <div class='offset-block'>
+  <%= link_to 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087', 'http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087', target: 'blank'%>
+  </div>
+  <br>
+<% end %>
+
+<br>
+Thank you for using Offsite collections!
+<br>
+You can now close this browser window.
+<br>
+<br>
+
+

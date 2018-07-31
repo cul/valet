@@ -1,0 +1,66 @@
+
+<% if @wanted_title.present? %>
+  <%= render 'explain_bound_with' %>
+<% end %>
+
+<%= form_for(@offsite_request) do |f| %>
+
+  <%= hidden_field_tag(:emailAddress, current_user.email) %>
+  <%= hidden_field_tag(:itemOwningInstitution, @clio_record.owningInstitution) %>
+  <%= hidden_field_tag(:bibId, @clio_record.key) %>
+  <%= hidden_field_tag(:titleIdentifier, @clio_record.title) %>
+  <%= hidden_field_tag(:mfhd_id, @holding[:mfhd_id]) %>
+  <%= hidden_field_tag(:callNumber, @holding[:display_call_number]) %>
+  
+
+  <% if @offsite_request.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited this offsite_request from being saved:</h2>
+      <ul>
+      <% @offsite_request.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- should never happen -->
+  <% if @clio_record.blank? %>
+    <div class='alert alert-danger'>
+      ERROR: No CLIO Record passed to view!
+    </div>
+  <% end %>
+
+
+  <%= render 'bib_form', f: f %>
+  <br>
+
+  <% if @available_items.size == 0 %>
+    <!-- No Available Offsite Items - patron should not` have been sent to Valet -->
+    <div class='danger-block'>
+      <strong>NOTICE:</strong>
+      No available offsite items for <%=@clio_record.key%>.
+      <br>The Offsite Request System cannot be used for this record.
+      <br>Please locate the material in CLIO and try Borrow Direct or ILL.
+    </div>
+  <% else %>
+    <!-- Yes, there are available Offsite Items - display request form as usual -->
+    <%= render 'items_form', f: f %>
+    <br>
+    <%= render 'delivery_form', f: f %>
+    <br>
+    <br>
+    <div class='row'>
+      <div class='col-sm-6'>
+        <%= f.submit('Submit Offsite Request', name: 'submit', onclick: "return validateOffsiteRequestForm()") %>
+      </div>
+      <div class='col-sm-6'>
+      </div>
+    </div>
+  
+  <% end %>  <!-- end for (available_items.size > 0) -->
+
+
+<% end %>
+
+

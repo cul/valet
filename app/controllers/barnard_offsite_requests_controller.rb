@@ -1,7 +1,7 @@
-class OffsiteRequestsController < ApplicationController
+class BarnardOffsiteRequestsController < ApplicationController
   before_action :authenticate_user!
 
-  before_action :confirm_offsite_eligibility!, except: [ :ineligible, :error ]
+  before_action :confirm_barnard_offsite_eligibility!, except: [ :ineligible, :error ]
 
   before_action :set_offsite_request, only: [:show, :edit, :update, :destroy]
 
@@ -25,7 +25,7 @@ class OffsiteRequestsController < ApplicationController
     bib_id = params['bib_id']
     if bib_id.present?
       params = { bib_id: bib_id }
-      return redirect_to holding_offsite_requests_path params
+      return redirect_to holding_barnard_offsite_requests_path params
     end
   end
 
@@ -36,19 +36,19 @@ class OffsiteRequestsController < ApplicationController
     bib_id = params['bib_id']
     if bib_id.blank?
       flash[:error] = "Please supply a record number"
-      return redirect_to bib_offsite_requests_path
+      return redirect_to bib_barnard_offsite_requests_path
     end
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
     if @clio_record.blank?
       flash[:error] = "Cannot find record #{bib_id}"
-      return redirect_to bib_offsite_requests_path
+      return redirect_to bib_barnard_offsite_requests_path
     end
 
-    offsite_holdings = @clio_record.offsite_holdings
+    offsite_holdings = @clio_record.barnard_offsite_holdings
     if offsite_holdings.size == 0
-      flash[:error] = "The requested record (bib id #{bib_id}) has no offsite holdings available."
-      return redirect_to bib_offsite_requests_path
+      flash[:error] = "The requested record (bib id #{bib_id}) has no Barnard offsite holdings available."
+      return redirect_to bib_barnard_offsite_requests_path
     end
 
     if @clio_record.offsite_holdings.size == 1
@@ -57,58 +57,11 @@ class OffsiteRequestsController < ApplicationController
       params = { bib_id: bib_id, mfhd_id: mfhd_id }
       # clear any leftover error message, let new page figure it out.
       flash[:error] = nil
-      return redirect_to new_offsite_request_path params
+      return redirect_to new_barnard_offsite_request_path params
     end
 
     # If we haven't redirected, then we'll render
     # a page to let the user pick which holding they want.
-  end
-
-
-  # Offsite Requests can be called with just barcode(s).
-  # (E.g., for bound-with requsts)
-  # Valet will then lookup the appropriate bib_id & mfhd_id
-  def barcode
-    barcode = params['barcode']
-    wanted_title = params['wanted_title']
-    wanted_enum_chron = params['wanted_enum_chron']
-
-    if barcode.blank?
-      flash[:error] = "ERROR -- Not enough details to proceed with barcode request"
-      redirect_to error_offsite_requests_path and return
-    end
-
-    @clio_record = ClioRecord::new_from_barcode(barcode)
-    if @clio_record.blank?
-      flash[:error] = "Cannot find any record for barcode #{barcode}"
-      redirect_to error_offsite_requests_path and return
-    end
-    bib_id = @clio_record.key
-    
-    offsite_holdings = @clio_record.offsite_holdings
-    if offsite_holdings.size == 0
-      flash[:error] = "The requested record (bib id #{bib_id}) has no offsite holdings available."
-      redirect_to error_offsite_requests_path and return
-    end
-    
-    # Identify the holding that contain an item with the passed-in barcode
-    @holding = offsite_holdings.select do |holding|
-      holding[:items].any? { |item| item[:barcode] == barcode }
-    end.first  # 'first' because select from array always returns array
-    if @holding.blank?
-      flash[:error] = "Cannot find any holding within bib #{bib_id} with the barcode #{barcode}."
-      redirect_to error_offsite_requests_path and return
-    end
-    mfhd_id = @holding[:mfhd_id]
-    
-    # I now have my bib, holding, and barcode.
-    # Pass all of it along to build the request form
-    params = { bib_id: bib_id, mfhd_id: mfhd_id, barcode: barcode }
-    if wanted_title.present?
-      params[:wanted_title] = wanted_title || ''
-      params[:wanted_enum_chron] = wanted_enum_chron || ''
-    end
-    return redirect_to new_offsite_request_path params
   end
 
 
@@ -119,32 +72,22 @@ class OffsiteRequestsController < ApplicationController
     bib_id = params['bib_id']
     mfhd_id = params['mfhd_id']
 
-    # These other params may be present, and need to be available in the form
-    # For bound-with request, which title/enum_chron was actually wanted by patron?
-    if params['wanted_title'].present?
-      @wanted_title = params['wanted_title'] 
-      @wanted_enum_chron = params['wanted_enum_chron'] || ''
-    end
-    # For barcode-targetted requests (like bound-with), which barcode(s)?
-    @barcode = params['barcode'] if params['barcode'].present?
-
     if bib_id.blank?
       flash[:error] = "Please supply a record number"
-      return redirect_to bib_offsite_requests_path
+      return redirect_to bib_barnard_offsite_requests_path
     end
     if mfhd_id.blank?
       flash[:error] = "Please specify a holding"
       params = { bib_id: bib_id }
-      return redirect_to holding_offsite_requests_path params
+      return redirect_to holding_barnard_offsite_requests_path params
     end
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
-    @clio_record.fetch_scsb_availabilty
 
     @holding = @clio_record.holdings.select { |h| h[:mfhd_id] == mfhd_id }.first
 
     # There's special view logic if the available-item list is empty.
-    @available_items = get_scsb_available_items(@clio_record, @holding)
+    @available_items = get_available_items(@clio_record, @holding)
 
     @offsite_location_code = @holding[:location_code]
     @customer_code = @holding[:customer_code]
@@ -217,24 +160,21 @@ class OffsiteRequestsController < ApplicationController
 
   private
 
-  def confirm_offsite_eligibility!
-    return redirect_to(ineligible_offsite_requests_path) unless current_user
-    return redirect_to(ineligible_offsite_requests_path) unless current_user.offsite_eligible?
-    
-    # Some other basic conditions need to be satisfied....
-    if current_user.barcode.blank?
-      flash[:error] = "ERROR -- Unable to determine barcode for current user"
-      redirect_to error_offsite_requests_path and return
-    end
+  # Just make sure we've got an authenticated user, with 
+  # a login id and a contact email.
+  def confirm_barnard_offsite_eligibility!
+    return redirect_to(ineligible_barnard_offsite_requests_path) unless 
+        current_user.login.present? &&
+        current_user.email.present?
   end
 
-  def get_scsb_available_items(clio_record = nil, holding = nil)
+  def get_available_items(clio_record = nil, holding = nil)
     return [] if clio_record.blank? || holding.blank?
     
     available_items = []
     holding[:items].each do |item|
-      scsb_availability = clio_record.scsb_availability[ item[:barcode] ]
-      available_items << item if scsb_availability == 'Available'
+      availability = clio_record.voyager_availability[ item[:barcode] ]
+      available_items << item if availability == 'Available'
     end
     return available_items
   end

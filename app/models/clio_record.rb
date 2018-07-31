@@ -4,7 +4,7 @@
 # It is not a Blacklight Document.
 class ClioRecord
   attr_reader :marc_record, :holdings, :barcodes,
-              :availability,
+              :scsb_availability,
               # :available_item_count,
               :tocs, :owningInstitution
 
@@ -20,7 +20,7 @@ class ClioRecord
     # self.fetch_locations
     # self.fetch_availabilty
 
-    @availability = {}
+    @scsb_availability = {}
   end
 
   def self.new_from_bib_id(bib_id = nil)
@@ -279,6 +279,16 @@ class ClioRecord
     end
   end
 
+  def barnard_offsite_holdings
+    barnard_config = APP_CONFIG['barnard']
+    die "Missing barnard configuration!" unless 
+      barnard_config.present? && barnard_config['offsite_location_code'].present?
+
+    holdings.select do |holding|
+      holding[:location_code] == barnard_config['offsite_location_code']
+    end
+  end
+
   def populate_barcodes
     # Single array of barcodes from all holdings, all items
     barcodes = @holdings.collect do |holdings|
@@ -291,12 +301,23 @@ class ClioRecord
   end
 
   # Fetch availability for each barcode from SCSB
-  # @availability format:
+  # @scsb_availability format:
   #   { barcode: availability, barcode: availability, ...}
-  def fetch_availabilty
-    @availability = Recap::ScsbRest.get_bib_availability(owningInstitutionBibId, owningInstitution) || {}
+  def fetch_scsb_availabilty
+    @scsb_availability = Recap::ScsbRest.get_bib_availability(owningInstitutionBibId, owningInstitution) || {}
 
-    # @available_item_count = @availability.select{ |barcode, availability_status|
+    # @available_item_count = @scsb_availability.select{ |barcode, availability_status|
+    #   availability_status == 'Available'
+    # }.count
+  end
+
+  # Fetch availability for each barcode from Voyager (via clio-backend)
+  # @voyager_availability format:
+  #   { barcode: availability, barcode: availability, ...}
+  def fetch_voyager_availabilty
+    @voyager_availability = Clio::Backend.get_bib_availability(self.key) || {}
+
+    # @available_item_count = @scsb_availability.select{ |barcode, availability_status|
     #   availability_status == 'Available'
     # }.count
   end
