@@ -106,6 +106,9 @@ gem 'bootstrap-sass'
 # gem 'rest-client'
 gem 'faraday'
 
+# Talk to HTTP servers
+gem 'httpclient'
+
 # Use MySQL for deployed server environments
 gem 'mysql2'
 

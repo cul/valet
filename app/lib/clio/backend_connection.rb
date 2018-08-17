@@ -4,31 +4,52 @@ module Clio
   class BackendConnection
 
     # Lots borrowed from CLIO Spectrum
-    def backend_httpclient
-      hc = HTTPClient.new
-      # The default is to wait 60/120 seconds - but we expect an instant response,
-      # anything else means trouble, and we should give up immediately so as not
-      # to not sit on resources.
-      hc.connect_timeout = 10 # default 60
-      hc.send_timeout    = 10 # default 120
-      hc.receive_timeout = 10 # default 60
-      hc
-    end
 
+    # def self.backend_httpclient
+    #   hc = HTTPClient.new
+    #   # The default is to wait 60/120 seconds - but we expect an instant response,
+    #   # anything else means trouble, and we should give up immediately so as not
+    #   # to not sit on resources.
+    #   hc.connect_timeout = 10 # default 60
+    #   hc.send_timeout    = 10 # default 120
+    #   hc.receive_timeout = 10 # default 60
+    #   hc
+    # end
 
-    def get_circ_status(id = nil)
+   def self.backend_connection
+     backend_config = APP_CONFIG['clio_backend_connection_details']
+     unless backend_config.present? && backend_config['url'].present?
+       Rails.logger.error "Missing CLIO Backend config!"
+       return {}
+     end
+
+     conn = Faraday.new(backend_config['url'], request: {
+       open_timeout: 10,   # opening a connection
+       timeout: 10         # waiting for response
+     })
+     return conn
+   end
+
+    def self.get_circ_status(id = nil)
       return {} unless id.present? && id.match(/^\d+$/)
       
-      backend_config = APP_CONFIG['clio_backend_connection_details']
-      unless backend_config.present? && backend_config['url'].present?
-        Rails.logger.error "Missing CLIO Backend config!"
+      # backend_config = APP_CONFIG['clio_backend_connection_details']
+      # unless backend_config.present? && backend_config['url'].present?
+      #   Rails.logger.error "Missing CLIO Backend config!"
+      #   return {}
+      # end
+
+      # backend_url = backend_config['url'] + '/holdings/circ_status/' + id
+      conn = backend_connection
+      unless conn
+        Rails.logger.error "CLIO Backend backend_connection() returned nil!"
         return {}
       end
-
-      backend_url = backend_config['url'] + '/holdings/circ_status/' + id
+      circ_status_path = '/holdings/circ_status/' + id
 
       begin
-        json_results = backend_httpclient.get_content(backend_url)
+        # json_results = backend_httpclient.get_content(backend_url)
+        json_results = conn.get(circ_status_path).body
         backend_results = JSON.parse(json_results).with_indifferent_access
       rescue => ex
         logger.error "Clio::BackendConnection#circ_status #{ex} URL: #{backend_url}"
@@ -45,12 +66,22 @@ module Clio
     end
 
 
-    def get_availability(id)
-      circ_status = get_circ_status
+    # Simplify circ_status to just available/unavailable
+    def self.get_bib_availability(id)
+      # WANTED @voyager_availability format:
+      #   { barcode: availability, barcode: availability, ...}
+      availability_hash = {}
+      circ_status = get_circ_status(id)
+      circ_status[id].each { |holding_id, holding_details|
+        Rails.logger.debug "holding_id=#{holding_id}"
+        holding_details.each { |item_id, item_details|
+          availability = (item_details['statusCode'] == 1) ? 'Available' : 'Unavailable'
+          Rails.logger.debug "item_id=#{item_id} availability=#{availability}"
+          availability_hash[item_id] = availability
+        }
+      }
       
-      # Simplify circ_status to just available/unavailable
-      
-      
+      return availability_hash
     end
 
     # Called like this:

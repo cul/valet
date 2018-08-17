@@ -1,29 +1,14 @@
 
-<% if @wanted_title.present? %>
-  <%= render 'explain_bound_with' %>
-<% end %>
+<h4><i>Item in BearStor, request for pickup</i></h4>
 
-<%= form_for(@offsite_request) do |f| %>
+<%= form_for(@barnard_offsite_request) do |f| %>
 
   <%= hidden_field_tag(:emailAddress, current_user.email) %>
-  <%= hidden_field_tag(:itemOwningInstitution, @clio_record.owningInstitution) %>
   <%= hidden_field_tag(:bibId, @clio_record.key) %>
   <%= hidden_field_tag(:titleIdentifier, @clio_record.title) %>
   <%= hidden_field_tag(:mfhd_id, @holding[:mfhd_id]) %>
   <%= hidden_field_tag(:callNumber, @holding[:display_call_number]) %>
   
-
-  <% if @offsite_request.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@offsite_request.errors.count, "error") %> prohibited this offsite_request from being saved:</h2>
-      <ul>
-      <% @offsite_request.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
   <!-- should never happen -->
   <% if @clio_record.blank? %>
     <div class='alert alert-danger'>
@@ -47,12 +32,10 @@
     <!-- Yes, there are available Offsite Items - display request form as usual -->
     <%= render 'items_form', f: f %>
     <br>
-    <%= render 'delivery_form', f: f %>
-    <br>
     <br>
     <div class='row'>
       <div class='col-sm-6'>
-        <%= f.submit('Submit Offsite Request', name: 'submit', onclick: "return validateOffsiteRequestForm()") %>
+        <%= f.submit('Submit Offsite Request', name: 'submit') %>
       </div>
       <div class='col-sm-6'>
       </div>

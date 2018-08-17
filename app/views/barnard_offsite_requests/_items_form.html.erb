@@ -1,12 +1,11 @@
 
 <div class='items_form'>
 
-  <div class='instructional_title'>
-    Please select one or more items:
-  </div>
-  <div class='instructional_description'>
-    (For electronic delivery service only one article may be requested at a time.)
-  </div>
+  <% if @barcode.blank? %>
+    <div class='instructional_title'>
+      Please select one or more items:
+    </div>
+  <% end %>
 
 
   <table class='offsite_request table-hover'>
@@ -31,7 +30,7 @@
       <!-- Do we have a barcode filter in effect? -->
       <!-- If so, pre-select that item, and hide all other items. -->
       <% next if @barcode && item[:barcode] != @barcode %>
-      <% next unless availability = @clio_record.availability[ item[:barcode] ] %>
+      <% next unless availability = @clio_record.voyager_availability[ item[:item_id] ] %>
       <tr>
         <td>
           <% case availability

@@ -4,7 +4,7 @@
 # It is not a Blacklight Document.
 class ClioRecord
   attr_reader :marc_record, :holdings, :barcodes,
-              :scsb_availability,
+              :scsb_availability, :voyager_availability,
               # :available_item_count,
               :tocs, :owningInstitution
 
@@ -314,12 +314,8 @@ class ClioRecord
   # Fetch availability for each barcode from Voyager (via clio-backend)
   # @voyager_availability format:
   #   { barcode: availability, barcode: availability, ...}
-  def fetch_voyager_availabilty
-    @voyager_availability = Clio::Backend.get_bib_availability(self.key) || {}
-
-    # @available_item_count = @scsb_availability.select{ |barcode, availability_status|
-    #   availability_status == 'Available'
-    # }.count
+  def fetch_voyager_availability
+    @voyager_availability = Clio::BackendConnection.get_bib_availability(self.key) || {}
   end
 
   # For each of the barcodes in this record (@barcodes),

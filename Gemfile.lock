@@ -122,6 +122,7 @@ GEM
     globalid (0.4.1)
       activesupport (>= 4.2.0)
     hashie (3.5.7)
+    httpclient (2.8.3)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
     jbuilder (2.7.0)
@@ -295,6 +296,7 @@ DEPENDENCIES
   devise (~> 4.4.0)
   exception_notification
   faraday
+  httpclient
   jbuilder
   jquery-datatables-rails
   jquery-rails
