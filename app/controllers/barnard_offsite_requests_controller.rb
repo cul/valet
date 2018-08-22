@@ -115,14 +115,14 @@ class BarnardOffsiteRequestsController < ApplicationController
     # Send request email to barnard library staff
     from    = "Barnard Offsite Request Service <#{email}>"
     to      = "Barnard Offsite Request Service <#{email}>"
-    subject = "New BearStor Request [#{@request_item_response[:titleIdentifier]}]"
+    subject = "New BearStor Request [#{@offsite_request_params[:titleIdentifier]}]"
     body    = request_email_body()
     ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver_now
 
     # Send confirmation email to patron
     from    = "Barnard Offsite Request Service <#{email}>"
     to      = current_user.email
-    subject = "BearStor Request Confirmation [#{@request_item_response[:titleIdentifier]}]"
+    subject = "BearStor Request Confirmation [#{@offsite_request_params[:titleIdentifier]}]"
     body    = confirmation_email_body()
     ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver_now
 
@@ -210,23 +210,11 @@ class BarnardOffsiteRequestsController < ApplicationController
   end
 
 
-  # def confirmation_email_subject()
-  #   subject = 'Offsite Item Request Confirmation'
-  #   if @request_item_response[:titleIdentifier]
-  #     subject = subject + " [#{@request_item_response[:titleIdentifier]}]"
-  #   end
-  #   
-  #   if Rails.env != 'valet_prod'
-  #     subject = subject + " (#{Rails.env})"
-  #   end
-  #   return subject
-  # end
-
   def request_email_body()
     body = <<-EOT
 The following has been requested from BearStor:
 
-TITLE : #{@request_item_response[:titleIdentifier]}
+TITLE : #{@offsite_request_params[:titleIdentifier]}
 CALL NO : #{@offsite_request_params[:callNumber]}
 BARCODE: #{(@offsite_request_params[:itemBarcodes] || []).join(', ')}
 
@@ -241,13 +229,13 @@ EOT
     body = <<-EOT
 You have requested the following from BearStor:
 
-TITLE : #{@request_item_response[:titleIdentifier]}
+TITLE : #{@offsite_request_params[:titleIdentifier]}
 CALL NO : #{@offsite_request_params[:callNumber]}
 BARCODE: #{(@offsite_request_params[:itemBarcodes] || []).join(', ')}
 
 Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
 
-You will be contacted by email (to #{@request_item_response[:emailAddress]}) when the item is available.
+You will be contacted by email (to #{@offsite_request_params[:emailAddress]}) when the item is available.
 
 Thank you for using Offsite collections!
 EOT
