@@ -107,8 +107,6 @@ class BarnardOffsiteRequestsController < ApplicationController
   def create
     @offsite_request_params = offsite_request_params()
 
-    @request_item_response = Recap::ScsbRest.request_item(@offsite_request_params) || {}
-
     barnard_config = APP_CONFIG['barnard']
     die "Missing barnard configuration!" unless 
       barnard_config.present? && barnard_config['request_email'].present?
