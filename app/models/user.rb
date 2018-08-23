@@ -38,34 +38,34 @@ class User < ApplicationRecord
   end
 
   def set_personal_info_via_ldap
-    # return if the ldap attributes have already been filled in
+    # return if we already fetched ldap attributes
     return unless @ldap_attributes.nil?
 
-    if uid
-      ldap_args = APP_CONFIG['ldap_connection_details']
+    # Can't proceed without a uid!
+    return unless uid
 
-      raise "LDAP config needs 'host'" unless ldap_args.has_key?(:host)
-      raise "LDAP config needs 'port'" unless ldap_args.has_key?(:port)
-      raise "LDAP config needs 'base'" unless ldap_args.has_key?(:base)
+    ldap_args = APP_CONFIG['ldap_connection_details']
+    raise "LDAP config needs 'host'" unless ldap_args.has_key?(:host)
+    raise "LDAP config needs 'port'" unless ldap_args.has_key?(:port)
+    raise "LDAP config needs 'base'" unless ldap_args.has_key?(:base)
 
-      Rails.logger.debug "Querying LDAP #{ldap_args.inspect} for uid=#{uid}"
-      entry = Net::LDAP.new({host: ldap_args[:host], port: ldap_args[:port]}).search(base: ldap_args[:base], :filter => Net::LDAP::Filter.eq("uid", uid)) || []
-      entry = entry.first
-      Rails.logger.debug "LDAP response: #{entry.inspect}"
+    Rails.logger.debug "Querying LDAP #{ldap_args.inspect} for uid=#{uid}"
+    entry = Net::LDAP.new({host: ldap_args[:host], port: ldap_args[:port]}).search(base: ldap_args[:base], :filter => Net::LDAP::Filter.eq("uid", uid)) || []
+    entry = entry.first
+    Rails.logger.debug "LDAP response: #{entry.inspect}"
 
-      if entry
-        # Copy all attributes of the LDAP entry to an instance variable,
-        # keeping them in list format
-        @ldap_attributes = Hash.new
-        entry.each_attribute do |attribute, value_list|
-          next if value_list.blank?
-          @ldap_attributes[attribute] = value_list
-        end
-
-        # Process certain raw attributes into cleaned up fields
-        self.last_name  = Array(entry[:sn]).first.to_s
-        self.first_name = Array(entry[:givenname]).first.to_s
+    if entry
+      # Copy all attributes of the LDAP entry to an instance variable,
+      # keeping them in list format
+      @ldap_attributes = Hash.new
+      entry.each_attribute do |attribute, value_list|
+        next if value_list.blank?
+        @ldap_attributes[attribute] = value_list
       end
+
+      # Process certain raw attributes into cleaned up fields
+      self.last_name  = Array(entry[:sn]).first.to_s
+      self.first_name = Array(entry[:givenname]).first.to_s
     end
 
     return self
