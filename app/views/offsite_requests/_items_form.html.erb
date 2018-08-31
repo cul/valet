@@ -9,7 +9,7 @@
   </div>
 
 
-  <table class='offsite_request table-hover'>
+  <table class='valet_request table-hover'>
     <tr>
       <td colspan='5'>
         <strong>
@@ -36,7 +36,7 @@
         <td>
           <% case availability
              when 'Available' %>
-               <%= offsite_item_check_box_tag(item, @barcode) %>
+               <%= request_item_check_box_tag(item, @barcode) %>
           <% else %>
             OUT
             <!-- <%= availability %> -->

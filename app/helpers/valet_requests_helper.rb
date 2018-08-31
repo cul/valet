@@ -1,4 +1,4 @@
-module OffsiteRequestsHelper
+module ValetRequestsHelper
 
   # shortcuts used in several methods
   WWW  = 'http://www.columbia.edu'
@@ -143,7 +143,7 @@ module OffsiteRequestsHelper
   # There's a bit of complexity in the offsite request item checkboxes.
   # The barcode filter is for when the request is for a precise barcode,
   # for example, requesting the container item of a bound-with relationship.
-  def offsite_item_check_box_tag(item, barcode_filter = nil)
+  def request_item_check_box_tag(item, barcode_filter = nil)
     return '' unless item.present?
     # if we have a barcode filter, skip anything that doesn't match the filter
     return '' if barcode_filter.present? && item[:barcode] != barcode_filter

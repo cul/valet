@@ -27,14 +27,29 @@ a.logo:hover {
 }
 
 
-/*
-div.legacy-link, span.legacy-link {
-  border: 1px solid gray;
-  padding: 8px;
-  font-style: italic;
-  font-size: 80%;
+table.valet_request {
+  width: 600px;
+  border-spacing: 0px;
+  background-color: #E8E8E8;
+  font-size: 90%;
+  border: 2px solid #B0B0B0;
 }
-*/
+
+
+table.valet_request tr,
+table.valet_request tr td {
+  padding: 4px;
+  border: 1px solid #B0B0B0;
+}
+
+
+table.valet_request .form-group {
+  margin-bottom: 0px;
+}
+table.valet_request label {
+  font-weight: normal;
+}
+
 
 .offset-block {
   padding-top: 10px;
@@ -59,12 +74,10 @@ a.info-link {
 
 .instructional_title {
   font-size: 18px;
-/*  font-weight: bolder;*/
   margin-bottom: 0px;
 }
 .instructional_description {
   margin-top: 0px;
-/*  margin-left: 10px;*/
   margin-bottom: 20px;
   width: 500px;
 }

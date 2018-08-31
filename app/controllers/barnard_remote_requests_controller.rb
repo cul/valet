@@ -1,21 +1,21 @@
-class BarnardOffsiteRequestsController < ApplicationController
+class BarnardRemoteRequestsController < ApplicationController
   before_action :authenticate_user!
 
-  before_action :confirm_barnard_offsite_eligibility!, except: [ :ineligible, :error ]
+  before_action :confirm_barnard_remote_eligibility!, except: [ :ineligible, :error ]
 
-  before_action :set_offsite_request, only: [:show, :edit, :update, :destroy]
+  before_action :set_remote_request, only: [:show, :edit, :update, :destroy]
 
   # before_filter :authenticate_user!, if: :devise_controller?
 
 
-  # GET /offsite_requests
-  # GET /offsite_requests.json
+  # GET /remote_requests
+  # GET /remote_requests.json
   def index
     return redirect_to(action: 'bib')
   end
 
-  # GET /offsite_requests/1
-  # GET /offsite_requests/1.json
+  # GET /remote_requests/1
+  # GET /remote_requests/1.json
   def show
   end
 
@@ -25,7 +25,7 @@ class BarnardOffsiteRequestsController < ApplicationController
     bib_id = params['bib_id']
     if bib_id.present?
       params = { bib_id: bib_id }
-      return redirect_to holding_barnard_offsite_requests_path params
+      return redirect_to holding_barnard_remote_requests_path params
     end
   end
 
@@ -36,28 +36,28 @@ class BarnardOffsiteRequestsController < ApplicationController
     bib_id = params['bib_id']
     if bib_id.blank?
       flash[:error] = "Please supply a record number"
-      return redirect_to bib_barnard_offsite_requests_path
+      return redirect_to bib_barnard_remote_requests_path
     end
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
     if @clio_record.blank?
       flash[:error] = "Cannot find record #{bib_id}"
-      return redirect_to bib_barnard_offsite_requests_path
+      return redirect_to bib_barnard_remote_requests_path
     end
 
-    offsite_holdings = @clio_record.barnard_offsite_holdings
-    if offsite_holdings.size == 0
-      flash[:error] = "The requested record (bib id #{bib_id}) has no Barnard offsite holdings available."
-      return redirect_to bib_barnard_offsite_requests_path
+    remote_holdings = @clio_record.barnard_remote_holdings
+    if remote_holdings.size == 0
+      flash[:error] = "The requested record (bib id #{bib_id}) has no Barnard remote holdings available."
+      return redirect_to bib_barnard_remote_requests_path
     end
 
-    if @clio_record.barnard_offsite_holdings.size == 1
-      @holding = @clio_record.barnard_offsite_holdings.first
+    if @clio_record.barnard_remote_holdings.size == 1
+      @holding = @clio_record.barnard_remote_holdings.first
       mfhd_id = @holding[:mfhd_id]
       params = { bib_id: bib_id, mfhd_id: mfhd_id }
       # clear any leftover error message, let new page figure it out.
       flash[:error] = nil
-      return redirect_to new_barnard_offsite_request_path params
+      return redirect_to new_barnard_remote_request_path params
     end
 
     # If we haven't redirected, then we'll render
@@ -65,7 +65,7 @@ class BarnardOffsiteRequestsController < ApplicationController
   end
 
 
-  # GET /offsite_requests/new
+  # GET /remote_requests/new
   # Needs to have a bib_id and mfhd_id,
   # if either is missing, bounce back to appropriate screen
   def new
@@ -74,12 +74,12 @@ class BarnardOffsiteRequestsController < ApplicationController
 
     if bib_id.blank?
       flash[:error] = "Please supply a record number"
-      return redirect_to bib_barnard_offsite_requests_path
+      return redirect_to bib_barnard_remote_requests_path
     end
     if mfhd_id.blank?
       flash[:error] = "Please specify a holding"
       params = { bib_id: bib_id }
-      return redirect_to holding_barnard_offsite_requests_path params
+      return redirect_to holding_barnard_remote_requests_path params
     end
 
     @clio_record = ClioRecord::new_from_bib_id(bib_id)
@@ -96,16 +96,16 @@ class BarnardOffsiteRequestsController < ApplicationController
       @barcode = @available_items.first[:barcode]
     end
 
-    @offsite_location_code = @holding[:location_code]
+    @remote_location_code = @holding[:location_code]
     @customer_code = @holding[:customer_code]
-    @barnard_offsite_request = BarnardOffsiteRequest.new
+    @barnard_remote_request = BarnardRemoteRequest.new
   end
 
 
   # This is the request-form-submit.
   # All it has to do is send email to Barnard staff.
   def create
-    @offsite_request_params = offsite_request_params()
+    @remote_request_params = remote_request_params()
 
     barnard_config = APP_CONFIG['barnard']
     die "Missing barnard configuration!" unless 
@@ -113,16 +113,16 @@ class BarnardOffsiteRequestsController < ApplicationController
     email = barnard_config['request_email']
 
     # Send request email to barnard library staff
-    from    = "Barnard Offsite Request Service <#{email}>"
-    to      = "Barnard Offsite Request Service <#{email}>"
-    subject = "New BearStor Request [#{@offsite_request_params[:titleIdentifier]}]"
+    from    = "Barnard Remote Request Service <#{email}>"
+    to      = "Barnard Remote Request Service <#{email}>"
+    subject = "New BearStor Request [#{@remote_request_params[:titleIdentifier]}]"
     body    = request_email_body()
     ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver_now
 
     # Send confirmation email to patron
-    from    = "Barnard Offsite Request Service <#{email}>"
+    from    = "Barnard Remote Request Service <#{email}>"
     to      = current_user.email
-    subject = "BearStor Request Confirmation [#{@offsite_request_params[:titleIdentifier]}]"
+    subject = "BearStor Request Confirmation [#{@remote_request_params[:titleIdentifier]}]"
     body    = confirmation_email_body()
     ActionMailer::Base.mail(from: from, to: to, subject: subject, body: body).deliver_now
 
@@ -130,26 +130,26 @@ class BarnardOffsiteRequestsController < ApplicationController
   end
 
 
-  # # PATCH/PUT /offsite_requests/1
-  # # PATCH/PUT /offsite_requests/1.json
+  # # PATCH/PUT /remote_requests/1
+  # # PATCH/PUT /remote_requests/1.json
   # def update
   #   # respond_to do |format|
-  #   #   if @offsite_request.update(offsite_request_params)
-  #   #     format.html { redirect_to @offsite_request, notice: 'Offsite request was successfully updated.' }
-  #   #     format.json { render :show, status: :ok, location: @offsite_request }
+  #   #   if @remote_request.update(remote_request_params)
+  #   #     format.html { redirect_to @remote_request, notice: 'Offsite request was successfully updated.' }
+  #   #     format.json { render :show, status: :ok, location: @remote_request }
   #   #   else
   #   #     format.html { render :edit }
-  #   #     format.json { render json: @offsite_request.errors, status: :unprocessable_entity }
+  #   #     format.json { render json: @remote_request.errors, status: :unprocessable_entity }
   #   #   end
   #   # end
   # end
 
-  # # DELETE /offsite_requests/1
-  # # DELETE /offsite_requests/1.json
+  # # DELETE /remote_requests/1
+  # # DELETE /remote_requests/1.json
   # def destroy
-  #   # @offsite_request.destroy
+  #   # @remote_request.destroy
   #   # respond_to do |format|
-  #   #   format.html { redirect_to offsite_requests_url, notice: 'Offsite request was successfully destroyed.' }
+  #   #   format.html { redirect_to remote_requests_url, notice: 'Offsite request was successfully destroyed.' }
   #   #   format.json { head :no_content }
   #   # end
   # end
@@ -164,8 +164,8 @@ class BarnardOffsiteRequestsController < ApplicationController
 
   # Just make sure we've got an authenticated user, with 
   # a login id and a contact email.
-  def confirm_barnard_offsite_eligibility!
-    return redirect_to(ineligible_barnard_offsite_requests_path) unless 
+  def confirm_barnard_remote_eligibility!
+    return redirect_to(ineligible_barnard_remote_requests_path) unless 
         current_user.login.present? &&
         current_user.email.present?
   end
@@ -182,14 +182,14 @@ class BarnardOffsiteRequestsController < ApplicationController
   end
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_offsite_request
-    @barnard_offsite_request = BarnardOffsiteRequest.find(params[:id])
+  def set_remote_request
+    @barnard_remote_request = BarnardRemoteRequest.find(params[:id])
   end
 
 
   # Never trust parameters from the scary internet, 
   # only allow the white list through.
-  def offsite_request_params
+  def remote_request_params
     # Fill in ALL request params here, 
     # permit some from form params,
     # merge in others from other application state
@@ -214,9 +214,9 @@ class BarnardOffsiteRequestsController < ApplicationController
     body = <<-EOT
 The following has been requested from BearStor:
 
-TITLE : #{@offsite_request_params[:titleIdentifier]}
-CALL NO : #{@offsite_request_params[:callNumber]}
-BARCODE: #{(@offsite_request_params[:itemBarcodes] || []).join(', ')}
+TITLE : #{@remote_request_params[:titleIdentifier]}
+CALL NO : #{@remote_request_params[:callNumber]}
+BARCODE: #{(@remote_request_params[:itemBarcodes] || []).join(', ')}
 
 PATRON UNI:  #{current_user.login}
 PATRON EMAIL:  #{current_user.email}
@@ -229,15 +229,15 @@ EOT
     body = <<-EOT
 You have requested the following from BearStor:
 
-TITLE : #{@offsite_request_params[:titleIdentifier]}
-CALL NO : #{@offsite_request_params[:callNumber]}
-BARCODE: #{(@offsite_request_params[:itemBarcodes] || []).join(', ')}
+TITLE : #{@remote_request_params[:titleIdentifier]}
+CALL NO : #{@remote_request_params[:callNumber]}
+BARCODE: #{(@remote_request_params[:itemBarcodes] || []).join(', ')}
 
 Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
 
-You will be contacted by email (to #{@offsite_request_params[:emailAddress]}) when the item is available.
+You will be contacted by email (to #{@remote_request_params[:emailAddress]}) when the item is available.
 
-Thank you for using Offsite collections!
+Thank you for using Remote collections!
 EOT
   end
 

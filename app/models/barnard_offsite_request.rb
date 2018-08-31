@@ -1,2 +1,0 @@
-class BarnardOffsiteRequest < ApplicationRecord
-end

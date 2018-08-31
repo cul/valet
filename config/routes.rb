@@ -26,7 +26,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :barnard_offsite_requests do
+  resources :barnard_remote_requests do
     collection do
       # different entry points to the request workflow
       get 'bib'

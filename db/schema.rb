@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema.define(version: 2018_08_01_010101) do
 
-  create_table "barnard_offsite_requests", force: :cascade do |t|
+  create_table "barnard_remote_requests", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

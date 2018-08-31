@@ -279,13 +279,13 @@ class ClioRecord
     end
   end
 
-  def barnard_offsite_holdings
+  def barnard_remote_holdings
     barnard_config = APP_CONFIG['barnard']
     die "Missing barnard configuration!" unless 
-      barnard_config.present? && barnard_config['offsite_location_code'].present?
+      barnard_config.present? && barnard_config['remote_location_code'].present?
 
     holdings.select do |holding|
-      holding[:location_code] == barnard_config['offsite_location_code']
+      holding[:location_code] == barnard_config['remote_location_code']
     end
   end
 
