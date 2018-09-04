@@ -404,7 +404,7 @@ class ClioRecord
 
   # def public_locations
   #   # basic set of public delivery locations
-  #   basic_set = ['AR', 'BL', 'UT', 'BS', 'BU', 'EA', 'GE', 'HS', 'CJ', 'GS', 'LE', 'ML', 'MR', 'CA', 'SW']
+  #   basic_set = ['AR', 'BL', 'UT', 'BS', 'BU', 'EA', 'HS', 'CJ', 'GS', 'LE', 'ML', 'MR', 'CA', 'SW']
   # 
   #   locations = {
   #     'OFF AVE'   => { default: 'AR', available: ['AR']},
@@ -419,7 +419,7 @@ class ClioRecord
   #     'OFF EAX'   => { default: 'EA', available: basic_set},
   #     'OFF ENG'   => { default: 'CA', available: basic_set},
   #     'OFF FAX'   => { default: 'AR', available: ['AR']},
-  #     'OFF GLG'   => { default: 'GE', available: basic_set},
+  #     'OFF GLG'   => { default: 'CA', available: basic_set},
   #     'OFF GLX'   => { default: 'BU', available: basic_set},
   #     'OFF GSC'   => { default: 'GS', available: basic_set},
   #     'OFF HSL'   => { default: 'HS', available: basic_set},
@@ -463,7 +463,6 @@ class ClioRecord
   #   'BU' => 'Butler Library',
   #   'EA' => 'East Asian Library',
   #   'EN' => 'Engineering Library',
-  #   'GE' => 'Geology Library',
   #   'GS' => 'Lamont-Doherty Earth Observatory',
   #   'HS' => 'Health Sciences Library',
   #   'CJ' => 'Journalism Library',

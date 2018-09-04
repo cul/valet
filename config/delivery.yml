@@ -1,12 +1,11 @@
 
 standard_delivery_locations:
   - AR
-  # - BL
+  - BL
   - UT
   - BS
   - BU
   - EA
-  # - GE
   - HS
   - CJ
   - GS
@@ -98,7 +97,6 @@ off,fax:
     -  AR
 
 off,glg:
-  # default:  GE
   default:  CA
 
 off,glx:
