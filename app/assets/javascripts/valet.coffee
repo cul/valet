@@ -15,6 +15,17 @@ $ ->
   } )
 
 
-
+# We don't want old Valet window hanging around.
+$ ->
+  # The /timeout warning page closes after about a minute
+  if window.location.href.indexOf('/timeout') > -1
+    delay = 1 * (60 * 1000)
+    setTimeout (-> window.close('/timeout') ), delay
+  # Any pop-up Valet page bounces to /timeout page after about an hour
+  else if window.opener && window.opener != window
+    delay = 60 * (60 * 1000)
+    setTimeout (-> window.location.replace('/timeout') ), delay
+  
+  
 
   
