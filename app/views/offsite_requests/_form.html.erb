@@ -43,6 +43,9 @@
       <br>The Offsite Request System cannot be used for this record.
       <br>Please locate the material in CLIO and try Borrow Direct or ILL.
     </div>
+    <div id='close_popup_button'></div>
+    <%= javascript_tag 'close_popup_button();' %>
+
   <% else %>
     <!-- Yes, there are available Offsite Items - display request form as usual -->
     <%= render 'items_form', f: f %>

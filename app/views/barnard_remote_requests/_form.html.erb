@@ -28,6 +28,9 @@
       <br>The Remote Request System cannot be used for this record.
       <br>Please locate the material in CLIO and try Borrow Direct or ILL.
     </div>
+    <div id='close_popup_button'></div>
+    <%= javascript_tag 'close_popup_button();' %>
+
   <% else %>
     <!-- Yes, there are available Remote Items - display request form as usual -->
     <%= render 'items_form', f: f %>
