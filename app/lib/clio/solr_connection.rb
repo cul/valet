@@ -39,7 +39,7 @@ module Clio
           query.present? && query.is_a?(Hash) && query.size == 1
 
       # query hash { bib_id: 1234 } becomes string "bibid:1234"
-      q = "#{query.keys.first}:#{query.values.first}"
+      q = "#{query.keys.first}:\"#{query.values.first}\""
 
       # Use the 'document' handler to fetch a specific document
       #   e.g., http://SERVER:PORT/solr/CORE/select?qt=document&id=1234
