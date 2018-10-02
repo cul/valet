@@ -362,7 +362,7 @@ class ClioRecord
     # (Illiad only wants the numeric portion, not any ocm/ocn prefix)
     openurl[:ESPNumber]  = self.oclc_number.gsub(/\D/, '')
     openurl[:sid]        = 'CLIO OPAC'
-    openurl[:notes]      = 'http://clio.columbia.edu/catalog/' + self.key
+    openurl[:notes]      = 'https://clio.columbia.edu/catalog/' + self.key
 
     openurl_string = openurl.map { |key, value|
       # puts "key=[#{key}] value=[#{value}]"
@@ -392,7 +392,7 @@ class ClioRecord
   #   if ($out->{'pub_date'})  {$date = $out->{'pub_date'}; $date =~ s/\D//g;
   #                             $open .= "loandate="   . $date . "&"};
   #   $open .= "title=" . $out->{'title'} . "&";
-  #   $open .= "sid=CLIO OPAC&notes=http://clio.columbia.edu/catalog/$bib_id&";
+  #   $open .= "sid=CLIO OPAC&notes=https://clio.columbia.edu/catalog/$bib_id&";
   # 
   # 
   # $open =~ s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;

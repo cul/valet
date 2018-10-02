@@ -30,10 +30,10 @@ class IllRequestsController < ApplicationController
 
     # If our affiliation is Law or Teacher's College, redirect outwards
     if @affiliation == 'law'
-      return redirect_to 'http://www.law.columbia.edu/library'
+      return redirect_to 'https://www.law.columbia.edu/library'
     end
     if @affiliation == 'tc'
-      return redirect_to 'http://library.tc.columbia.edu/request.php'
+      return redirect_to 'https://library.tc.columbia.edu/p/request-materials'
     end
     
     # If we already have a bib (e.g. passed in from CLIO), skip to step #3
