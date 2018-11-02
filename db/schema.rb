@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_01_010101) do
+ActiveRecord::Schema.define(version: 2018_10_01_010101) do
 
   create_table "barnard_remote_requests", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "logs", force: :cascade do |t|
+    t.text "user_agent"
+    t.text "referrer"
+    t.string "remote_ip"
+    t.string "set", null: false
+    t.text "logdata"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
