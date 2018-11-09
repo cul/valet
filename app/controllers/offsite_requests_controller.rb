@@ -278,6 +278,32 @@ class OffsiteRequestsController < ApplicationController
 
   end
 
+  # WHAT ARE ALL THESE PARAMS FOR?  
+  # HERE ARE SOME INLINE COMMENTS FROM THE HTC WIKI:
+  # https://htcrecap.atlassian.net/wiki/spaces/RTG/pages/25438542/Request+Item
+  # {
+  #   "author": "", // Author information of the bibliographic record.
+  #   "bibId": "", // Bibliographic Id of the bibliographic record.
+  #   "callNumber": "", // Call number details to ease process of retrieval.
+  #   "chapterTitle": "", // Chapter title to ease fulfillment of EDD requests.
+  #   "deliveryLocation": "PA", // Delivery location for physical retrievals.
+  #   "emailAddress": "test@example.com", // Email address of the Patron. Mandatory in case of EDD requests.
+  #   "endPage": "", // The end page for scanning in case of EDD requests. String input takes in any value.
+  #   "issue": "", // Issue details to ease fulfillment of EDD requests.
+  #   "itemBarcodes": [
+  #     "PULTST54322" // Item Barcode. Multiple values (maximum of 20) allowed separated by comma (,) as long as they belong to the same bibliographic record, have same customer code and the same availability status.
+  #   ],
+  #   "itemOwningInstitution": "PUL", // Item owning institution. Possible values are PUL, CUL or NYPL.
+  #   "patronBarcode": "45678913", // Patron Barcode.
+  #   "requestNotes": "Test Request", // Request Notes can be leveraged to enter any notes relevant to the request.
+  #   "requestType": "RETRIEVAL", // Request Type can either be 'RETRIEVAL', 'RECALL' or 'EDD'. Recall can be only done on a not available, checked out item.
+  #   "requestingInstitution": "PUL", // Requesting Institution. The institution to which the requesting patron belongs to.
+  #   "startPage": "", // The start page for scanning in case of EDD requests. String input takes in any value.
+  #   "titleIdentifier": "", // This is used to send titles to use during creation of temporary records.
+  #   "trackingId": "", // NYPL's ILS generated ID initiated on their side while placing hold used as a reference to return response in SCSB.
+  #   "username": "admin", //User with Request permission
+  #   "volume": "" // Volume information to ease fulfillment of EDD requests.
+  # }
 
   def confirmation_email_subject()
     subject = 'Offsite Request Submission Confirmation'
