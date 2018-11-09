@@ -59,35 +59,35 @@ class LogsController < ApplicationController
   end
 
   
-  # Bounce the user to a destination URL,
-  # while logging the event
-  def bounce
-    url = log_params[:url]
-    # can't redirect, go to root
-    if url.blank?
-      Rails.logger.error "LogsController#bounce() called w/out 'url' param"
-      return redirect_to root_path, flash: { error: 'No destination URL given' }
-    end
-
-    # can't log - redirect w/log record
-    set = log_params[:set]
-    if set.present?
-      # logdata is a serial
-      logdata = log_params[:logdata] || ''
-      all_data = request_data.merge(set: set, logdata: logdata)
-      begin
-        # If the database save fails, log it, continue the redirect
-        Log.create(all_data)
-      rescue => ex
-        Rails.logger.error "LogsController#bounce error: #{ex.message}"
-        Rails.logger.error all_data.inspect
-      end
-    else
-      Rails.logger.error "LogsController#bounce(#{url}) called w/out 'set' param"
-    end
-    
-    return redirect_to url
-  end
+  # # Bounce the user to a destination URL,
+  # # while logging the event
+  # def bounce
+  #   url = log_params[:url]
+  #   # can't redirect, go to root
+  #   if url.blank?
+  #     Rails.logger.error "LogsController#bounce() called w/out 'url' param"
+  #     return redirect_to root_path, flash: { error: 'No destination URL given' }
+  #   end
+  # 
+  #   # can't log - redirect w/log record
+  #   set = log_params[:set]
+  #   if set.present?
+  #     # logdata is a serial
+  #     logdata = log_params[:logdata] || ''
+  #     all_data = request_data.merge(set: set, logdata: logdata)
+  #     begin
+  #       # If the database save fails, log it, continue the redirect
+  #       Log.create(all_data)
+  #     rescue => ex
+  #       Rails.logger.error "LogsController#bounce error: #{ex.message}"
+  #       Rails.logger.error all_data.inspect
+  #     end
+  #   else
+  #     Rails.logger.error "LogsController#bounce(#{url}) called w/out 'set' param"
+  #   end
+  #   
+  #   return redirect_to url
+  # end
 
   # Display a list of available log sets
   # ('ILL', 'Scan & Deliver', etc.)
@@ -101,24 +101,10 @@ class LogsController < ApplicationController
   def log_params
     params.permit(:set, :logdata, :url, :year_month, :download, :format)
   end
-
-  # Return a hash with a set of attributes
-  # of the current request, to be added to
-  # a given log entry.
-  # What do we want to know?
-  # Referrer, Timestamp, IP, 
-  def request_data
-    data = Hash.new
-    data[:user_agent] = request.user_agent
-    # Do we want to parse user agent, and store browser & version?
-    data[:referrer]   = request.referrer
-    data[:remote_ip]  = request.remote_ip
-    return data
-  end
   
   # return array of keys of the basic request fields
   def request_keys
-    return [:created_at, :user_agent, :referrer, :remote_ip]
+    return [:created_at, :user_agent, :browser_name, :browser_version, :referrer, :remote_ip]
   end
   
   # Figure out appropriate keys for this log set by looking

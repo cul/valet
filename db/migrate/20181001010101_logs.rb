@@ -6,6 +6,8 @@ class Logs < ActiveRecord::Migration[5.2]
 
       # request data
       t.text :user_agent, null: true
+      t.string :browser_name, null: true
+      t.string :browser_version, null: true
       t.text :referrer, null: true
       t.string :remote_ip, null: true
 

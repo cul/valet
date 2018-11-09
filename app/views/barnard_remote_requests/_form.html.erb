@@ -5,7 +5,7 @@
 
   <%= hidden_field_tag(:emailAddress, current_user.email) %>
   <%= hidden_field_tag(:bibId, @clio_record.key) %>
-  <%= hidden_field_tag(:titleIdentifier, @clio_record.title) %>
+  <%= hidden_field_tag(:titleIdentifier, @clio_record.titleIdentifier) %>
   <%= hidden_field_tag(:mfhd_id, @holding[:mfhd_id]) %>
   <%= hidden_field_tag(:callNumber, @holding[:display_call_number]) %>
   

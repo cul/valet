@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   # - #create, the form-handler - logs, emails, bounces, etc.
   resources :borrowdirect,
             :recall_hold,
+            :ill,
             :docdel,
             :intercampus,
             :inprocess,

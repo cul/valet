@@ -26,4 +26,21 @@ class ApplicationController < ActionController::Base
     return after_sign_out_path
   end
 
+
+  # Return a hash with a set of attributes
+  # of the current request, to be added to
+  # a given log entry.
+  # What do we want to know?
+  # Referrer, Timestamp, IP, 
+  def request_data
+    data = Hash.new
+    data[:user_agent] = request.user_agent
+    # Also for convenience store name and version
+    data[:browser_name] = browser.name
+    data[:browser_version] = browser.version
+    data[:referrer]   = request.referrer
+    data[:remote_ip]  = request.remote_ip
+    return data
+  end
+
 end

@@ -73,6 +73,15 @@ class ClioRecord
   #   field.each {|s| print s}
 
 
+  # Hash of basic bib fields, used in logging of most request services
+  def basic_log_data
+    return {
+      bib_id:  key,
+      title:   title,
+      author:  author
+    }
+  end
+
   def key
     return @marc_record['001'].value
   end
@@ -86,27 +95,61 @@ class ClioRecord
     end
   end
 
-  def title
-    title ||= []
-    "abcfghknps".split(//).each do |subfield|
-      if @marc_record['245']
-        title << @marc_record['245'][subfield]
-      end
-    end
-    return title.compact.join(' ')
-  end
+  # def title
+  #   title ||= []
+  #   "abcfghknps".split(//).each do |subfield|
+  #     if @marc_record['245']
+  #       title << @marc_record['245'][subfield]
+  #     end
+  #   end
+  #   return title.compact.join(' ')
+  # end
+  # 
+  # def author
+  #   author ||= []
+  #   ['100', '110', '111'].each do |field|
+  #     next unless @marc_record[field]
+  #     'abcdefgjklnpqtu'.split(//).each do |subfield|
+  #       author << @marc_record[field][subfield]
+  #     end
+  #     # stop once the 1st possible field is found & processed
+  #     break
+  #   end
+  #   return author.compact.join(' ')
+  # end
 
+  def title
+    return '' unless @marc_record && @marc_record['245']
+    subfieldA = @marc_record['245']['a'] || ''
+    subfieldB = @marc_record['245']['b'] || ''
+    title = subfieldA.strip
+    title += " #{subfieldB.strip}" if subfieldB.present?
+    # return the cleaned up title
+    return trim_punctuation(title)
+  end
+  
   def author
-    author ||= []
+    author_tokens = []
     ['100', '110', '111'].each do |field|
-      next unless @marc_record[field]
-      'abcdefgjklnpqtu'.split(//).each do |subfield|
-        author << @marc_record[field][subfield]
+      # skip ahead to the first author field we find
+      next unless @marc_record[field].present?
+      # gather up a few subfields
+      'abcjq'.split(//).each do |subfield|
+        author_tokens << @marc_record[field][subfield]
       end
       # stop once the 1st possible field is found & processed
       break
     end
-    return author.compact.join(' ')
+    # combine all subfields into a string
+    author = author_tokens.compact.join(' ')
+    # return the cleaned up string
+    return trim_punctuation(author)
+  end
+  
+  # SCSB works with a "titleIdentifier", which is assumed
+  # to have the MARCish title + author in a single string
+  def titleIdentifier
+    titleIdentifier = title + ' / ' + author
   end
 
   def publisher
@@ -375,6 +418,29 @@ class ClioRecord
     return openurl_string
   end
 
+  # Trim punctuation from MARC fields
+  # (copied directly from https://github.com/traject/traject)
+  def trim_punctuation(str = shift)
+    # If something went wrong and we got a nil, just return it
+    return str unless str
+
+    # trailing: comma, slash, semicolon, colon (possibly preceded and followed by whitespace)
+    str = str.sub(/ *[ ,\/;:] *\Z/, '')
+
+    # trailing period if it is preceded by at least three letters (possibly preceded and followed by whitespace)
+    str = str.sub(/( *[[:word:]]{3,})\. *\Z/, '\1')
+
+    # single square bracket characters if they are the start and/or end
+    #   chars and there are no internal square brackets.
+    str = str.sub(/\A\[?([^\[\]]+)\]?\Z/, '\1')
+
+    # trim any leading or trailing whitespace
+    str.strip!
+
+    return str
+  end
+  
+  
 # OpenURL generation code, from /wwws/cgi/cul/forms/illiad CGI 
   # sub printout {
   # 

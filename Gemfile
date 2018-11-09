@@ -121,5 +121,6 @@ gem 'jquery-datatables-rails'
 # Send notifications when application errors occur
 gem 'exception_notification'
 
-
+# Parse User Agent into browser name, version
+gem 'browser'
 

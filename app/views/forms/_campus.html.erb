@@ -1,0 +1,20 @@
+<!-- partial to ask for the patron's campus -->
+
+<br>
+<h4>
+Please select your campus campus.
+</h4>
+<br>
+
+<%= form.radio_button(:campus, 'zcu') %>
+<%= form.label(:campus_mbuts, 'Columbia (Morningside) / Barnard / Union Theological Seminary / Lamont-Doherty Earth Observatory') %>
+<br>
+<%= form.radio_button(:campus, 'zch') %>
+<%= form.label(:campus_mcc, 'Medical Center Campus') %>
+<br>
+<%= form.radio_button(:campus, 'law') %>
+<%= form.label(:campus_law, 'Columbia Law School') %>
+<br>
+<%= form.radio_button(:campus, 'tc') %>
+<%= form.label(:campus_tc, 'Teachers College') %>
+
