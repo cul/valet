@@ -4,7 +4,7 @@
 <%= form_for(@barnard_remote_request) do |f| %>
 
   <%= hidden_field_tag(:emailAddress, current_user.email) %>
-  <%= hidden_field_tag(:bibId, @clio_record.key) %>
+  <%= hidden_field_tag(:bibId, @clio_record.id) %>
   <%= hidden_field_tag(:titleIdentifier, @clio_record.titleIdentifier) %>
   <%= hidden_field_tag(:mfhd_id, @holding[:mfhd_id]) %>
   <%= hidden_field_tag(:callNumber, @holding[:display_call_number]) %>
@@ -24,7 +24,7 @@
     <!-- No Available Remote Items - patron should not` have been sent to Valet -->
     <div class='danger-block'>
       <strong>NOTICE:</strong>
-      No available remote items for <%=@clio_record.key%>.
+      No available remote items for <%=@clio_record.id%>.
       <br>The Remote Request System cannot be used for this record.
       <br>Please locate the material in CLIO and try Borrow Direct or ILL.
     </div>

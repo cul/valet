@@ -67,9 +67,22 @@ module Clio
 
 
     # Simplify circ_status to just available/unavailable
+    # CIRC_STATUS returns:
+    # { bib_id: {
+    #     holding_id: {
+    #       item_id: {
+    #         ...
+    #         statusCode: 0/1
+    #         ...
+    #       },
+    #       next_item_id: ...
+    #     },
+    #     next_holding_id...
+    #   }
+    # }
+    # WANTED simplified flattened lookup table:
+    #   { item_id: availability, item_id: availability, ...}
     def self.get_bib_availability(id)
-      # WANTED @voyager_availability format:
-      #   { barcode: availability, barcode: availability, ...}
       availability_hash = {}
       circ_status = get_circ_status(id)
       circ_status[id].each { |holding_id, holding_details|
@@ -85,7 +98,7 @@ module Clio
     end
 
     # Called like this:
-    #   @voyager_availability = Clio::Backend.get_bib_availability(self.key) || {}
+    #   @voyager_availability = Clio::Backend.get_bib_availability(self.id) || {}
     # Discard 
       
 

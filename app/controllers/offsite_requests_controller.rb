@@ -83,7 +83,7 @@ class OffsiteRequestsController < ApplicationController
       flash[:error] = "Cannot find any record for barcode #{barcode}"
       redirect_to error_offsite_requests_path and return
     end
-    bib_id = @clio_record.key
+    bib_id = @clio_record.id
     
     offsite_holdings = @clio_record.offsite_holdings
     if offsite_holdings.size == 0

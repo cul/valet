@@ -97,10 +97,23 @@ module ValetRequestsHelper
     select_tag(:deliveryLocation, options_for_select(options_array, delivery_default))
   end
 
-  def location_label(location_code)
-    return '' unless location_code
-    location_name = LOCATIONS[location_code] || 'Offsite'
-    return "#{location_name} (#{location_code.upcase})"
+  def location_label(location_code_or_holding)
+    return '' unless location_code_or_holding
+    
+    # old logic, brought over from CGIs, uses hardcoded table
+    if location_code_or_holding.is_a? String
+      location_code = location_code_or_holding
+      location_name = LOCATIONS[location_code] || 'Offsite'
+      location_code = location_code_or_holding
+      return "#{location_name} (#{location_code.upcase})"
+    end
+    # new logic, pull location name and code out of the holding
+    if location_code_or_holding.is_a? Hash
+      holding = location_code_or_holding
+      location_name = holding[:location_display]
+      location_code = holding[:location_code]
+      return "#{location_name} (#{location_code})"
+    end
   end
 
   def holding_radio_button_label(holding)

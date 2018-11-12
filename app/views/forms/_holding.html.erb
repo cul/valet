@@ -1,0 +1,51 @@
+
+<!-- When the holding has only a single item, pre-select it.  -->
+<% item_count = holding[:items].size %>
+<% filter_barcode = (item_count == 1) ? holding[:items].first[:barcode] : nil %>
+
+<% holding[:summary_holdings].each do |summary| %>
+  <%= summary%>
+  <br>
+<% end %>
+
+<div class='items_form'>
+
+  <table class='valet_request table-hover'>
+    <tr>
+      <td colspan='5'>
+        <strong>
+          Items for 
+          call number <%= holding[:display_call_number].upcase %>,
+          location <%= location_label(holding) %>
+        </strong>
+        <% holding[:summary_holdings].each do |summary| %>
+          <%= summary%>
+          <br>
+        <% end %>
+      </td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>Vol / Part No.</td>
+      <td>Barcode</td>
+    </tr>
+
+    <% holding[:items].each do |item| %>
+      <% next unless availability = bib_record.voyager_availability[ item[:item_id] ] %>
+      <tr>
+        <td>
+          <% case availability
+             when 'Available' %>
+               <%= request_item_check_box_tag(item, filter_barcode) %>
+          <% else %>
+            OUT
+          <% end %>
+        </td>
+        <td><%= item[:enum_chron] %></td>
+        <td><%= item[:barcode] %></td>
+      <tr>
+    <% end %>
+
+  </table>
+
+</div>

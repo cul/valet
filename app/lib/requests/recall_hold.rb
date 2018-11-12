@@ -3,7 +3,7 @@ module Requests
 
     # Recall / Hold just throws the user to a Voyager page
     def build_bounce_url(bib_record)
-      return @config[:voyager_url] + bib_record.key
+      return @config[:voyager_url] + bib_record.id
     end
 
     def patron_eligible?(current_user = nil)

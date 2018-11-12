@@ -2,7 +2,7 @@
 
 <%= form_with url: ill_index_path do |form| %>
 
-  <%= form.hidden_field(:id, value: bib_record.key) %>
+  <%= form.hidden_field(:id, value: bib_record.id) %>
   <%= render 'campus', form: form %>
 
   <br>

@@ -1,10 +1,14 @@
 class FormsController < ApplicationController
 
   # The FormsController handles many different services.
-  # Initialize based on active service
+  # Initialize based on active service.
   before_action :initialize_service
-  
-  # Given a bibkey as an 'id' param,
+
+  # CUMC staff who have not completed security training
+  # may not use authenticated online request services.
+  before_action :cumc_block
+    
+  # Given a bib record id as an 'id' param,
   # Lookup bibliographic information on that bib,
   # Lookup form details in app_config,
   # Either:
@@ -95,13 +99,27 @@ class FormsController < ApplicationController
     return error("Cannot load service module for #{@config['label']}") unless service_module.present?
     self.class.send :prepend, service_module_name.constantize
   end
+  
+  # CUMC staff who have not completed security training
+  # may not use authenticated online request services.
+  def cumc_block
+    return unless current_user && current_user.affils
+    return error("Internal error - CUMC Block config missing") unless APP_CONFIG[:cumc]
+    if current_user.has_affil(APP_CONFIG[:cumc][:block_affil])
+      Rails.logger.info "CUMC block: #{current_user.login}"
+      return redirect_to APP_CONFIG[:cumc][:block_url]
+    end
+  end
 
   # HELPER METHODS
   
   # Process a 'form' service
+  # - setup service-specific local variables for the form
   # - render the service-specific form
   def build_form(bib_record = nil)
-    render @config[:service], locals: {bib_record: bib_record}
+    locals = setup_form_locals(bib_record)
+    # render @config[:service], locals: {bib_record: bib_record}
+    render @config[:service], locals: locals
   end
 
   # Process a 'bounce' service.
@@ -168,7 +186,25 @@ class FormsController < ApplicationController
   def bib_eligible?(bib_record = nil)
     return true
   end
+  
+  def setup_form_locals(bib_record = nil)
+    locals = { bib_record: bib_record }
+    return locals
+  end
 
+  
+  # COMMON LOGIC
+  def get_available_items(holding, availability)
+    return [] if holding.blank? || availability.blank?
+
+    available_items = []
+    holding[:items].each do |item|
+      available_items << item if availability[ item[:item_id] ] == 'Available'
+    end
+    return available_items
+  end
+  
+  
 end
 
 

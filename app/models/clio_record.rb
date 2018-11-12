@@ -76,13 +76,13 @@ class ClioRecord
   # Hash of basic bib fields, used in logging of most request services
   def basic_log_data
     return {
-      bib_id:  key,
+      bib_id:  id,
       title:   title,
       author:  author
     }
   end
 
-  def key
+  def id
     return @marc_record['001'].value
   end
 
@@ -93,6 +93,10 @@ class ClioRecord
     else
       return @marc_record['009'].value
     end
+  end
+  
+  def voyager?
+    owningInstitution == 'CUL' && id.match(/^\d+$/)
   end
 
   # def title
@@ -197,7 +201,7 @@ class ClioRecord
     return edition.compact.join(' ')
   end
 
-  def lc_call_number
+  def call_number
     tag050 = @marc_record['050']
     return '' unless tag050
 
@@ -205,8 +209,8 @@ class ClioRecord
     tag050.each { |subfield|
       subfield_values.push subfield.value
     }
-    lc_call_number = subfield_values.join(' ') || ''
-    return lc_call_number
+    call_number = subfield_values.join(' ') || ''
+    return call_number
   end
   
   def oclc_number
@@ -358,7 +362,7 @@ class ClioRecord
   # @voyager_availability format:
   #   { barcode: availability, barcode: availability, ...}
   def fetch_voyager_availability
-    @voyager_availability = Clio::BackendConnection.get_bib_availability(self.key) || {}
+    @voyager_availability ||= Clio::BackendConnection.get_bib_availability(self.id) || {}
   end
 
   # For each of the barcodes in this record (@barcodes),
@@ -379,7 +383,7 @@ class ClioRecord
     #   end
     # end
     # Hopefully faster?
-    tocs = Columbia::Web.get_bib_toc_links(key)
+    tocs = Columbia::Web.get_bib_toc_links(id)
     @tocs = tocs
   end
 
@@ -399,13 +403,13 @@ class ClioRecord
       openurl[:issn]       = self.issn
       openurl[:genre]      = 'article'
     end
-    openurl[:CallNumber] = self.lc_call_number
+    openurl[:CallNumber] = self.call_number
     openurl[:edition]    = self.edition
     # "External Service Provider Number"
     # (Illiad only wants the numeric portion, not any ocm/ocn prefix)
     openurl[:ESPNumber]  = self.oclc_number.gsub(/\D/, '')
     openurl[:sid]        = 'CLIO OPAC'
-    openurl[:notes]      = 'https://clio.columbia.edu/catalog/' + self.key
+    openurl[:notes]      = 'https://clio.columbia.edu/catalog/' + self.id
 
     openurl_string = openurl.map { |key, value|
       # puts "key=[#{key}] value=[#{value}]"

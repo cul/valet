@@ -1,0 +1,47 @@
+
+<h4>BearStor Confirmation</h4>
+
+<br>
+
+You have requested the following from BearStor:
+
+<br>
+<br>
+
+<strong>
+TITLE : 
+<%= bib_record.title %>
+<br>
+CALL NO : 
+<%= bib_record.call_number %>
+<br>
+BARCODE: 
+<%= (barcodes || []).join(', ') %>
+</strong>
+
+<br>
+<br>
+
+
+<br>
+Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
+<br>
+<br>
+You will be contacted by email (to 
+<strong>
+<%= patron_email %>
+</strong>
+) when the item is available.
+<br>
+<br>
+
+<br>
+Thank you for using BearStor!
+<br>
+You can now close this browser window.
+<br>
+<br>
+<div id='close_popup_button'></div>
+<%= javascript_tag 'close_popup_button();' %>
+
+

@@ -5,22 +5,22 @@
     <tbody>
       <tr>
         <td>CLIO ID:</td>
-        <td><%= @clio_record.id%></td>
+        <td><%= bib_record.id%></td>
       </tr>
       <tr>
         <td>TITLE:</td>
-        <td><%= @clio_record.title%></td>
+        <td><%= bib_record.title%></td>
       </tr>
-      <% if @clio_record.author.present? %>
+      <% if bib_record.author.present? %>
         <tr>
           <td>AUTHOR:</td>
-          <td><%= @clio_record.author%></td>
+          <td><%= bib_record.author%></td>
         </tr>
       <% end %>
-      <% if @clio_record.publisher.present? %>
+      <% if bib_record.publisher.present? %>
         <tr>
           <td>PUBLISHER:</td>
-          <td><%= @clio_record.publisher%></td>
+          <td><%= bib_record.publisher%></td>
         </tr>
       <% end %>
     </tbody>

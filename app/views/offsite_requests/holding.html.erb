@@ -7,7 +7,7 @@ Which holding of this record would you like to request?
 
 <%= form_tag(new_offsite_request_path, method: 'get') do %>
 
-  <%= hidden_field_tag(:bib_id, @clio_record.key) %>
+  <%= hidden_field_tag(:bib_id, @clio_record.id) %>
 
   <%= render 'bib_form' %>
   <%= render 'holdings_form' %>

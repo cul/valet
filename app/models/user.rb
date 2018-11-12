@@ -175,6 +175,12 @@ class User < ApplicationRecord
     # fallback, return an empty string value
     return ''
   end
+  
+  def has_affil(affil = nil)
+    return false if affil.blank?
+    return false unless self.affils
+    return affils.include?(affil)
+  end
 
   def offsite_eligible?
     return false unless affils
