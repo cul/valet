@@ -1,0 +1,9 @@
+
+<!-- Map Rails Flash types to Bootstrap 3 style colors -->
+<% flash_map = {success: 'success', notice: 'info', alert: 'warning', error: 'danger'}.with_indifferent_access %>
+
+<% [:success, :notice, :info].each do |name| %>
+  <% if flash[name] && flash[name].is_a?(String) %>
+    <%= content_tag :div, flash[name], class: "alert alert-#{flash_map[name]}" %>
+  <% end %>
+<% end %>

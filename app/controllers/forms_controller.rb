@@ -22,7 +22,7 @@ class FormsController < ApplicationController
     bib_id = params['id']
     bib_record = ClioRecord::new_from_bib_id(bib_id)
     return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
-    return error("Bib id #{bib_id} is not elible for service #{@config['label']}") unless bib_eligible?(bib_record)
+    return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless bib_eligible?(bib_record)
 
     # process as form or as direct bounce
     case @config['type']
@@ -171,8 +171,8 @@ class FormsController < ApplicationController
   #    if broken() return error("Broken!")
   # instead of multi-line if/end
   def error(message)
-    flash[:error] = message
-    return render :error
+    flash.now[:error] = message
+    return render :error, layout: 'form_error'
   end
   
   # DEFAULT METHOD IMPLEMENTATIONS
