@@ -9,7 +9,7 @@ class FormMailer < ApplicationMailer
   def bearstor_request
     @params = params
     to      = params[:staff_email]
-    from    = "Barnard Remote Request Service <#{to}>"
+    from    = "Barnard Remote Request Service <#{params[:staff_email]}>"
     title   = params[:bib_record].title
     subject = "New BearStor request [#{title}]"
     mail(to: to, from: from, subject: subject)
@@ -18,9 +18,20 @@ class FormMailer < ApplicationMailer
   # Email confirmation to Patron
   def bearstor_confirm
     to = params[:patron_email]
-    from    = "Barnard Remote Request Service <#{to}>"
+    from    = "Barnard Remote Request Service <#{params[:staff_email]}>"
     title = params[:bib_record].title
     subject = "BearStor Request Confirmation [#{title}]"
+    mail(to: to, from: from, subject: subject)
+  end
+
+  ###
+  ### PRECAT - single mail to both staff and patron
+  ###
+  def precat
+    to = params[:patron_email] + ', ' + params[:staff_email]
+    from    = "Butler Circulation <#{params[:staff_email]}>"
+    title = params[:bib_record].title
+    subject = "Precat Search_Request [#{title}]"
     mail(to: to, from: from, subject: subject)
   end
 

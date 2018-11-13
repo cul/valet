@@ -66,14 +66,17 @@ module Requests
 
 
     def get_bearstor_holdings(bib_record)
-      return [] if bib_record.blank? or bib_record.holdings.blank?
-      
       bearstor_location = APP_CONFIG[:bearstor][:location_code]
-      bearstor_holdings = []
-      bib_record.holdings.each do |holding|
-        bearstor_holdings << holding if holding[:location_code] == bearstor_location
-      end
-      return bearstor_holdings
+      return get_holdings_by_location_code(bib_record, bearstor_location)
+      
+      # return [] if bib_record.blank? or bib_record.holdings.blank?
+      # 
+      # bearstor_location = APP_CONFIG[:bearstor][:location_code]
+      # bearstor_holdings = []
+      # bib_record.holdings.each do |holding|
+      #   bearstor_holdings << holding if holding[:location_code] == bearstor_location
+      # end
+      # return bearstor_holdings
     end
 
     

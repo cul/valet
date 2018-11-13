@@ -88,7 +88,7 @@ module Clio
       circ_status[id].each { |holding_id, holding_details|
         Rails.logger.debug "holding_id=#{holding_id}"
         holding_details.each { |item_id, item_details|
-          availability = (item_details['statusCode'] == 1) ? 'Available' : 'Unavailable'
+          availability = [1,11].include?(item_details['statusCode']) ? 'Available' : 'Unavailable'
           Rails.logger.debug "item_id=#{item_id} availability=#{availability}"
           availability_hash[item_id] = availability
         }

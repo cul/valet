@@ -20,8 +20,9 @@
           <% if current_user.valet_admin? %>
             <br>
             <br>
-            <%= link_to "Valet Logs", admin_logs_path %>
+            <%= link_to "Offsite Logs", admin_logs_path %>
             <br>
+            <%= link_to "Valet Logs", logs_path %>
             <br>
             <%= recap_staff_link() %>
           <% end %>

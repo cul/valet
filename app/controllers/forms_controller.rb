@@ -194,6 +194,19 @@ class FormsController < ApplicationController
 
   
   # COMMON LOGIC
+  # Generic methods called by different service modules
+
+  def get_holdings_by_location_code(bib_record = nil, location_code = nil)
+    return [] if bib_record.blank? or bib_record.holdings.blank?
+    return [] if location_code.blank?
+
+    found_holdings = []
+    bib_record.holdings.each do |holding|
+      found_holdings << holding if holding[:location_code] == location_code
+    end
+    return found_holdings
+  end
+
   def get_available_items(holding, availability)
     return [] if holding.blank? || availability.blank?
 
