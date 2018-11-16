@@ -360,7 +360,7 @@ class ClioRecord
 
   # Fetch availability for each barcode from Voyager (via clio-backend)
   # @voyager_availability format:
-  #   { barcode: availability, barcode: availability, ...}
+  #   { item_id: availability, item_id: availability, ...}
   def fetch_voyager_availability
     @voyager_availability ||= Clio::BackendConnection.get_bib_availability(self.id) || {}
   end

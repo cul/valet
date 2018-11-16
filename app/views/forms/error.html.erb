@@ -1,6 +1,9 @@
 
-<div class="alert alert-default h4">
+<div class='h4'>
   The <%= @config[:label] %> Request system encountered an error and is unable to continue.
-  <br>
 </div>
+
+<br>
+
+<%= service_error.html_safe %>
 

@@ -2,19 +2,19 @@
 
 <br>
 <h4>
-Please select your campus campus.
+Please select your campus.
 </h4>
 <br>
 
-<%= form.radio_button(:campus, 'zcu') %>
-<%= form.label(:campus_mbuts, 'Columbia (Morningside) / Barnard / Union Theological Seminary / Lamont-Doherty Earth Observatory') %>
+<%= form.radio_button(:campus, 'mbuts', id: :campus_mbuts) %>
+<%= form.label('Columbia (Morningside) / Barnard / Union Theological Seminary / Lamont-Doherty Earth Observatory', for: :campus_mbuts) %>
 <br>
-<%= form.radio_button(:campus, 'zch') %>
-<%= form.label(:campus_mcc, 'Medical Center Campus') %>
+<%= form.radio_button(:campus, 'mcc', id: :campus_mcc) %>
+<%= form.label('Medical Center Campus', for: :campus_mcc) %>
 <br>
-<%= form.radio_button(:campus, 'law') %>
-<%= form.label(:campus_law, 'Columbia Law School') %>
+<%= form.radio_button(:campus, 'law', id: :campus_law) %>
+<%= form.label('Columbia Law School', for: :campus_law) %>
 <br>
-<%= form.radio_button(:campus, 'tc') %>
-<%= form.label(:campus_tc, 'Teachers College') %>
+<%= form.radio_button(:campus, 'tc', id: 'campus_tc') %>
+<%= form.label('Teachers College', for: :campus_tc) %>
 

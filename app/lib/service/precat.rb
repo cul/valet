@@ -1,17 +1,19 @@
-module Requests
-  module Precat
+module Service
+  class Precat < Service::Base
 
     # Are any of this bib's holdings in the precat location?
     def bib_eligible?(bib_record = nil)
       precat_holdings = get_precat_holdings(bib_record)
       return true if precat_holdings.size > 0
       
-      flash.now[:default] = '<h5>This item is not in PreCat.
+      self.error = 'This item is not in Pre-Cataloging status.
         <br><br>  Please 
+        <strong>
         <a href="http://library.columbia.edu/services/askalibrarian.html">
           ask a librarian
         </a> 
-        or ask for assistance at a service desk.</h5>'.html_safe
+        </strong>
+        or ask for assistance at a service desk.'
       return false
     end
     
@@ -29,10 +31,29 @@ module Requests
       return locals
     end
     
-    # What do we do with the results of the Precat request form?
     # - mail search details to staff, patron
-    # - redirect to confirmation page
-    def form_handler(params, bib_record)
+    def send_emails(params, bib_record, current_user)
+      precat_params = get_precat_params(params, bib_record, current_user)
+      # mail search details to staff, patron
+      FormMailer.with(precat_params).precat.deliver_now
+    end
+  
+    def get_confirm_params(params, bib_record, current_user)
+      precat_params = get_precat_params(params, bib_record, current_user)
+      confirm_params = {
+        template: '/forms/precat_confirm',
+        locals:   precat_params
+      }
+      return confirm_params
+    end
+  
+    def get_precat_holdings(bib_record)
+      precat_location = APP_CONFIG[:precat][:location_code]
+      return get_holdings_by_location_code(bib_record, precat_location)
+    end
+
+    # The same set of params gets used for emails and confirm page
+    def get_precat_params(params, bib_record, current_user)
       holding = get_precat_holdings(bib_record).first
 
       precat_params = {
@@ -43,17 +64,8 @@ module Requests
         patron_email: current_user.email,
         staff_email: APP_CONFIG[:precat][:staff_email],
       }
-      # mail search details to staff, patron
-      FormMailer.with(precat_params).precat.deliver_now
-      # redirect patron browser to confirm webpage
-      render 'precat_confirm', locals: precat_params
+      return precat_params
     end
-
-    def get_precat_holdings(bib_record)
-      precat_location = APP_CONFIG[:precat][:location_code]
-      return get_holdings_by_location_code(bib_record, precat_location)
-    end
-    
     
   end
 end

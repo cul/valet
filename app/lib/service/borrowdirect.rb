@@ -1,5 +1,5 @@
-module Requests
-  module Borrowdirect
+module Service
+  class Borrowdirect < Service::Base
 
     # Borrow Direct bounces to Relais D2D, 
     # with the following fields:
@@ -9,7 +9,7 @@ module Requests
     # https://relais.atlassian.net/wiki/spaces/ILL/pages/132579329/Using+other+discovery+tools
     # A full example is: https://bd.relaisd2d.com/?LS=COLUMBIA&PI=779287826&query=ti%3D%22Piotr%22+and+au%3D%22Sokorski%2C+Wodzimierz%22
     # 
-    def build_bounce_url(bib_record)
+    def build_service_url(params, bib_record, current_user)
       url = 'https://bd.relaisd2d.com/'
       url += '?LS=COLUMBIA'
       url += '&PI=' + current_user.barcode

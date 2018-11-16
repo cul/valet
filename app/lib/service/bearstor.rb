@@ -1,5 +1,5 @@
-module Requests
-  module Bearstor
+module Service
+  class Bearstor < Service::Base
 
     # Is the current patron allowed to use the 
     # BearStor offsite request paging service?
@@ -19,7 +19,8 @@ module Requests
       
       bearstor_holdings = get_bearstor_holdings(bib_record)
       if bearstor_holdings.size == 0
-        flash.now[:default] = "* No BearStor holdings for this record"
+        # flash.now[:default] = "* No BearStor holdings for this record"
+        self.error = "* No BearStor holdings for this record"
         return false
       end
       
@@ -43,12 +44,8 @@ module Requests
     end
 
 
-    # What do we do with the results of the BearStor request form?
-    # - mail request to staff
-    # - mail confirm to patron
-    # - redirect to confirmation page
-    def form_handler(params, bib_record)
-      bearstor_params = {
+    def send_emails(params, bib_record, current_user)
+      mail_params = {
         bib_record: bib_record, 
         barcodes:  params[:itemBarcodes],
         patron_uni: current_user.uid,
@@ -56,12 +53,48 @@ module Requests
         staff_email: APP_CONFIG[:bearstor][:staff_email]
       }
       # mail request to staff
-      FormMailer.with(bearstor_params).bearstor_request.deliver_now
+      FormMailer.with(mail_params).bearstor_request.deliver_now
       # mail confirm to patron
-      FormMailer.with(bearstor_params).bearstor_confirm.deliver_now
-      # redirect patron browser to confirm webpage
-      render 'bearstor_confirm', locals: bearstor_params
+      FormMailer.with(mail_params).bearstor_confirm.deliver_now
     end
+    
+    def get_confirm_params(params, bib_record, current_user)
+      #   # redirect patron browser to confirm webpage
+      #   render 'bearstor_confirm', locals: bearstor_params
+      confirm_locals = {
+        bib_record: bib_record, 
+        barcodes:  params[:itemBarcodes],
+        patron_uni: current_user.uid,
+        patron_email: current_user.email,
+        staff_email: APP_CONFIG[:bearstor][:staff_email]
+      }
+      confirm_params = {
+        template: '/forms/bearstor_confirm',
+        locals:   confirm_locals
+      }
+      return confirm_params
+    end
+
+
+    # # What do we do with the results of the BearStor request form?
+    # # - mail request to staff
+    # # - mail confirm to patron
+    # # - redirect to confirmation page
+    # def form_handler(params, bib_record, current_user)
+    #   bearstor_params = {
+    #     bib_record: bib_record, 
+    #     barcodes:  params[:itemBarcodes],
+    #     patron_uni: current_user.uid,
+    #     patron_email: current_user.email,
+    #     staff_email: APP_CONFIG[:bearstor][:staff_email]
+    #   }
+    #   # mail request to staff
+    #   FormMailer.with(bearstor_params).bearstor_request.deliver_now
+    #   # mail confirm to patron
+    #   FormMailer.with(bearstor_params).bearstor_confirm.deliver_now
+    #   # redirect patron browser to confirm webpage
+    #   render 'bearstor_confirm', locals: bearstor_params
+    # end
     
 
 

@@ -1,7 +1,7 @@
-module Requests
-  module Ill
+module Service
+  class Ill < Service::Base
 
-    def form_handler(params, bib_record)
+    def form_handler(params, bib_record, current_user)
       openurl = bib_record.openurl
       ezproxy_url = @config[:ezproxy_url] 
 

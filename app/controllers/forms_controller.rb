@@ -16,13 +16,13 @@ class FormsController < ApplicationController
   # - bounce directly to URL
   def show
     # validate user
-    return error("Current user is not elible for service #{@config['label']}") unless patron_eligible?(current_user)
+    return error("Current user is not elible for service #{@config['label']}") unless @service.patron_eligible?(current_user)
     
     # validate bib record
     bib_id = params['id']
     bib_record = ClioRecord::new_from_bib_id(bib_id)
     return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
-    return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless bib_eligible?(bib_record)
+    return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless @service.bib_eligible?(bib_record)
 
     # process as form or as direct bounce
     case @config['type']
@@ -38,23 +38,36 @@ class FormsController < ApplicationController
   end
   
   # form processor
+  # we've collected data from the patron, 
+  # now create the service request.
+  # (which means either redirecting or emailing)
+  # possibly land on confirm page.
   def create
     bib_id = params['id']
     bib_record = ClioRecord::new_from_bib_id(bib_id)
-
-    # How to best hand-off to service-specific 
-    # form processing details?
-    # What are common form-processing steps?
-    # - sending emails
-    # - redirecting the browser
-    # - writing to a transaction file? (not-on-shelf)
 
     # All should log, so that should happen here.
     # (should add service-specific fields)
     log(bib_record, current_user)
 
-    # For now, just send it to the service module
-    form_handler(params, bib_record)
+    # Service may want to send emails.
+    @service.send_emails(params, bib_record, current_user)
+
+    # Now that we have user-input params,
+    # the service may want to redirect to an external URL
+    redirect_url = @service.build_service_url(params, bib_record, current_user)
+    return redirect_to redirect_url if redirect_url.present?
+    
+    # Service may want to render a confirm page
+    confirm_params = @service.get_confirm_params(params, bib_record, current_user)
+    return render(confirm_params) if confirm_params.present?
+    
+    # If the service didn't render or redirect??
+    return error("Service #{@config.service} ")
+
+    # # For now, just send it to the service module,
+    # # with the most commonly used args - the bib and the user
+    # @service.form_handler(params, bib_record, current_user)
   end
 
   private
@@ -65,8 +78,9 @@ class FormsController < ApplicationController
   def initialize_service
     service = determine_service
     load_service_config(service)
-    load_service_module(service)
+    # load_service_module(service)
     authenticate_user! if @config[:authenticate]
+    instantiate_service_object(service)
   end
 
   # Original path is something like:  /docdel/123
@@ -88,16 +102,24 @@ class FormsController < ApplicationController
     return error("Can' find configuration for: #{service}") unless @config.present?
   end
     
-  # Dynamically prepend the module methods for the active service
-  # so that calling the un-scoped method names, e.g.
-  #   build_bounce_url()
-  # will call the build_bounce_url() method of the active service.
-  def load_service_module(service)
-    service_module_name = "Requests::#{service.camelize}"
-    Rails.logger.debug "self.class prepend #{service_module_name}"
-    service_module = service_module_name.constantize rescue nil
-    return error("Cannot load service module for #{@config['label']}") unless service_module.present?
-    self.class.send :prepend, service_module_name.constantize
+  # # Dynamically prepend the module methods for the active service
+  # # so that calling the un-scoped method names, e.g.
+  # #   build_service_url()
+  # # will call the build_service_url() method of the active service.
+  # def load_service_module(service)
+  #   service_module_name = "Service::#{service.camelize}"
+  #   Rails.logger.debug "self.class prepend #{service_module_name}"
+  #   service_module = service_module_name.constantize rescue nil
+  #   return error("Cannot load service module for #{@config['label']}") unless service_module.present?
+  #   self.class.send :prepend, service_module_name.constantize
+  # end
+
+  def instantiate_service_object(service)
+    service_class_name = "Service::#{service.camelize}"
+    Rails.logger.debug "instatiating class #{service_class_name}"
+    service_class_instance = service_class_name.constantize rescue nil
+    return error("Cannot constantize #{service_class_name}") if service_class_instance.nil?
+    @service = service_class_instance.new
   end
   
   # CUMC staff who have not completed security training
@@ -117,7 +139,7 @@ class FormsController < ApplicationController
   # - setup service-specific local variables for the form
   # - render the service-specific form
   def build_form(bib_record = nil)
-    locals = setup_form_locals(bib_record)
+    locals = @service.setup_form_locals(bib_record)
     # render @config[:service], locals: {bib_record: bib_record}
     render @config[:service], locals: locals
   end
@@ -127,7 +149,7 @@ class FormsController < ApplicationController
   # - log
   # - redirect the user
   def bounce(bib_record = nil)
-    bounce_url = build_bounce_url(bib_record)
+    bounce_url = @service.build_service_url(params, bib_record, current_user)
     if bounce_url.present?
       log(bib_record, current_user)
       Rails.logger.debug "bounce() redirecting to: #{bounce_url}"
@@ -172,50 +194,10 @@ class FormsController < ApplicationController
   # instead of multi-line if/end
   def error(message)
     flash.now[:error] = message
-    return render :error, layout: 'form_error'
+    service_error = @service.error rescue ''
+    return render :error, locals: {service_error: service_error}
   end
   
-  # DEFAULT METHOD IMPLEMENTATIONS
-  # They may be overridden in service-specific modules.
-
-  def patron_eligible?(current_user = nil)
-    Rails.logger.debug "patron_eligible? - DEFAULT"
-    return true
-  end
-  
-  def bib_eligible?(bib_record = nil)
-    return true
-  end
-  
-  def setup_form_locals(bib_record = nil)
-    locals = { bib_record: bib_record }
-    return locals
-  end
-
-  
-  # COMMON LOGIC
-  # Generic methods called by different service modules
-
-  def get_holdings_by_location_code(bib_record = nil, location_code = nil)
-    return [] if bib_record.blank? or bib_record.holdings.blank?
-    return [] if location_code.blank?
-
-    found_holdings = []
-    bib_record.holdings.each do |holding|
-      found_holdings << holding if holding[:location_code] == location_code
-    end
-    return found_holdings
-  end
-
-  def get_available_items(holding, availability)
-    return [] if holding.blank? || availability.blank?
-
-    available_items = []
-    holding[:items].each do |item|
-      available_items << item if availability[ item[:item_id] ] == 'Available'
-    end
-    return available_items
-  end
   
   
 end
