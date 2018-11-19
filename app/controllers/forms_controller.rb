@@ -1,5 +1,5 @@
-class FormsController < ApplicationController
 
+class FormsController < ApplicationController
   # The FormsController handles many different services.
   # Initialize based on active service.
   before_action :initialize_service

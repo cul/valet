@@ -49,6 +49,7 @@ group :development, :test do
 
   # Testing
   gem 'rspec-rails'
+  gem 'factory_bot'
 
 end
 
@@ -98,6 +99,9 @@ gem 'rsolr'
 
 # Parse the MARC data structure of our catalog records
 gem 'marc'
+
+# Normalization of ISBN (10 and 13), ISSN, and LCCN
+gem 'library_stdnums'
 
 # Use Twitter Bootstrap for styling
 gem 'bootstrap-sass'

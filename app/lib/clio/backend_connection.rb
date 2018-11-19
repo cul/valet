@@ -57,7 +57,7 @@ module Clio
       end
 
       if backend_results.nil? or backend_results.empty?
-        logger.error "Clio::BackendConnection#circ_status URL: #{backend_url} nothing returned"
+        Rails.logger.error "Clio::BackendConnection#circ_status URL: #{backend_url} nothing returned"
         return nil
       end
 

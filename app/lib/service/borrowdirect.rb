@@ -7,7 +7,7 @@ module Service
     # PI - Patron Identifier (Voyager Barcode)
     # query - query by isbn, issn, or title/author, see:
     # https://relais.atlassian.net/wiki/spaces/ILL/pages/132579329/Using+other+discovery+tools
-    # A full example is: https://bd.relaisd2d.com/?LS=COLUMBIA&PI=779287826&query=ti%3D%22Piotr%22+and+au%3D%22Sokorski%2C+Wodzimierz%22
+    # A full example is: https://bd.relaisd2d.com/?LS=COLUMBIA&PI=123456789&query=ti%3D%22Piotr%22+and+au%3D%22Sokorski%2C+Wodzimierz%22
     # 
     def build_service_url(params, bib_record, current_user)
       url = 'https://bd.relaisd2d.com/'
@@ -20,9 +20,9 @@ module Service
     def build_query(bib_record)
       query = ''
       if bib_record.issn.present?
-        query = 'issn=' . bib_record.issn
+        query = 'issn=' + bib_record.issn.first
       elsif bib_record.isbn.present?
-        query = 'isbn=' . bib_record.isbn
+        query = 'isbn=' + bib_record.isbn.first
       else
         query = 'ti=' + bib_record.title
         if bib_record.author.present?

@@ -225,14 +225,24 @@ class ClioRecord
     }
   end
 
+  # Bibs can have multiple ISBNs for different formats,
+  # and 020$a can have ISBN together with notes "123 (paperback)"
   def isbn
-    isbn = @marc_record.fields('020').map { |field| field['a'] }
-    return isbn.join(' ')
+    isbns = @marc_record.fields('020').map { |field| 
+      StdNum::ISBN.normalize(field['a'])
+    }
+    return isbns.compact
   end
 
   def issn
-    issn = @marc_record.fields('022').map { |field| field['a'] }
-    return issn.join(' ')
+    issns = @marc_record.fields('022').map { |field| 
+      StdNum::ISSN.normalize(field['a'])
+    }
+    # StdNum module returns digits only.
+    # Map to hyphenated form (NNNN-NNNN)
+    issns.compact.map { |digits|
+      digits[0..3] + '-' + digits[4..7]
+    }
   end
 
   def populate_owningInstitution
