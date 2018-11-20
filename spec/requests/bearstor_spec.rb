@@ -4,14 +4,14 @@ RSpec.describe "BearStor Request Service" do
 
   it "bearstor request renders form" do
     sign_in FactoryBot.create(:user)
-    get bearstor_path('10810175')
+    get bearstor_path('5060332')
     expect(response.body).to include("BearStor Request")
   end
 
   it "bearstor form submission renders confirm and sends email" do
     user = FactoryBot.create(:user)
     sign_in user
-    params = { id: '10810175', barcode: '0071242201'}
+    params = { id: '5060332', barcode: '0036014419'}
     post bearstor_index_path, params: params
 
     # confirm page

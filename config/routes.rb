@@ -60,17 +60,17 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :barnard_remote_requests do
-    collection do
-      # different entry points to the request workflow
-      get 'bib'
-      get 'holding'
-
-      # exception conditions
-      get 'ineligible'
-      get 'error'
-    end
-  end
+  # resources :barnard_remote_requests do
+  #   collection do
+  #     # different entry points to the request workflow
+  #     get 'bib'
+  #     get 'holding'
+  # 
+  #     # exception conditions
+  #     get 'ineligible'
+  #     get 'error'
+  #   end
+  # end
 
 
   # special admin pages
