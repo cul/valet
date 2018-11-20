@@ -7,6 +7,9 @@
 # Ignore bundler config.
 /.bundle
 
+# rspec last-run stats
+/spec/examples.txt
+
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
