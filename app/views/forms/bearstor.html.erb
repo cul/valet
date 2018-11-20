@@ -13,7 +13,7 @@
 
   <!-- what to collect from the patron -->
   <% bearstor_holdings.each do |holding| %>
-    <%= render 'holding', bib_record: bib_record, holding: holding %>
+    <%= render 'holding', bib_record: bib_record, holding: holding, filter_barcode: filter_barcode %>
   <% end %>
 
   <br>

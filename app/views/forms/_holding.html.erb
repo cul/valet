@@ -1,8 +1,4 @@
 
-<!-- When the holding has only a single item, pre-select it.  -->
-<% item_count = holding[:items].size %>
-<% filter_barcode = (item_count == 1) ? holding[:items].first[:barcode] : nil %>
-
 <% holding[:summary_holdings].each do |summary| %>
   <%= summary%>
   <br>

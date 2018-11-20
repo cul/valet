@@ -43,12 +43,16 @@ module Service
       return found_holdings
     end
 
+    # Accept either a single holding or an array of holdings,
+    # return an array of all available items within the holding(s).
     def get_available_items(holding, availability)
       return [] if holding.blank? || availability.blank?
 
       available_items = []
-      holding[:items].each do |item|
-        available_items << item if availability[ item[:item_id] ] == 'Available'
+      Array.wrap(holding).each do |each_holding|
+        each_holding[:items].each do |item|
+          available_items << item if availability[ item[:item_id] ] == 'Available'
+        end
       end
       return available_items
     end

@@ -34,10 +34,17 @@ module Service
 
 
     def setup_form_locals(bib_record)
+      availability ||= bib_record.fetch_voyager_availability
       bearstor_holdings = get_bearstor_holdings(bib_record)
+      available_bearstor_items = get_available_items(bearstor_holdings, availability)
+      filter_barcode = nil
+      if available_bearstor_items.count == 1
+        filter_barcode = available_bearstor_items.first[:barcode]
+      end
       locals = { 
         bib_record: bib_record,
-        bearstor_holdings: bearstor_holdings
+        bearstor_holdings: bearstor_holdings,
+        filter_barcode: filter_barcode,
       }
       return locals
     end
@@ -74,43 +81,10 @@ module Service
       return confirm_params
     end
 
-
-    # # What do we do with the results of the BearStor request form?
-    # # - mail request to staff
-    # # - mail confirm to patron
-    # # - redirect to confirmation page
-    # def form_handler(params, bib_record, current_user)
-    #   bearstor_params = {
-    #     bib_record: bib_record, 
-    #     barcodes:  params[:itemBarcodes],
-    #     patron_uni: current_user.uid,
-    #     patron_email: current_user.email,
-    #     staff_email: APP_CONFIG[:bearstor][:staff_email]
-    #   }
-    #   # mail request to staff
-    #   FormMailer.with(bearstor_params).bearstor_request.deliver_now
-    #   # mail confirm to patron
-    #   FormMailer.with(bearstor_params).bearstor_confirm.deliver_now
-    #   # redirect patron browser to confirm webpage
-    #   render 'bearstor_confirm', locals: bearstor_params
-    # end
-    
-
-
     def get_bearstor_holdings(bib_record)
       bearstor_location = APP_CONFIG[:bearstor][:location_code]
       return get_holdings_by_location_code(bib_record, bearstor_location)
-      
-      # return [] if bib_record.blank? or bib_record.holdings.blank?
-      # 
-      # bearstor_location = APP_CONFIG[:bearstor][:location_code]
-      # bearstor_holdings = []
-      # bib_record.holdings.each do |holding|
-      #   bearstor_holdings << holding if holding[:location_code] == bearstor_location
-      # end
-      # return bearstor_holdings
     end
-
     
   end
 end
