@@ -138,7 +138,7 @@ class ClioRecord
       # skip ahead to the first author field we find
       next unless @marc_record[field].present?
       # gather up a few subfields
-      'abcjq'.split(//).each do |subfield|
+      'abcj'.split(//).each do |subfield|
         author_tokens << @marc_record[field][subfield]
       end
       # stop once the 1st possible field is found & processed
@@ -333,6 +333,14 @@ class ClioRecord
   def offsite_holdings
     holdings.select do |holding|
       LOCATIONS['offsite_locations'].include? holding[:location_code]
+    end
+  end
+
+  # Sometimes we want to only know what's ON-campus
+  # (e.g., intercampus-delivery service)
+  def onsite_holdings
+    holdings.select do |holding|
+      ! LOCATIONS['offsite_locations'].include? holding[:location_code]
     end
   end
 

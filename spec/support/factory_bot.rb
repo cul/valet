@@ -10,7 +10,7 @@ FactoryBot.define do
     uid { "jdoe" }
     first_name { "John" }
     last_name  { "Doe" }
-    email { "johndoe@example.com" }
+    email { "jdoe@columbia.edu" }
     barcode { "123456789" }
   end
 

@@ -24,9 +24,9 @@ module Service
       elsif bib_record.isbn.present?
         query = 'isbn=' + bib_record.isbn.first
       else
-        query = 'ti=' + bib_record.title
+        query = 'ti="' + bib_record.title + '"'
         if bib_record.author.present?
-          query += ' and au=' + bib_record.author
+          query += ' and au="' + bib_record.author + '"'
         end
       end
       return relais_escape(query)

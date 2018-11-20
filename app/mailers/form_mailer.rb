@@ -31,7 +31,7 @@ class FormMailer < ApplicationMailer
     to = params[:patron_email] + ', ' + params[:staff_email]
     from    = "Butler Circulation <#{params[:staff_email]}>"
     title = params[:bib_record].title
-    subject = "Precat Search_Request [#{title}]"
+    subject = "Precat Search Request [#{title}]"
     mail(to: to, from: from, subject: subject)
   end
 

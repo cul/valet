@@ -10,17 +10,16 @@ module Service
 
     # May this bib be requested from Bearstor?
     def bib_eligible?(bib_record = nil)
-      # Only Voyager records
-      return false unless bib_record.voyager?
-
       # Only records with bearstor holdings
       # which include an available item
       availability ||= bib_record.fetch_voyager_availability
       
       bearstor_holdings = get_bearstor_holdings(bib_record)
       if bearstor_holdings.size == 0
-        # flash.now[:default] = "* No BearStor holdings for this record"
-        self.error = "* No BearStor holdings for this record"
+        self.error = "This item has no BearStor holdings.
+        <br><br>
+        Only items stored in Barnard's remote storage facility
+        may be requested via BeatStor."
         return false
       end
       

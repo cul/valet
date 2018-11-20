@@ -77,6 +77,7 @@ class FormsController < ApplicationController
   # called in before_action
   def initialize_service
     service = determine_service
+    return error("Unable to determine service!") unless service
     load_service_config(service)
     # load_service_module(service)
     authenticate_user! if @config[:authenticate]
@@ -99,7 +100,7 @@ class FormsController < ApplicationController
     @config = APP_CONFIG[service]
     # store the service key within the config hash
     @config[:service] = service
-    return error("Can' find configuration for: #{service}") unless @config.present?
+    return error("Can't find configuration for: #{service}") unless @config.present?
   end
     
   # # Dynamically prepend the module methods for the active service

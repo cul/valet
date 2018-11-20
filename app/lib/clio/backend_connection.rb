@@ -85,6 +85,7 @@ module Clio
     def self.get_bib_availability(id)
       availability_hash = {}
       circ_status = get_circ_status(id)
+      return {} unless circ_status.present?
       circ_status[id].each { |holding_id, holding_details|
         Rails.logger.debug "holding_id=#{holding_id}"
         holding_details.each { |item_id, item_details|

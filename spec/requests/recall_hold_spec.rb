@@ -17,9 +17,8 @@ RSpec.describe "Recall / Hold Request Service" do
   end
 
   it "renders error page for non-existant item" do
-    # Pick a bib that's extremely unlikely to be circulating
-    bib = '60'
-    get recall_hold_url(bib)
+    # CLIO has no bib id 60
+    get recall_hold_url('60')
     expect(response.body).to include("Cannot find bib record")
   end
 
