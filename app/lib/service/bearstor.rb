@@ -16,19 +16,21 @@ module Service
       
       bearstor_holdings = get_bearstor_holdings(bib_record)
       if bearstor_holdings.size == 0
-        self.error = "This item has no BearStor holdings.
+        self.error = "This record has no BearStor holdings.
         <br><br>
         Only items stored in Barnard's remote storage facility
         may be requested via BeatStor."
         return false
       end
       
-      bearstor_holdings.each do |holding|
-        available_items = get_available_items(holding, availability)
-        return true if available_items.size > 0
-      end
+      available_items = get_available_items(bearstor_holdings, availability)
+      return true if available_items.size > 0
 
-      flash.now[:default] = "* No available BearStor items for this record"
+      self.error = "This record has no available BearStor items.
+      <br><br>
+      All items for this record are either checked our or 
+      otherwise unavailable."
+
       return false
     end
 
