@@ -21,7 +21,6 @@ module Valet
     # the framework and any gems in your application.
 
     # https://mattbrictson.com/dynamic-rails-error-pages
-    config.exceptions_app = self.routes
-
+    config.exceptions_app = routes
   end
 end

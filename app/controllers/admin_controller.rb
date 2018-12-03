@@ -1,5 +1,4 @@
 class AdminController < ApplicationController
-
   before_action :authenticate_user!
 
   layout 'admin'
@@ -21,7 +20,7 @@ class AdminController < ApplicationController
     #   send_file(log_file)
     #   return
     # end
-    # 
+    #
   end
 
   def log_file
@@ -42,7 +41,7 @@ class AdminController < ApplicationController
 
       line.split('|').each do |field|
         # gather headers only when working on first row
-        header = '' if @rows.size == 0
+        header = '' if @rows.size.zero?
         if (match = field.match(/(\w+)=(.*)/))
           # If this field is key=value
           header, value = match.captures
@@ -51,18 +50,16 @@ class AdminController < ApplicationController
           header = ''
           value = field
         end
-        
+
         # Some fields are uninteresting, and don't need to be displayed
         next if header == 'requestingInstitution'
-        
+
         row.push(value)
         # gather headers only when working on first row
-        @headers.push(header) if @rows.size == 0
+        @headers.push(header) if @rows.size.zero?
       end
-      
+
       @rows.push(row)
     end
-
   end
-
 end

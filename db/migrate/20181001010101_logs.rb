@@ -1,9 +1,6 @@
 class Logs < ActiveRecord::Migration[5.2]
-
   def change
-
     create_table :logs do |t|
-
       # request data
       t.text :user_agent, null: true
       t.string :browser_name, null: true
@@ -16,10 +13,6 @@ class Logs < ActiveRecord::Migration[5.2]
       t.text :logdata, null: true
 
       t.timestamps null: false
-
     end
-
   end
-
 end
-

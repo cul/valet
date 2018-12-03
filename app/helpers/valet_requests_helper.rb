@@ -1,9 +1,8 @@
 module ValetRequestsHelper
-
   # shortcuts used in several methods
-  WWW  = 'http://www.columbia.edu'
-  CGI  = 'http://www.columbia.edu/cgi-bin'
-  LWEB = 'http://library.columbia.edu'
+  WWW  = 'http://www.columbia.edu'.freeze
+  CGI  = 'http://www.columbia.edu/cgi-bin'.freeze
+  LWEB = 'http://library.columbia.edu'.freeze
 
   def toc_link(clio_record = nil, barcode = nil)
     return '' unless clio_record.present? &&
@@ -67,11 +66,11 @@ module ValetRequestsHelper
   def get_delivery_config(code)
     delivery_config = DELIVERY[code]
 
-    # If there are no specific delivery rules defined for 
+    # If there are no specific delivery rules defined for
     # this offsite location, treat it as if it were 'OFF GLX'
     delivery_config = DELIVERY['off,glx'] if delivery_config.blank?
 
-    return delivery_config
+    delivery_config
   end
 
   # offsite_location_code is the location code of the holding
@@ -91,7 +90,7 @@ module ValetRequestsHelper
     delivery_default ||= get_delivery_default(offsite_location_code)
 
     options_array = delivery_options.map do |delivery_location_code|
-      [LOCATIONS[delivery_location_code], delivery_location_code ]
+      [LOCATIONS[delivery_location_code], delivery_location_code]
     end
 
     select_tag(:deliveryLocation, options_for_select(options_array, delivery_default))
@@ -99,7 +98,7 @@ module ValetRequestsHelper
 
   def location_label(location_code_or_holding)
     return '' unless location_code_or_holding
-    
+
     # old logic, brought over from CGIs, uses hardcoded table
     if location_code_or_holding.is_a? String
       location_code = location_code_or_holding
@@ -122,7 +121,7 @@ module ValetRequestsHelper
     label = 'Call number ' + holding[:display_call_number].upcase +
             ', location ' + location_label(holding[:location_code])
 
-    return label_tag(radio_button_id, label)
+    label_tag(radio_button_id, label)
   end
 
   def use_restriction_note(holding, item)
@@ -131,7 +130,7 @@ module ValetRequestsHelper
 
     # UT Missionary Research Library is very special,
     # they get their very own message.
-    nonCircLocations = [ 'off,utmrl' ]
+    nonCircLocations = ['off,utmrl']
     if nonCircLocations.include?(holding[:location_code])
       return 'In library use only.'
     end
@@ -139,16 +138,16 @@ module ValetRequestsHelper
     return '' if item[:use_restriction].blank?
 
     # Return special language for fragile material.
-    if item[:use_restriction].upcase == 'FRGL'
+    if item[:use_restriction].casecmp('FRGL').zero?
       return 'In library use only. "Item to Library" delivery only.'
     end
 
     # We need to show Use Restrictions from partners.
     # But Columbia uses staff-only codes ("TIED", "ENVE") which we don't
     # want to show to patrons.
-    
+
     # Explicitly suppress Columbia codes, but show any other note verbatim
-    return '' if ['TIED','ENVE'].include?(item[:use_restriction])
+    return '' if %w(TIED ENVE).include?(item[:use_restriction])
 
     item[:use_restriction]
   end
@@ -167,16 +166,13 @@ module ValetRequestsHelper
 
     # Setup data attributes
     options = item_data_hash(item)
-    
-    # Checkbox state immutable if barcode filter is active
-    if barcode_filter.present?
-      options.merge!( { onclick: 'return false;' } )
-    end
 
-    return check_box_tag("itemBarcodes[]", item[:barcode], checked_state, options)
+    # Checkbox state immutable if barcode filter is active
+    options[:onclick] = 'return false;' if barcode_filter.present?
+
+    check_box_tag('itemBarcodes[]', item[:barcode], checked_state, options)
   end
-    
-    
+
   # Include extra attributes with the item barcode checkboxes via html data attribute
   def item_data_hash(item)
     datahash = {}
@@ -187,10 +183,9 @@ module ValetRequestsHelper
     end
 
     # If we found any data elements, return a data hash
-    return { data: datahash } if datahash.size > 0
-    
-    # Otherwise, return nothing
-    return {}
-  end
+    return { data: datahash } unless datahash.empty?
 
+    # Otherwise, return nothing
+    {}
+  end
 end

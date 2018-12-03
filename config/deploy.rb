@@ -53,7 +53,6 @@ set :passenger_restart_with_touch, true
 set :rvm_ruby_version, 'valet'
 
 namespace :deploy do
-
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
       # Here we can do anything such as:
@@ -62,5 +61,4 @@ namespace :deploy do
       # end
     end
   end
-
 end

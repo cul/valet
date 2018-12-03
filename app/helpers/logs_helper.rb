@@ -1,8 +1,7 @@
 module LogsHelper
-  
   def get_logdata_field(logdata, field)
     return '' unless logdata.present? && field.present?
-    
+
     begin
       logdata = JSON.parse(logdata)
       return logdata[field]
@@ -11,24 +10,23 @@ module LogsHelper
     end
 
     # failed to parse field from data
-    return ''
+    ''
   end
-  
+
   # given text, return text plus glyph, wrapped in parentheses
   # input:   'Foo'
   # output:  '( Foo v )'
   def download_label(text = nil)
     return "( #{text} #{download_glyph}".html_safe + ' )' unless text.nil?
-    return '( download csv '.html_safe + download_glyph + ')'
+    '( download csv '.html_safe + download_glyph + ')'
   end
-  
+
   def download_glyph
     # https://getbootstrap.com/docs/3.3/components/#glyphicons-glyphs
     # which download glyph?
     #   glyphicon glyphicon-download
-    # or 
+    # or
     #   glyphicon glyphicon-download-alt
-    return '<span class="glyphicon glyphicon-download-alt"></span>'.html_safe
+    '<span class="glyphicon glyphicon-download-alt"></span>'.html_safe
   end
-
 end

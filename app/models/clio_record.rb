@@ -1,6 +1,6 @@
 # Our CLIO Record class is primarily a MARC::Record container,
 # with a few convenience methods specific to this application.
-# 
+#
 # It is not a Blacklight Document.
 class ClioRecord
   attr_reader :marc_record, :holdings, :barcodes,
@@ -11,11 +11,11 @@ class ClioRecord
   def initialize(marc_record = nil)
     @marc_record = marc_record
 
-    # TODO - do this better
-    self.populate_holdings
-    self.populate_owningInstitution
-    self.populate_barcodes
-    self.fetch_tocs
+    # TODO: - do this better
+    populate_holdings
+    populate_owningInstitution
+    populate_barcodes
+    fetch_tocs
 
     # self.fetch_locations
     # self.fetch_availabilty
@@ -25,7 +25,7 @@ class ClioRecord
 
   def self.new_from_bib_id(bib_id = nil)
     if bib_id.blank?
-      Rails.logger.error "ClioRecord::new_from_bib_id() missing bib_id!"
+      Rails.logger.error 'ClioRecord::new_from_bib_id() missing bib_id!'
       return nil
     end
     query = { id: bib_id }
@@ -34,7 +34,7 @@ class ClioRecord
 
   def self.new_from_barcode(barcode = nil)
     if barcode.blank?
-      Rails.logger.error "ClioRecord::new_from_barcode() missing barcode!"
+      Rails.logger.error 'ClioRecord::new_from_barcode() missing barcode!'
       return nil
     end
     query = { barcode_txt: barcode }
@@ -43,23 +43,23 @@ class ClioRecord
 
   def self.new_from_query(query = nil)
     if query.blank?
-      Rails.logger.error "ClioRecord::new_from_query() missing query!"
+      Rails.logger.error 'ClioRecord::new_from_query() missing query!'
       return nil
     end
 
-    solr_connection = Clio::SolrConnection.new()
-    raise "Clio::SolrConnection failed!" unless solr_connection
+    solr_connection = Clio::SolrConnection.new
+    raise 'Clio::SolrConnection failed!' unless solr_connection
 
     marcxml = solr_connection.retrieve_marcxml_by_query(query)
     if marcxml.blank?
-      Rails.logger.error "ClioRecord::new_from_bib_id() marcxml nil!"
+      Rails.logger.error 'ClioRecord::new_from_bib_id() marcxml nil!'
       return nil
     end
 
     reader = MARC::XMLReader.new(StringIO.new(marcxml))
     marc_record = reader.entries[0]
     if marc_record.blank?
-      Rails.logger.error "ClioRecord::new_from_bib_id() marc_record nil!"
+      Rails.logger.error 'ClioRecord::new_from_bib_id() marc_record nil!'
       return nil
     end
 
@@ -72,10 +72,9 @@ class ClioRecord
   # You can iterate through the subfields in a Field:
   #   field.each {|s| print s}
 
-
   # Hash of basic bib fields, used in logging of most request services
   def basic_log_data
-    return {
+    {
       bib_id:  id,
       title:   title,
       author:  author
@@ -83,7 +82,7 @@ class ClioRecord
   end
 
   def id
-    return @marc_record['001'].value
+    @marc_record['001'].value
   end
 
   def owningInstitutionBibId
@@ -94,7 +93,7 @@ class ClioRecord
       return @marc_record['009'].value
     end
   end
-  
+
   def voyager?
     owningInstitution == 'CUL' && id.match(/^\d+$/)
   end
@@ -108,7 +107,7 @@ class ClioRecord
   #   end
   #   return title.compact.join(' ')
   # end
-  # 
+  #
   # def author
   #   author ||= []
   #   ['100', '110', '111'].each do |field|
@@ -129,12 +128,12 @@ class ClioRecord
     title = subfieldA.strip
     title += " #{subfieldB.strip}" if subfieldB.present?
     # return the cleaned up title
-    return trim_punctuation(title)
+    trim_punctuation(title)
   end
-  
+
   def author
     author_tokens = []
-    ['100', '110', '111'].each do |field|
+    %w(100 110 111).each do |field|
       # skip ahead to the first author field we find
       next unless @marc_record[field].present?
       # gather up a few subfields
@@ -147,19 +146,19 @@ class ClioRecord
     # combine all subfields into a string
     author = author_tokens.compact.join(' ')
     # return the cleaned up string
-    return trim_punctuation(author)
+    trim_punctuation(author)
   end
-  
+
   # SCSB works with a "titleIdentifier", which is assumed
   # to have the MARCish title + author in a single string
   def titleIdentifier
     titleIdentifier = title + ' / ' + author
-    return titleIdentifier
+    titleIdentifier
   end
 
   def publisher
     publisher ||= []
-    ['260', '264'].each do |field|
+    %w(260 264).each do |field|
       next unless @marc_record[field]
       'abcefg3'.split(//).each do |subfield|
         publisher << @marc_record[field][subfield]
@@ -167,84 +166,82 @@ class ClioRecord
       # stop once the 1st possible field is found & processed
       break
     end
-    return publisher.compact.join(' ')
+    publisher.compact.join(' ')
   end
 
   def pub_field
     pub_field = @marc_record['260'] || @marc_record['264'] || nil
-    return pub_field
+    pub_field
   end
 
   def pub_place
     return '' unless (pub_field = self.pub_field)
     return '' unless (pub_place = pub_field['a'])
-    return pub_place.sub(/\s*[:;,]$/, '')
+    pub_place.sub(/\s*[:;,]$/, '')
   end
-  
+
   def pub_name
     return '' unless (pub_field = self.pub_field)
     return '' unless (pub_name = pub_field['b'])
-    return pub_name.sub(/\s*[:;,]$/, '')
+    pub_name.sub(/\s*[:;,]$/, '')
   end
 
   def pub_date
     return '' unless (pub_field = self.pub_field)
     return '' unless (pub_date = pub_field['c'])
-    return pub_date.sub(/\s*[:;,]$/, '')
+    pub_date.sub(/\s*[:;,]$/, '')
   end
-  
+
   def edition
     edition ||= []
     'ab'.split(//).each do |subfield|
-      if @marc_record['250']
-        edition << @marc_record['250'][subfield]
-      end
+      edition << @marc_record['250'][subfield] if @marc_record['250']
     end
-    return edition.compact.join(' ')
+    edition.compact.join(' ')
   end
 
   def call_number
     tag050 = @marc_record['050']
     return '' unless tag050
 
-    subfield_values = Array.new()
-    tag050.each { |subfield|
+    subfield_values = []
+    tag050.each do |subfield|
       subfield_values.push subfield.value
-    }
+    end
     call_number = subfield_values.join(' ') || ''
-    return call_number
+    call_number
   end
-  
+
   def oclc_number
     # 035 - System Control Number, may be OCLC or something else
-    @marc_record.fields('035').each { |field|
+    @marc_record.fields('035').each do |field|
       next unless (number = field['a'])
 
       oclc_regex = /OCoLC[^0-9A-Za-z]*([0-9A-Za-z]*)/
       next unless (oclc_match = number.match(oclc_regex))
       oclc_number = oclc_match[1]
       return oclc_number
-    }
+    end
   end
 
   # Bibs can have multiple ISBNs for different formats,
   # and 020$a can have ISBN together with notes "123 (paperback)"
   def isbn
-    isbns = @marc_record.fields('020').map { |field| 
+    isbns = @marc_record.fields('020').map do |field|
       StdNum::ISBN.normalize(field['a'])
-    }
-    return isbns.compact
+    end
+    isbns.compact
   end
 
   def issn
-    issns = @marc_record.fields('022').map { |field| 
+    issns = @marc_record.fields('022').map do |field|
       StdNum::ISSN.normalize(field['a'])
-    }
+    end
     # StdNum module returns digits only.
     # Map to hyphenated form (NNNN-NNNN)
-    issns.compact.map { |digits|
+    issns.compact.map do |digits|
       digits[0..3] + '-' + digits[4..7]
-    }
+    end
   end
 
   def populate_owningInstitution
@@ -258,14 +255,13 @@ class ClioRecord
     else
       @owningInstitution = 'CUL'
     end
-
   end
 
   # Drill down into the MARC fields to build an
   # array of holdings.  See:
   # https://wiki.library.columbia.edu/display/cliogroup/Holdings+Revision+project
   def populate_holdings
-    mfhd_fields  = {
+    mfhd_fields = {
       summary_holdings:         '866',
       supplements:              '867',
       indexes:                  '868',
@@ -274,11 +270,11 @@ class ClioRecord
       reproduction_note:        '892',
       url:                      '893',
       acquisitions_information: '894',
-      current_issues:           '895',
+      current_issues:           '895'
     }
 
     # Process each 852, creating a new mfhd for each
-    holdings = Hash.new
+    holdings = {}
     @marc_record.each_by_tag('852') do |tag852|
       mfhd_id = tag852['0']
       holdings[mfhd_id] = {
@@ -298,12 +294,12 @@ class ClioRecord
     # if any found, add to appropriate Holding
     # (e.g., label :summary_holdings, tag '866')
     mfhd_fields.each_pair do |label, tag|
-       @marc_record.each_by_tag(tag) do |mfhd_data_field|
-         mfhd_id = mfhd_data_field['0']
-         value = mfhd_data_field['a']
-         next unless mfhd_id and holdings[mfhd_id] and value
-         holdings[mfhd_id][label] << value
-       end
+      @marc_record.each_by_tag(tag) do |mfhd_data_field|
+        mfhd_id = mfhd_data_field['0']
+        value = mfhd_data_field['a']
+        next unless mfhd_id && holdings[mfhd_id] && value
+        holdings[mfhd_id][label] << value
+      end
     end
 
     # Now add the list of items to each holding.
@@ -320,7 +316,7 @@ class ClioRecord
       # Store this item hash in the apppropriate Holding
       mfhd_id = item_field['0']
       holdings[mfhd_id][:items] << item
-      # Assume a single customer code per holding.  
+      # Assume a single customer code per holding.
       if item_field['z'].present?
         holdings[mfhd_id][:customer_code] = item_field['z']
       end
@@ -342,15 +338,15 @@ class ClioRecord
   # (e.g., intercampus-delivery service)
   def onsite_holdings
     holdings.select do |holding|
-      ! LOCATIONS['offsite_locations'].include? holding[:location_code]
+      !LOCATIONS['offsite_locations'].include? holding[:location_code]
     end
   end
 
   # def barnard_remote_holdings
   #   barnard_config = APP_CONFIG['barnard']
-  #   die "Missing barnard configuration!" unless 
+  #   die "Missing barnard configuration!" unless
   #     barnard_config.present? && barnard_config['remote_location_code'].present?
-  # 
+  #
   #   holdings.select do |holding|
   #     holding[:location_code] == barnard_config['remote_location_code']
   #   end
@@ -382,13 +378,13 @@ class ClioRecord
   # @voyager_availability format:
   #   { item_id: availability, item_id: availability, ...}
   def fetch_voyager_availability
-    @voyager_availability ||= Clio::BackendConnection.get_bib_availability(self.id) || {}
+    @voyager_availability ||= Clio::BackendConnection.get_bib_availability(id) || {}
   end
 
   # For each of the barcodes in this record (@barcodes),
   # check to see if there's a TOC.
   # If so, add the toc URL to this record's tocs Hash:
-  # { 
+  # {
   # 'CU12731471' => 'http://www.columbia.edu/cgi-bin/cul/toc.pl?CU12731471',
   #  ...etc...
   # }
@@ -407,38 +403,38 @@ class ClioRecord
   end
 
   def openurl
-    openurl = Hash.new
-    
+    openurl = {}
+
     # The OpenURL keys are fixed by Illiad servce.
     # We re-purpose some fields for other purposes.
     # (E.g., "loadplace", "loandate")
-    openurl[:title]      = self.title
-    openurl[:author]     = self.author
-    openurl[:publisher]  = self.pub_name
-    openurl[:loanplace]  = self.pub_place
-    openurl[:loandate]   = self.pub_date
-    openurl[:isbn]       = self.isbn
-    if self.issn.present?
-      openurl[:issn]       = self.issn
+    openurl[:title]      = title
+    openurl[:author]     = author
+    openurl[:publisher]  = pub_name
+    openurl[:loanplace]  = pub_place
+    openurl[:loandate]   = pub_date
+    openurl[:isbn]       = isbn
+    if issn.present?
+      openurl[:issn]       = issn
       openurl[:genre]      = 'article'
     end
-    openurl[:CallNumber] = self.call_number
-    openurl[:edition]    = self.edition
+    openurl[:CallNumber] = call_number
+    openurl[:edition]    = edition
     # "External Service Provider Number"
     # (Illiad only wants the numeric portion, not any ocm/ocn prefix)
-    openurl[:ESPNumber]  = self.oclc_number.gsub(/\D/, '')
+    openurl[:ESPNumber]  = oclc_number.gsub(/\D/, '')
     openurl[:sid]        = 'CLIO OPAC'
-    openurl[:notes]      = 'https://clio.columbia.edu/catalog/' + self.id
+    openurl[:notes]      = 'https://clio.columbia.edu/catalog/' + id
 
-    openurl_string = openurl.map { |key, value|
+    openurl_string = openurl.map do |key, value|
       # puts "key=[#{key}] value=[#{value}]"
-      "#{ key }=#{ CGI::escape(value) }"
-    }.join('&')
-    
+      "#{key}=#{CGI.escape(value)}"
+    end.join('&')
+
     # puts "-- openurl params as string:"
     # puts openurl_string
     # puts "--"
-    return openurl_string
+    openurl_string
   end
 
   # Trim punctuation from MARC fields
@@ -460,15 +456,14 @@ class ClioRecord
     # trim any leading or trailing whitespace
     str.strip!
 
-    return str
+    str
   end
-  
-  
-# OpenURL generation code, from /wwws/cgi/cul/forms/illiad CGI 
+
+  # OpenURL generation code, from /wwws/cgi/cul/forms/illiad CGI
   # sub printout {
-  # 
+  #
   #   my $out = shift;
-  # 
+  #
   #   if ($out->{'issn'})      {$open .= "genre=article&issn="       . $out->{'issn'}      . "&"};
   #   if ($out->{'LCcall'})    {$open .= "CallNumber=" . $out->{'LCcall'}    . "&"};
   #   if ($out->{'isbn'})      {$open .= "isbn="       . $out->{'isbn'}      . "&"};
@@ -482,19 +477,17 @@ class ClioRecord
   #                             $open .= "loandate="   . $date . "&"};
   #   $open .= "title=" . $out->{'title'} . "&";
   #   $open .= "sid=CLIO OPAC&notes=https://clio.columbia.edu/catalog/$bib_id&";
-  # 
-  # 
+  #
+  #
   # $open =~ s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
-  # 
-  # 
+  #
+  #
   # }
-
-
 
   # def public_locations
   #   # basic set of public delivery locations
   #   basic_set = ['AR', 'BL', 'UT', 'BS', 'BU', 'EA', 'HS', 'CJ', 'GS', 'LE', 'ML', 'MR', 'CA', 'SW']
-  # 
+  #
   #   locations = {
   #     'OFF AVE'   => { default: 'AR', available: ['AR']},
   #     'OFF BIO'   => { default: 'CA', available: basic_set},
@@ -535,7 +528,7 @@ class ClioRecord
   #     'OFF WAR'   => { default: 'AR', available: basic_set}
   #   }
   # end
-  # 
+  #
   # def location_labels
   #   labels = {
   #   'BC' => 'Bibliographic Control',
@@ -565,8 +558,4 @@ class ClioRecord
   #   'SW' => 'Social Work Library'
   # }
   # end
-
 end
-
-
-

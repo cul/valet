@@ -1,19 +1,18 @@
 Rails.application.routes.draw do
-
-  match "/404", :to => "errors#not_found", :via => :all
-  match "/500", :to => "errors#internal_server_error", :via => :all
+  match '/404', to: 'errors#not_found', via: :all
+  match '/500', to: 'errors#internal_server_error', via: :all
 
   root 'welcome#index'
   get 'welcome/index'
-  get "welcome/logout"
+  get 'welcome/logout'
 
-  get '/timeout', to: "welcome#timeout"
+  get '/timeout', to: 'welcome#timeout'
 
-  devise_for :users, controllers: { sessions: 'users/sessions', :omniauth_callbacks => "users/omniauth_callbacks" }
+  devise_for :users, controllers: { sessions: 'users/sessions', omniauth_callbacks: 'users/omniauth_callbacks' }
 
   devise_scope :user do
-    get 'sign_in', :to => 'users/sessions#new', :as => :new_user_session
-    get 'sign_out', :to => 'users/sessions#destroy', :as => :destroy_user_session
+    get 'sign_in', to: 'users/sessions#new', as: :new_user_session
+    get 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
   # Valet maps all these requests to the Forms Controller,
@@ -31,8 +30,8 @@ Rails.application.routes.draw do
             :itemfeedback,
             :notonshelf,
             :bearstor,
-          controller: 'forms',
-          only: [:show, :create]
+            controller: 'forms',
+            only: [:show, :create]
 
   # ILL currently has custom code
   # Offsite currently has custom code
@@ -65,13 +64,12 @@ Rails.application.routes.draw do
   #     # different entry points to the request workflow
   #     get 'bib'
   #     get 'holding'
-  # 
+  #
   #     # exception conditions
   #     get 'ineligible'
   #     get 'error'
   #   end
   # end
-
 
   # special admin pages
   get 'admin/system'
@@ -87,6 +85,4 @@ Rails.application.routes.draw do
       get 'sets'
     end
   end
-
-
 end

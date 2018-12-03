@@ -86,14 +86,11 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 end
 
-
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  #   ignore_exceptions: ['ActionView::TemplateError'] + ExceptionNotifier.ignored_exceptions,
-  #   ignore_crawlers: %w(Googlebot bingbot archive.org_bot Blogtrottr Sogou Baidu Yandex),
-  :email => {
-    :email_prefix => "[#{Rails.env.titleize}] ",
-    :sender_address => %{"notifier" <no-reply@libraries.cul.columbia.edu>},
-    :exception_recipients => %w{clio-dev@libraries.cul.columbia.edu}
-  }
-
-
+                                        #   ignore_exceptions: ['ActionView::TemplateError'] + ExceptionNotifier.ignored_exceptions,
+                                        #   ignore_crawlers: %w(Googlebot bingbot archive.org_bot Blogtrottr Sogou Baidu Yandex),
+                                        email: {
+                                          email_prefix: "[#{Rails.env.titleize}] ",
+                                          sender_address: %("notifier" <no-reply@libraries.cul.columbia.edu>),
+                                          exception_recipients: %w(clio-dev@libraries.cul.columbia.edu)
+                                        }

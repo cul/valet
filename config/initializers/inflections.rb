@@ -15,7 +15,6 @@
 #   inflect.acronym 'RESTful'
 # end
 
-
 ActiveSupport::Inflector.inflections do |inflect|
-   inflect.uncountable %w( intercampus )
+  inflect.uncountable %w(intercampus)
 end
