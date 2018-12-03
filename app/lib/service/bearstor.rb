@@ -3,7 +3,7 @@ module Service
 
     # Is the current patron allowed to use the 
     # BearStor offsite request paging service?
-    def patron_eligible?(current_user = nil)
+    def patron_eligible?(_current_user = nil)
       # For now, any authenticated user may use Bearstor
       return true;
     end

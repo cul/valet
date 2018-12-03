@@ -93,6 +93,7 @@ class FormsController < ApplicationController
     return unless original && original.starts_with?('/')
     # '/docdel/123'  ==>  [ '', 'docdel', '123' ]
     service = original.split('/')[1]
+    return service
   end
 
   def load_service_config(service)

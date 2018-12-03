@@ -9,7 +9,7 @@ module Service
     # https://relais.atlassian.net/wiki/spaces/ILL/pages/132579329/Using+other+discovery+tools
     # A full example is: https://bd.relaisd2d.com/?LS=COLUMBIA&PI=123456789&query=ti%3D%22Piotr%22+and+au%3D%22Sokorski%2C+Wodzimierz%22
     # 
-    def build_service_url(params, bib_record, current_user)
+    def build_service_url(_params, bib_record, current_user)
       url = 'https://bd.relaisd2d.com/'
       url += '?LS=COLUMBIA'
       url += '&PI=' + current_user.barcode

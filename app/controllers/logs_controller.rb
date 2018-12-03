@@ -125,7 +125,7 @@ class LogsController < ApplicationController
     where_clause = 'year(created_at)'
 
     # SQLite needs something special
-    if ActiveRecord::Base.connection.adapter_name.match /sqlite/i
+    if ActiveRecord::Base.connection.adapter_name.match(/sqlite/i)
       where_clause = 'strftime("%Y", created_at)'
     end
 
@@ -137,7 +137,7 @@ class LogsController < ApplicationController
     where_clause = "concat( year(created_at), '-', month(created_at) )"
 
     # SQLite needs something special
-    if ActiveRecord::Base.connection.adapter_name.match /sqlite/i
+    if ActiveRecord::Base.connection.adapter_name.match(/sqlite/i)
       where_clause = 'strftime("%Y-%m", created_at)'
     end
 
@@ -158,7 +158,7 @@ class LogsController < ApplicationController
     where_clause = "year(created_at) = '#{download}'"
 
     # SQLite needs something special
-    if ActiveRecord::Base.connection.adapter_name.match /sqlite/i
+    if ActiveRecord::Base.connection.adapter_name.match(/sqlite/i)
       where_clause = "strftime('%Y', created_at) = '#{download}'"
     end
 
@@ -171,7 +171,7 @@ class LogsController < ApplicationController
     where_clause = "year(created_at) = '#{year}' AND month(created_at) = '#{month}'"
 
     # SQLite needs something special
-    if ActiveRecord::Base.connection.adapter_name.match /sqlite/i
+    if ActiveRecord::Base.connection.adapter_name.match(/sqlite/i)
       where_clause = "strftime('%Y', created_at) = '#{year}' AND strftime('%m', created_at) = '#{month}'"
     end
 

@@ -6,20 +6,20 @@ module Service
     # DEFAULT METHOD IMPLEMENTATIONS
     # They may be overridden in service-specific modules.
 
-    def patron_eligible?(current_user = nil)
+    def patron_eligible?(_current_user = nil)
       Rails.logger.debug "patron_eligible? - DEFAULT"
       return true
     end
 
-    def bib_eligible?(bib_record = nil)
+    def bib_eligible?(_bib_record = nil)
       return true
     end
 
-    def build_service_url(params, bib_record, current_user)
+    def build_service_url(_params, _bib_record, _current_user)
       return nil
     end
     
-    def get_confirm_params(params, bib_record, current_user)
+    def get_confirm_params(_params, _bib_record, _current_user)
       return {}
     end
 

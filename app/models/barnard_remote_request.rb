@@ -1,2 +1,2 @@
-class BarnardRemoteRequest < ApplicationRecord
-end
+# class BarnardRemoteRequest < ApplicationRecord
+# end

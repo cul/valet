@@ -43,7 +43,7 @@ class AdminController < ApplicationController
       line.split('|').each do |field|
         # gather headers only when working on first row
         header = '' if @rows.size == 0
-        if match = field.match(/(\w+)=(.*)/)
+        if (match = field.match(/(\w+)=(.*)/))
           # If this field is key=value
           header, value = match.captures
         else

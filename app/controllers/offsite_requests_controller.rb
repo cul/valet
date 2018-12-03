@@ -169,7 +169,7 @@ class OffsiteRequestsController < ApplicationController
     end
 
     # Instead of raise/catch, just detect failed API call directly here
-    if status = @request_item_response[:status] && status != 200
+    if (status = @request_item_response[:status]) && (status != 200)
       render 'api_error' and return
     end
 
@@ -362,6 +362,7 @@ In order to best serve the Columbia community, please request 20 items or fewer 
 #{my_account_link}
 Thank you for using Offsite collections!
 EOT
+    return body
   end
 
 
@@ -390,7 +391,7 @@ EOT
       return
     end
     unless Dir.exist?(log_dir)
-      Rails.logger.error "cannot log request - can't find log_dir [#{log_dir.to_s}]"
+      Rails.logger.error "cannot log request - can't find log_dir [#{log_dir}]"
       return
     end
 

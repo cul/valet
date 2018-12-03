@@ -2,7 +2,7 @@ module Service
   class RecallHold < Service::Base
 
     # Recall / Hold just throws the user to a Voyager page
-    def build_service_url(params, bib_record, current_user)
+    def build_service_url(_params, bib_record, _current_user)
       return APP_CONFIG[:recall_hold][:voyager_url] + bib_record.id
     end
 

@@ -207,7 +207,7 @@ module Voyager
         formatted_value = Array(value).collect { |item|
           "'#{item.to_s.gsub("'", "''")}'"
         }.join(',')
-        query.gsub!("~#{name.to_s}~", formatted_value)
+        query.gsub!("~#{name}~", formatted_value)
       end
       return query
     end

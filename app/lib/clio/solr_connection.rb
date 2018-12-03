@@ -51,6 +51,7 @@ module Clio
 
       # May be nil if no doc not was found
       solr_doc = response['response']['docs'].first
+      return solr_doc
     end
 
     def solr_doc_to_marcxml(solr_doc = nil)

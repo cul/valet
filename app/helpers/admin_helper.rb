@@ -6,7 +6,7 @@ module AdminHelper
   end
 
   def recap_staff_link()
-    if recap_staff_url = APP_CONFIG['recap_staff_url']
+    if (recap_staff_url = APP_CONFIG['recap_staff_url'])
       return link_to "ReCAP Staff Interface", recap_staff_url, target: '_blank'
     end
     return ''

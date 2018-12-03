@@ -154,6 +154,7 @@ class ClioRecord
   # to have the MARCish title + author in a single string
   def titleIdentifier
     titleIdentifier = title + ' / ' + author
+    return titleIdentifier
   end
 
   def publisher
@@ -171,23 +172,24 @@ class ClioRecord
 
   def pub_field
     pub_field = @marc_record['260'] || @marc_record['264'] || nil
+    return pub_field
   end
 
   def pub_place
-    return '' unless pub_field = self.pub_field
-    return '' unless pub_place = pub_field['a']
+    return '' unless (pub_field = self.pub_field)
+    return '' unless (pub_place = pub_field['a'])
     return pub_place.sub(/\s*[:;,]$/, '')
   end
   
   def pub_name
-    return '' unless pub_field = self.pub_field
-    return '' unless pub_name = pub_field['b']
+    return '' unless (pub_field = self.pub_field)
+    return '' unless (pub_name = pub_field['b'])
     return pub_name.sub(/\s*[:;,]$/, '')
   end
 
   def pub_date
-    return '' unless pub_field = self.pub_field
-    return '' unless pub_date = pub_field['c']
+    return '' unless (pub_field = self.pub_field)
+    return '' unless (pub_date = pub_field['c'])
     return pub_date.sub(/\s*[:;,]$/, '')
   end
   
@@ -216,10 +218,10 @@ class ClioRecord
   def oclc_number
     # 035 - System Control Number, may be OCLC or something else
     @marc_record.fields('035').each { |field|
-      next unless number = field['a']
+      next unless (number = field['a'])
 
       oclc_regex = /OCoLC[^0-9A-Za-z]*([0-9A-Za-z]*)/
-      next unless oclc_match = number.match(oclc_regex)
+      next unless (oclc_match = number.match(oclc_regex))
       oclc_number = oclc_match[1]
       return oclc_number
     }
@@ -287,7 +289,7 @@ class ClioRecord
         items:                    []
       }
       # And fill in all possible mfhd fields with empty array
-      mfhd_fields.each_pair do |label, tag|
+      mfhd_fields.each_pair do |label, _tag|
         holdings[mfhd_id][label] = []
       end
     end
@@ -344,15 +346,15 @@ class ClioRecord
     end
   end
 
-  def barnard_remote_holdings
-    barnard_config = APP_CONFIG['barnard']
-    die "Missing barnard configuration!" unless 
-      barnard_config.present? && barnard_config['remote_location_code'].present?
-
-    holdings.select do |holding|
-      holding[:location_code] == barnard_config['remote_location_code']
-    end
-  end
+  # def barnard_remote_holdings
+  #   barnard_config = APP_CONFIG['barnard']
+  #   die "Missing barnard configuration!" unless 
+  #     barnard_config.present? && barnard_config['remote_location_code'].present?
+  # 
+  #   holdings.select do |holding|
+  #     holding[:location_code] == barnard_config['remote_location_code']
+  #   end
+  # end
 
   def populate_barcodes
     # Single array of barcodes from all holdings, all items
@@ -391,7 +393,6 @@ class ClioRecord
   #  ...etc...
   # }
   def fetch_tocs
-    tocs = {}
     # SLOW FOR SERIALS WITH MANY MANY BARCODES
     # conn = Columbia::Web.open_connection()
     # @barcodes.each do |barcode|
@@ -401,7 +402,7 @@ class ClioRecord
     #   end
     # end
     # Hopefully faster?
-    tocs = Columbia::Web.get_bib_toc_links(id)
+    tocs = Columbia::Web.get_bib_toc_links(id) || {}
     @tocs = tocs
   end
 

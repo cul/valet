@@ -36,13 +36,13 @@ RSpec.describe "BearStor Request Service" do
   it "rejects bearstor requests for non-bearstor items" do
     sign_in FactoryBot.create(:user)
     get bearstor_path('123')
-    expect(response.body).to include("item has no BearStor holdings")
+    expect(response.body).to include("record has no BearStor holdings")
   end
 
   it "rejects bearstor requests for Partner ReCAP items" do
     sign_in FactoryBot.create(:user)
     get bearstor_path('SCSB-1441991')
-    expect(response.body).to include("item has no BearStor holdings")
+    expect(response.body).to include("record has no BearStor holdings")
   end
 
   it "bounces unauth user to sign-in page" do

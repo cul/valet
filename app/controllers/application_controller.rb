@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   devise_group :user, contains: [:user]
 
   # Overwriting the sign_out redirect path method
-  def after_sign_out_path_for(resource_or_scope)
+  def after_sign_out_path_for(_resource_or_scope)
     cas_opts = YAML.load_file(File.join(Rails.root,'config','cas.yml'))[Rails.env] || {}
 
     # If CAS options are absent, we can only do application-level logout,

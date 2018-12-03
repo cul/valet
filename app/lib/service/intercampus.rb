@@ -22,7 +22,7 @@ module Service
 
     # InterCampus is just a direct bounce
     # to a hardcoded LWeb URL
-    def build_service_url(params, bib_record, current_user)
+    def build_service_url(_params, _bib_record, _current_user)
       return APP_CONFIG[:intercampus][:bounce_url]
     end
     

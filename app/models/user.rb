@@ -94,7 +94,7 @@ class User < ApplicationRecord
 
   def set_email
     # Try to find email via LDAP
-    if @ldap_attributes && ldap_mail = @ldap_attributes[:mail]
+    if @ldap_attributes && (ldap_mail = @ldap_attributes[:mail])
       ldap_mail = Array(ldap_mail).first.to_s
       if ldap_mail.length > 6 and ldap_mail.match(/^.+@.+$/)
         self.email = ldap_mail
@@ -105,7 +105,7 @@ class User < ApplicationRecord
     # Try to find email via Voyager
     if @oracle_connection ||= Voyager::OracleConnection.new()
       if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-        if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
+        if (voyager_email = @oracle_connection.retrieve_patron_email(@patron_id))
           if voyager_email.length > 6 and voyager_email.match(/^.+@.+$/)
             self.email = voyager_email
             return self
@@ -126,7 +126,7 @@ class User < ApplicationRecord
     if uid
       if @oracle_connection ||= Voyager::OracleConnection.new()
         if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-          if patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id)
+          if (patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id))
             self.barcode = patron_barcode
           end
         end
@@ -227,7 +227,7 @@ class User < ApplicationRecord
     permitted_affil_regex = config['permitted_affil_regex'] || []
 
     [ denied_affils, permitted_affils, permitted_affil_regex ].each do |f|
-      raise "#{f.to_s} must be an array!" unless f.is_a? Array
+      raise "#{f} must be an array!" unless f.is_a? Array
     end
 
     unless permitted_affils.present? || permitted_affil_regex.present?
