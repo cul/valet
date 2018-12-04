@@ -1,2 +1,2 @@
-class IllRequest < ApplicationRecord
-end
+# class IllRequest < ApplicationRecord
+# end

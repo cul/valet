@@ -1,6 +1,5 @@
 source 'https://rubygems.org'
 
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5'
 
@@ -49,7 +48,7 @@ group :development, :test do
 
   # Testing
   gem 'rspec-rails'
-
+  gem 'factory_bot'
 end
 
 group :development do
@@ -63,7 +62,7 @@ group :development do
   gem 'spring'
 
   # Better error page for Rack apps
-  gem "better_errors"
+  gem 'better_errors'
   # And get a REPL
   gem 'binding_of_caller'
 
@@ -77,7 +76,6 @@ group :development do
   # The `deploy:restart` hook for passenger applications is now in a separate gem
   # Just add it to your Gemfile and require it in your Capfile.
   gem 'capistrano-passenger', require: false
-
 end
 
 # # Authentication
@@ -85,7 +83,7 @@ end
 gem 'devise', '~> 4.4.0'
 
 # gem 'cul_omniauth'
-gem 'cul_omniauth', github: "cul/cul_omniauth", branch: 'rails-5'
+gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-5'
 
 # Fetch ldap details - first name, last name, etc.
 gem 'net-ldap'
@@ -98,6 +96,9 @@ gem 'rsolr'
 
 # Parse the MARC data structure of our catalog records
 gem 'marc'
+
+# Normalization of ISBN (10 and 13), ISSN, and LCCN
+gem 'library_stdnums'
 
 # Use Twitter Bootstrap for styling
 gem 'bootstrap-sass'
@@ -121,5 +122,5 @@ gem 'jquery-datatables-rails'
 # Send notifications when application errors occur
 gem 'exception_notification'
 
-
-
+# Parse User Agent into browser name, version
+gem 'browser'

@@ -1,0 +1,55 @@
+
+<h4>Precataloging Item Request</h4>
+
+<%= form_with url: precat_index_path do |form| %>
+
+  <!-- what we'll need to make the request -->
+  <%= form.hidden_field(:id, value: bib_record.id) %>
+
+  <!-- display basic bib data -->
+  <%= render 'bib', bib_record: bib_record %>
+
+  <br>
+
+  <%= location_label(holding) %>
+  -
+  <%= holding[:display_call_number].upcase %>
+  -
+  <% if available %>
+    Available
+  <% else %>
+    <span style="color:red">Unavailable</span>
+  <% end %>
+
+  <!-- what to collect from the patron -->
+  <h5>Volume / Issue or Note:</h5>
+  <textarea name="note" cols="60" rows="3" class="forminput"></textarea> 
+
+  <br>
+  
+  <%= form.submit('Submit Request') %>
+
+<% end %>
+
+<br>
+
+
+<div class="bg-info">
+<small>
+<br>
+<ul>
+<li>Use this form to request an item that is listed in CLIO as <strong>Shelved in Precataloging</strong>.</li>
+<li>Requests submitted by 5pm will be responded to no later than 5pm the next business day (Monday-Friday).</li>
+<li>An email notification will be sent to: <strong><%=current_user.email%></strong> whether the item is found or not.</li>
+<li>Some material cannot be checked out but may be used on site.</li>
+</ul>
+
+<p style="padding-left:15px">
+If you have questions about your request, please contact the 
+<strong><a href="http://library.columbia.edu/indiv/butlcirc.html">Butler Library Circulation</a></strong>
+department. 
+</p>
+
+<br>
+
+</div>

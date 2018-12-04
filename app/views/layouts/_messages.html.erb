@@ -4,8 +4,6 @@
 
 <% flash.each do |name, msg| %>
   <% if msg.is_a?(String) %>
-    <%= content_tag :div, msg, class: "alert alert-#{flash_map[name]}" %>
+    <%= content_tag :div, msg, class: "alert alert-#{flash_map[name] || name}" %>
   <% end %>
 <% end %>
-
-

@@ -1,0 +1,6 @@
+<% label = (@config && @config[:label]) ? @config[:label] : 'Valet' %>
+
+<% content_for :title, "#{label} Request" %>
+
+<%= render template: "layouts/application" %>
+

@@ -6,6 +6,8 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+VALET_VERSION = IO.read('VERSION').strip
+
 module Valet
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -19,7 +21,6 @@ module Valet
     # the framework and any gems in your application.
 
     # https://mattbrictson.com/dynamic-rails-error-pages
-    config.exceptions_app = self.routes
-
+    config.exceptions_app = routes
   end
 end

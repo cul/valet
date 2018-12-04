@@ -1,9 +1,9 @@
 class User < ApplicationRecord
   include Cul::Omniauth::Users
 
-  require "resolv"
+  require 'resolv'
 
-  # cul_omniauth includes several options (:registerable, 
+  # cul_omniauth includes several options (:registerable,
   # :recoverable, :rememberable, :trackable, :validatable, ...)
   # but we also want...
   devise :timeoutable
@@ -11,7 +11,7 @@ class User < ApplicationRecord
   serialize :affils, Array
 
   attr_reader :ldap_attributes, :patron_id, :oracle_connection
-  
+
   # cul_omniauth sets "devise :recoverable", and that requires
   # that the following user attributes be available.
   attr_accessor :reset_password_token, :reset_password_sent_at
@@ -36,7 +36,7 @@ class User < ApplicationRecord
   end
 
   def name
-    self.to_s
+    to_s
   end
 
   def set_personal_info_via_ldap
@@ -47,10 +47,10 @@ class User < ApplicationRecord
     return unless uid
 
     ldap_args = APP_CONFIG['ldap_connection_details']
-    raise "LDAP config needs 'host'" unless ldap_args.has_key?(:host)
-    raise "LDAP config needs 'port'" unless ldap_args.has_key?(:port)
-    raise "LDAP config needs 'base'" unless ldap_args.has_key?(:base)
-    
+    raise "LDAP config needs 'host'" unless ldap_args.key?(:host)
+    raise "LDAP config needs 'port'" unless ldap_args.key?(:port)
+    raise "LDAP config needs 'base'" unless ldap_args.key?(:base)
+
     # CUIT DNS sometimes fails (UNIX-5942).  Retry a few times.
     ldap_ip_address = nil
     3.times do
@@ -68,17 +68,16 @@ class User < ApplicationRecord
       Rails.logger.error "Unable to resolve hostname #{ldap_args[:host]}!."
       return
     end
-      
 
     Rails.logger.debug "Querying LDAP #{ldap_ip_address} #{ldap_args.inspect} for uid=#{uid}"
-    entry = Net::LDAP.new({host: ldap_ip_address, port: ldap_args[:port]}).search(base: ldap_args[:base], :filter => Net::LDAP::Filter.eq("uid", uid)) || []
+    entry = Net::LDAP.new(host: ldap_ip_address, port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
     entry = entry.first
     Rails.logger.debug "LDAP response: #{entry.inspect}"
 
     if entry
       # Copy all attributes of the LDAP entry to an instance variable,
       # keeping them in list format
-      @ldap_attributes = Hash.new
+      @ldap_attributes = {}
       entry.each_attribute do |attribute, value_list|
         next if value_list.blank?
         @ldap_attributes[attribute] = value_list
@@ -89,67 +88,66 @@ class User < ApplicationRecord
       self.first_name = Array(entry[:givenname]).first.to_s
     end
 
-    return self
+    self
   end
 
   def set_email
     # Try to find email via LDAP
-    if @ldap_attributes && ldap_mail = @ldap_attributes[:mail]
+    if @ldap_attributes && (ldap_mail = @ldap_attributes[:mail])
       ldap_mail = Array(ldap_mail).first.to_s
-      if ldap_mail.length > 6 and ldap_mail.match(/^.+@.+$/)
+      if ldap_mail.length > 6 && ldap_mail.match(/^.+@.+$/)
         self.email = ldap_mail
         return self
       end
     end
-    
+
     # Try to find email via Voyager
-    if @oracle_connection ||= Voyager::OracleConnection.new()
+    if @oracle_connection ||= Voyager::OracleConnection.new
       if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-        if voyager_email = @oracle_connection.retrieve_patron_email(@patron_id)
-          if voyager_email.length > 6 and voyager_email.match(/^.+@.+$/)
+        if (voyager_email = @oracle_connection.retrieve_patron_email(@patron_id))
+          if voyager_email.length > 6 && voyager_email.match(/^.+@.+$/)
             self.email = voyager_email
             return self
           end
         end
       end
     end
-    
+
     # No email!  Fill in guess.
     Rails.logger.error "ERROR: Cannot find email address via LDAP or Voyager for uid [#{uid}], assuming @columbia.edu"
     self.email = "#{uid}@columbia.edu"
-    return self
+    self
   end
 
   def set_barcode_via_oracle
     self.barcode = ''
 
     if uid
-      if @oracle_connection ||= Voyager::OracleConnection.new()
+      if @oracle_connection ||= Voyager::OracleConnection.new
         if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-          if patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id)
+          if (patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id))
             self.barcode = patron_barcode
           end
         end
       end
     end
 
-    return self
+    self
   end
 
-
   def login
-    self.uid.split('@').first
+    uid.split('@').first
   end
 
   def email
     email = super
     self.email = email
-    return email
+    email
   end
 
   # Password methods required by Devise.
   def password
-    Devise.friendly_token[0,20]
+    Devise.friendly_token[0, 20]
   end
 
   def password=(*val)
@@ -161,7 +159,7 @@ class User < ApplicationRecord
   end
 
   def department
-    get_first_ldap_value( 'ou' )
+    get_first_ldap_value('ou')
   end
 
   def get_first_ldap_value(*attribute_list)
@@ -173,7 +171,13 @@ class User < ApplicationRecord
       end
     end
     # fallback, return an empty string value
-    return ''
+    ''
+  end
+
+  def has_affil(affil = nil)
+    return false if affil.blank?
+    return false unless affils
+    affils.include?(affil)
   end
 
   def offsite_eligible?
@@ -184,20 +188,20 @@ class User < ApplicationRecord
 
     # But hardcode a default, in case nothing is set in app_config
     if config['permitted_affils'].blank? && config['permitted_affil_regex'].blank?
-      config['permitted_affil_regex'] = [ 'CUL_role-clio' ]
+      config['permitted_affil_regex'] = ['CUL_role-clio']
     end
 
-    return eligible?(config, affils)
+    eligible?(config, affils)
   end
 
   def offsite_blocked?
     return false unless affils
-    # This is not a "denied" affiliation, 
+    # This is not a "denied" affiliation,
     # because blocked users can still request physical delivery.
     affils.each do |affil|
-      return true if affil.match(/CUL_role-clio-.*-blocked/)
+      return true if affil =~ /CUL_role-clio-.*-blocked/
     end
-    return false
+    false
   end
 
   def ill_eligible?
@@ -207,28 +211,28 @@ class User < ApplicationRecord
     # but override with the app_config setting, if present
     config = APP_CONFIG['offsite'] || {}
 
-    return eligible?(config, affils)
+    eligible?(config, affils)
   end
 
   def eligible?(config, affils)
     unless config.present? && affils.present?
-      Rails.logger.error "elibible?(config,affils) needs valid input args"
+      Rails.logger.error 'elibible?(config,affils) needs valid input args'
       return false
     end
-    
+
     denied_affils         = config['denied_affils']         || []
     permitted_affils      = config['permitted_affils']      || []
     permitted_affil_regex = config['permitted_affil_regex'] || []
 
-    [ denied_affils, permitted_affils, permitted_affil_regex ].each do |f|
-      raise "#{f.to_s} must be an array!" unless f.is_a? Array
+    [denied_affils, permitted_affils, permitted_affil_regex].each do |f|
+      raise "#{f} must be an array!" unless f.is_a? Array
     end
 
     unless permitted_affils.present? || permitted_affil_regex.present?
-      Rails.log.error "Cannot find ANY permitted_affils - no access allowed!" 
+      Rails.log.error 'Cannot find ANY permitted_affils - no access allowed!'
       return false
     end
-    
+
     # Immediate rejection
     denied_affils.each do |bad_affil|
       Rails.logger.debug "#{login} has bad_affil #{bad_affil}" if
@@ -243,16 +247,15 @@ class User < ApplicationRecord
     permitted_affil_regex.each do |good_regex|
       affils.each do |affil|
         Rails.logger.debug "affil #{affil} matches regexp #{good_regex}" if
-            affil.match(/#{good_regex}/)
-        return true if affil.match(/#{good_regex}/)
+            affil =~ /#{good_regex}/
+        return true if affil =~ /#{good_regex}/
       end
     end
 
     # Default, if not explicitly permitted, return elible == false
-    return false
+    false
   end
-  
-  
+
   # developers and sysadmins
   def admin?
     affils && (affils.include?('CUNIX_litosys') || affils.include?('CUL_dpts-dev'))
@@ -260,9 +263,9 @@ class User < ApplicationRecord
 
   # application-level admin permissions
   def valet_admin?
-    return true if self.admin?
+    return true if admin?
     valet_admins = Array(APP_CONFIG['valet_admins']) || []
-    return valet_admins.include? login
+    valet_admins.include? login
   end
 
   # # UNUSED
@@ -272,6 +275,4 @@ class User < ApplicationRecord
   #   institution_id = 'CUL'
   #   @scsb_patron_information = Recap::ScsbRest.get_patron_information(barcode, institution_id) || {}
   # end
-
-
 end

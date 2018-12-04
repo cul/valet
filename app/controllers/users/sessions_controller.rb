@@ -1,6 +1,5 @@
 class Users::SessionsController < Devise::SessionsController
-
-  def new_session_path(scope)
+  def new_session_path(_scope)
     new_user_session_path # this accomodates Users namespace of the controller
   end
 
@@ -13,6 +12,4 @@ class Users::SessionsController < Devise::SessionsController
   def new
     redirect_to user_saml_omniauth_authorize_path
   end
-
 end
-

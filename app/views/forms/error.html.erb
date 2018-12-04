@@ -1,0 +1,10 @@
+<% label = (@config && @config[:label]) ? @config[:label] : 'Valet' %>
+
+<div class='h4'>
+  The <%= label %> Request system encountered an error and is unable to continue.
+</div>
+
+<br>
+
+<%= service_error.to_s.html_safe %>
+

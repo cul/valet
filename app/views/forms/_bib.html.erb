@@ -1,0 +1,30 @@
+
+<div class='bib_form'>
+
+  <table class='valet_request'>
+    <tbody>
+      <tr>
+        <td>CLIO ID:</td>
+        <td><%= bib_record.id%></td>
+      </tr>
+      <tr>
+        <td>TITLE:</td>
+        <td><%= bib_record.title%></td>
+      </tr>
+      <% if bib_record.author.present? %>
+        <tr>
+          <td>AUTHOR:</td>
+          <td><%= bib_record.author%></td>
+        </tr>
+      <% end %>
+      <% if bib_record.publisher.present? %>
+        <tr>
+          <td>PUBLISHER:</td>
+          <td><%= bib_record.publisher%></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+</div>
+
