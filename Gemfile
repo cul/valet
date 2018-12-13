@@ -124,3 +124,7 @@ gem 'exception_notification'
 
 # Parse User Agent into browser name, version
 gem 'browser'
+
+# UNIX-5942 - work around spotty CUIT DNS
+gem 'resolv-hosts-dynamic'
+
