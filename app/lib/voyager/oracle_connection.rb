@@ -29,10 +29,13 @@ module Voyager
 
       @results = {}
     end
-
-    def retrieve_patron_id(uni)
-      Rails.logger.debug "- retrieve_patron_id(uni=#{uni})"
+    
+    def retrieve_patron_record(uni)
+      Rails.logger.debug "- retrieve_patron_record(uni=#{uni})"
       return nil unless uni.present?
+      
+      # If we've already fetched the patron record, return it
+      return @patron_record if @patron_record.present?
 
       query = <<-HERE
         select institution_id, patron_id, expire_date, total_fees_due
@@ -46,11 +49,58 @@ module Voyager
         Rails.logger.warn "  no patron_id found in patron table for uni #{uni}!"
         return nil
       end
-      patron_id = raw_results.first['PATRON_ID']
+      @patron_record = raw_results.first
+      return @patron_record
+    end
+    
+    def retrieve_patron_id(uni)
+      Rails.logger.debug "- retrieve_patron_id(uni=#{uni})"
+      return nil unless uni.present?
 
+      @patron_record ||= retrieve_patron_record(uni)
+      return nil unless @patron_record.present?
+
+      patron_id = @patron_record['PATRON_ID']
       Rails.logger.debug "  found patron_id [#{patron_id}]"
       patron_id
     end
+
+    def retrieve_patron_expire_date(uni)
+      Rails.logger.debug "- retrieve_patron_expire_date(uni=#{uni})"
+      return nil unless uni.present?
+
+      @patron_record ||= retrieve_patron_record(uni)
+      return nil unless @patron_record.present?
+
+      expire_date = @patron_record['EXPIRE_DATE']
+      Rails.logger.debug "  found expire_date [#{expire_date}]"
+      expire_date
+    end
+
+    def retrieve_patron_total_fees_due(uni)
+      Rails.logger.debug "- retrieve_patron_expire_date(uni=#{uni})"
+      return nil unless uni.present?
+
+      @patron_record ||= retrieve_patron_record(uni)
+      return nil unless @patron_record.present?
+
+      total_fees_due = @patron_record['TOTAL_FEES_DUE']
+      Rails.logger.debug "  found total_fees_due [#{total_fees_due}]"
+      total_fees_due
+    end
+
+    def retrieve_patron_over_recall_notice_count(patron_id)
+      Rails.logger.debug "- retrieve_patron_expire_date(uni=#{uni})"
+      return nil unless uni.present?
+
+      @patron_record ||= retrieve_patron_record(uni)
+      return nil unless @patron_record.present?
+
+      total_fees_due = @patron_record['TOTAL_FEES_DUE']
+      Rails.logger.debug "  found total_fees_due [#{total_fees_due}]"
+      total_fees_due
+    end
+
 
     def retrieve_patron_email(patron_id)
       Rails.logger.debug "- retrieve_patron_email(patron_id=#{patron_id})"

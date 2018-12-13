@@ -1,5 +1,31 @@
 module Service
   class Borrowdirect < Service::Base
+
+    # Borrow Direct service requires:
+    # - unexpired patron record
+    # - not blocked for fines
+    # - no overdue recalls
+    # - active patron barcode
+    # Also, must either
+    # or
+    def patron_eligible?(current_user = nil)
+      return false unless current_user
+
+      return false if current_user.expired_patron_record?
+      return false if current_user.patron_blocked?
+      return false if current_user.patron_has_recalls?
+
+      # two different kinds of eligible patrons...
+      on-campus:  patron_group list && 9-digit barcode
+      
+      2cul: patron-group && patron-stat && barcode prefix
+      
+
+      # No disqualifying conditions?  Then yes, patron is eligible.
+      return true
+    end
+
+
     # Borrow Direct bounces to Relais D2D,
     # with the following fields:
     # LS - Library Symbol (hardcoded:  COLUMBIA)
@@ -39,9 +65,5 @@ module Service
       string
     end
 
-    # def patron_eligible?(current_user = nil)
-    #   Rails.logger.debug "patron_eligible? - BorrowDirect"
-    #   return true
-    # end
   end
 end
