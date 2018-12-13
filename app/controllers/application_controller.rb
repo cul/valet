@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
     hostnames = [ 'ldap.columbia.edu', 'cas.columbia.edu' ]
     hostnames.each { |hostname|
       addr = getaddress_retry(hostname)
-      dns_cache << { 'hostname' => 'x' + hostname, 'addr' => addr } if addr.present?
+      dns_cache << { 'hostname' => hostname, 'addr' => addr } if addr.present?
     }
     return unless dns_cache.size > 0
     
