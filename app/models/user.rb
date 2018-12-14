@@ -22,7 +22,7 @@ class User < ApplicationRecord
   # Every user-object instantiation...
   after_initialize :set_personal_info_via_ldap
   after_initialize :set_email
-  # after_initialize :set_barcode_via_oracle
+  after_initialize :set_barcode_via_oracle
 
   # we don't need this
   # after_initialize :get_scsb_patron_information
@@ -123,9 +123,7 @@ class User < ApplicationRecord
     self
   end
 
-  # def set_barcode_via_oracle
-  def barcode
-    return self.barcode if self.barcode.present?
+  def set_barcode_via_oracle
     self.barcode = ''
 
     if uid
@@ -282,30 +280,31 @@ class User < ApplicationRecord
   #   @scsb_patron_information = Recap::ScsbRest.get_patron_information(barcode, institution_id) || {}
   # end
 
-  # Access methods for Voyager patron details
-  
-  def patron_id
-    @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-    return @patron_id
-  end
-  
-  def patron_expired?
-    raise
-    @oracle_connection.expire_date(@patron_id)
-  end
-  
-  def patron_blocked?
-    @oracle_connection.total_fees_due(@patron_id) > 999
-  end
-  
-  def patron_has_recalls?
-    @oracle_connection.over_recall_notice_count(@patron_id) > 0
-  end
-  
-  def patron_group
-  end
-  
-  def patron_has_active_barcode?
-  end
-  
+  # WIP
+  # # Access methods for Voyager patron details
+  # 
+  # def patron_id
+  #   @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+  #   return @patron_id
+  # end
+  # 
+  # def patron_expired?
+  #   raise
+  #   @oracle_connection.expire_date(@patron_id)
+  # end
+  # 
+  # def patron_blocked?
+  #   @oracle_connection.total_fees_due(@patron_id) > 999
+  # end
+  # 
+  # def patron_has_recalls?
+  #   @oracle_connection.over_recall_notice_count(@patron_id) > 0
+  # end
+  # 
+  # def patron_group
+  # end
+  # 
+  # def patron_has_active_barcode?
+  # end
+
 end

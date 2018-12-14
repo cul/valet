@@ -11,14 +11,15 @@ module Service
     def patron_eligible?(current_user = nil)
       return false unless current_user
 
-      return false if current_user.expired_patron_record?
-      return false if current_user.patron_blocked?
-      return false if current_user.patron_has_recalls?
-
-      # two different kinds of eligible patrons...
-      on-campus:  patron_group list && 9-digit barcode
-      
-      2cul: patron-group && patron-stat && barcode prefix
+      # WIP
+      # return false if current_user.expired_patron_record?
+      # return false if current_user.patron_blocked?
+      # return false if current_user.patron_has_recalls?
+      # 
+      # # two different kinds of eligible patrons...
+      # on-campus:  patron_group list && 9-digit barcode
+      # 
+      # 2cul: patron-group && patron-stat && barcode prefix
       
 
       # No disqualifying conditions?  Then yes, patron is eligible.
