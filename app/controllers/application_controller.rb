@@ -1,6 +1,10 @@
 # We use the library-number-normalization througout
 require 'library_stdnums'
 
+# UNIX-5942 - work around spotty CUIT DNS
+require 'resolv-hosts-dynamic'
+require 'resolv-replace'
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -8,6 +12,8 @@ class ApplicationController < ActionController::Base
 
   include Devise::Controllers::Helpers
   devise_group :user, contains: [:user]
+
+  prepend_before_action :cache_dns_lookups
 
   # Overwriting the sign_out redirect path method
   def after_sign_out_path_for(_resource_or_scope)
@@ -44,4 +50,41 @@ class ApplicationController < ActionController::Base
     data[:remote_ip]  = request.remote_ip
     data
   end
+  
+  # UNIX-5942 - work around spotty CUIT DNS
+  def cache_dns_lookups
+    dns_cache = []
+    hostnames = [ 'ldap.columbia.edu', 'cas.columbia.edu' ]
+    hostnames.each { |hostname|
+      addr = getaddress_retry(hostname)
+      dns_cache << { 'hostname' => hostname, 'addr' => addr } if addr.present?
+    }
+    return unless dns_cache.size > 0
+    
+    Rails.logger.debug "cache_dns_lookups() dns_cache=#{dns_cache}"
+    
+    cached_resolver = Resolv::Hosts::Dynamic.new(dns_cache)
+    Resolv::DefaultResolver.replace_resolvers( [cached_resolver, Resolv::DNS.new] )
+  end
+  
+  def getaddress_retry(hostname = nil)
+    return unless hostname.present?
+
+    addr = nil
+    (1..3).each do |try|
+      begin
+        addr = Resolv.getaddress(hostname)
+        break if addr.present?
+      rescue => ex
+        # failed?  log, pause, and try again
+        Rails.logger.error "Resolv.getaddress(#{hostname}) failed on try #{try}: #{ex.message}, retrying..."
+        sleep 1
+      end
+    end
+
+
+    return addr
+  end
+
+
 end

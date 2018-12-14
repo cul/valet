@@ -213,6 +213,7 @@ GEM
     rb-inotify (0.9.10)
       ffi (>= 0.5.0, < 2)
     rdoc (6.0.4)
+    resolv-hosts-dynamic (0.0.2)
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
@@ -313,6 +314,7 @@ DEPENDENCIES
   mysql2
   net-ldap
   rails (~> 5)
+  resolv-hosts-dynamic
   rsolr
   rspec-rails
   ruby-oci8

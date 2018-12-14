@@ -51,26 +51,30 @@ class User < ApplicationRecord
     raise "LDAP config needs 'port'" unless ldap_args.key?(:port)
     raise "LDAP config needs 'base'" unless ldap_args.key?(:base)
 
-    # CUIT DNS sometimes fails (UNIX-5942).  Retry a few times.
-    ldap_ip_address = nil
-    3.times do
-      break if ldap_ip_address.present?
-      begin
-        ldap_ip_address = Resolv.getaddress(ldap_args[:host])
-      rescue => ex
-        # failed?  pause, and try again
-        Rails.logger.error "Resolv.getaddress(#{ldap_args[:host]}) failed: #{ex.message}, retrying..."
-        sleep 1
-      end
-    end
+    # DNS retry logic moved to ApplicationController#cache_dns_lookups()
+    #
+    # # CUIT DNS sometimes fails (UNIX-5942).  Retry a few times.
+    # ldap_ip_address = nil
+    # 3.times do
+    #   break if ldap_ip_address.present?
+    #   begin
+    #     ldap_ip_address = Resolv.getaddress(ldap_args[:host])
+    #   rescue => ex
+    #     # failed?  pause, and try again
+    #     Rails.logger.error "Resolv.getaddress(#{ldap_args[:host]}) failed: #{ex.message}, retrying..."
+    #     sleep 1
+    #   end
+    # end
+    # 
+    # if ldap_ip_address.blank?
+    #   Rails.logger.error "Unable to resolve hostname #{ldap_args[:host]}!."
+    #   return
+    # end
 
-    if ldap_ip_address.blank?
-      Rails.logger.error "Unable to resolve hostname #{ldap_args[:host]}!."
-      return
-    end
-
-    Rails.logger.debug "Querying LDAP #{ldap_ip_address} #{ldap_args.inspect} for uid=#{uid}"
-    entry = Net::LDAP.new(host: ldap_ip_address, port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
+    # Rails.logger.debug "Querying LDAP #{ldap_ip_address} #{ldap_args.inspect} for uid=#{uid}"
+    # entry = Net::LDAP.new(host: ldap_ip_address, port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
+    Rails.logger.debug "Querying LDAP #{ldap_args.inspect} for uid=#{uid}"
+    entry = Net::LDAP.new(host: ldap_args[:host], port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
     entry = entry.first
     Rails.logger.debug "LDAP response: #{entry.inspect}"
 
