@@ -50,6 +50,9 @@ class User < ApplicationRecord
     raise "LDAP config needs 'host'" unless ldap_args.key?(:host)
     raise "LDAP config needs 'port'" unless ldap_args.key?(:port)
     raise "LDAP config needs 'base'" unless ldap_args.key?(:base)
+    
+    # This should use Resolv-Replace instead of DNS
+    ldap_ip_address = Resolv.getaddress(ldap_args[:host])
 
     # DNS retry logic moved to ApplicationController#cache_dns_lookups()
     #
@@ -74,7 +77,8 @@ class User < ApplicationRecord
     # Rails.logger.debug "Querying LDAP #{ldap_ip_address} #{ldap_args.inspect} for uid=#{uid}"
     # entry = Net::LDAP.new(host: ldap_ip_address, port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
     Rails.logger.debug "Querying LDAP #{ldap_args.inspect} for uid=#{uid}"
-    entry = Net::LDAP.new(host: ldap_args[:host], port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
+    # entry = Net::LDAP.new(host: ldap_args[:host], port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
+    entry = Net::LDAP.new(host: ldap_ip_address, port: ldap_args[:port]).search(base: ldap_args[:base], filter: Net::LDAP::Filter.eq('uid', uid)) || []
     entry = entry.first
     Rails.logger.debug "LDAP response: #{entry.inspect}"
 
