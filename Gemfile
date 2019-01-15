@@ -101,7 +101,7 @@ gem 'marc'
 gem 'library_stdnums'
 
 # Use Twitter Bootstrap for styling
-gem 'bootstrap-sass'
+gem 'bootstrap-sass', '~> 3.3.0'
 
 # Talk to SCSB REST API
 # gem 'rest-client'
