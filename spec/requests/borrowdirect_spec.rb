@@ -1,8 +1,11 @@
 
 
 RSpec.describe 'BorrowDirect Request Service' do
+
+  LOGIN_FAILURE_URL = APP_CONFIG[:borrowdirect][:login_failure_url]
+
   it 'redirects to relais with ISBN' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
 
     # hardcode expected URL
     relais_url = 'https://bd.relaisd2d.com/?' \
@@ -13,7 +16,7 @@ RSpec.describe 'BorrowDirect Request Service' do
   end
 
   it 'redirects to relais with ISSN' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
 
     # hardcode expected URL
     relais_url = 'https://bd.relaisd2d.com/?' \
@@ -24,7 +27,7 @@ RSpec.describe 'BorrowDirect Request Service' do
   end
 
   it 'redirects to relais with title/author' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
 
     # hardcode expected URL
     relais_url = 'https://bd.relaisd2d.com/?' \
@@ -36,7 +39,7 @@ RSpec.describe 'BorrowDirect Request Service' do
   end
 
   it 'redirects to relais for SCSB ReCAP Partner item' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
 
     # hardcode expected URL
     relais_url = 'https://bd.relaisd2d.com/?' \
@@ -56,9 +59,56 @@ RSpec.describe 'BorrowDirect Request Service' do
   end
 
   it 'renders error page for non-existant item' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     # CLIO has no bib id 60
     get borrowdirect_path('60')
     expect(response.body).to include('Cannot find bib record')
   end
+
+  # Various invalid-patron conditions....
+  
+  it 'expired user - redirects to login_failure_url' do
+    sign_in FactoryBot.create(:expireduser)
+    get borrowdirect_path('123')
+    expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  end
+
+  it 'blocked user - redirects to login_failure_url' do
+    sign_in FactoryBot.create(:blockeduser)
+    get borrowdirect_path('123')
+    expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  end
+
+  it 'user with recalls - redirects to login_failure_url' do
+    sign_in FactoryBot.create(:recalleduser)
+    get borrowdirect_path('123')
+    expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  end
+
+  it 'user with good patron group - succeeds' do
+    good_url = 'https://bd.relaisd2d.com/?' \
+               'LS=COLUMBIA&PI=123456789&' \
+               'query=isbn%3D9780374275631'
+    good_groups = ['GRD','OFF','REG','SAC']
+    sign_in FactoryBot.create(:happyuser, patron_group: good_groups.sample)
+    get borrowdirect_path('9041682')
+    expect(response).to redirect_to(good_url)
+  end
+
+
+  it 'user with bad patron group - redirects to login_failure_url' do
+    sign_in FactoryBot.create(:happyuser, patron_group: 'BAD')
+    get borrowdirect_path('123')
+    expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  end
+
+  it '2CUL user with bad patron group  - succeeds' do
+    good_url = 'https://bd.relaisd2d.com/?' \
+               'LS=COLUMBIA&PI=123456789&' \
+               'query=isbn%3D9780374275631'
+    sign_in FactoryBot.create(:happyuser, patron_group: 'BAD', patron_stats: ['2CU'])
+    get borrowdirect_path('9041682')
+    expect(response).to redirect_to(good_url)
+  end
+
 end

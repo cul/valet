@@ -2,13 +2,13 @@
 
 RSpec.describe 'BearStor Request Service' do
   it 'bearstor request renders form' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     get bearstor_path('5060332')
     expect(response.body).to include('BearStor Request')
   end
 
   it 'bearstor form submission renders confirm and sends email' do
-    user = FactoryBot.create(:user)
+    user = FactoryBot.create(:happyuser)
     sign_in user
     params = { id: '5060332', barcode: '0036014419' }
     post bearstor_index_path, params: params
@@ -31,13 +31,13 @@ RSpec.describe 'BearStor Request Service' do
   end
 
   it 'rejects bearstor requests for non-bearstor items' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     get bearstor_path('123')
     expect(response.body).to include('record has no BearStor holdings')
   end
 
   it 'rejects bearstor requests for Partner ReCAP items' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     get bearstor_path('SCSB-1441991')
     expect(response.body).to include('record has no BearStor holdings')
   end
@@ -48,7 +48,7 @@ RSpec.describe 'BearStor Request Service' do
   end
 
   it 'renders error page for non-existant item' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     # CLIO has no bib id 60
     get bearstor_path('60')
     expect(response.body).to include('Cannot find bib record')

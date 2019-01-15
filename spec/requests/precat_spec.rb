@@ -2,13 +2,13 @@
 
 RSpec.describe 'Precat Request Service' do
   it 'precat request renders form' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     get precat_path('6120282')
     expect(response.body).to include('Precataloging Item Request')
   end
 
   it 'precat form submission renders confirm and sends email' do
-    user = FactoryBot.create(:user)
+    user = FactoryBot.create(:happyuser)
     sign_in user
     params = { id: '6120282', note: 'testing' }
     post precat_index_path, params: params
@@ -26,7 +26,7 @@ RSpec.describe 'Precat Request Service' do
   end
 
   it 'rejects precat requests for non-precat items' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     get precat_path('123')
     expect(response.body).to include('item is not in Pre-Cataloging status')
   end
@@ -37,7 +37,7 @@ RSpec.describe 'Precat Request Service' do
   end
 
   it 'renders error page for non-existant item' do
-    sign_in FactoryBot.create(:user)
+    sign_in FactoryBot.create(:happyuser)
     # CLIO has no bib id 60
     get precat_path('60')
     expect(response.body).to include('Cannot find bib record')
