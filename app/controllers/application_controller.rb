@@ -42,14 +42,27 @@ class ApplicationController < ActionController::Base
   # Referrer, Timestamp, IP,
   def request_data
     data = {}
-    data[:user_agent] = request.user_agent
     # Also for convenience store name and version
     data[:browser_name] = browser.name
     data[:browser_version] = browser.version
     data[:referrer]   = request.referrer
     data[:remote_ip]  = request.remote_ip
+    data[:user_agent] = request.user_agent
     data
   end
+  
+
+  # CUMC staff who have not completed security training
+  # may not use authenticated online request services.
+  def cumc_block
+    return unless current_user && current_user.affils
+    return error('Internal error - CUMC Block config missing') unless APP_CONFIG[:cumc]
+    if current_user.has_affil(APP_CONFIG[:cumc][:block_affil])
+      Rails.logger.info "CUMC block: #{current_user.login}"
+      return redirect_to APP_CONFIG[:cumc][:block_url]
+    end
+  end
+
   
   # UNIX-5942 - work around spotty CUIT DNS
   def cache_dns_lookups
@@ -82,8 +95,23 @@ class ApplicationController < ActionController::Base
       end
     end
 
-
     return addr
+  end
+
+  # Many of our services may want to use a common error page,
+  # and may want flash errors and/or inset-box errors.
+  
+  # Let caller just do:
+  #    if broken() return error("Broken!")
+  # instead of multi-line if/end
+  def error(message)
+    flash.now[:error] = message
+    service_error = begin
+                      @service.error
+                    rescue
+                      ''
+                    end
+    render '/forms/error', locals: { service_error: service_error }
   end
 
 

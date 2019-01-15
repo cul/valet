@@ -107,7 +107,7 @@ class User < ApplicationRecord
 
     # Try to find email via Voyager
     if @oracle_connection ||= Voyager::OracleConnection.new
-      if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+      if @patron_id ||= @oracle_connection.get_patron_id(uid)
         if (voyager_email = @oracle_connection.retrieve_patron_email(@patron_id))
           if voyager_email.length > 6 && voyager_email.match(/^.+@.+$/)
             self.email = voyager_email
@@ -128,7 +128,7 @@ class User < ApplicationRecord
 
     if uid
       if @oracle_connection ||= Voyager::OracleConnection.new
-        if @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
+        if @patron_id ||= @oracle_connection.get_patron_id(uid)
           if (patron_barcode = @oracle_connection.retrieve_patron_barcode(@patron_id))
             self.barcode = patron_barcode
           end
@@ -269,42 +269,90 @@ class User < ApplicationRecord
   def valet_admin?
     return true if admin?
     valet_admins = Array(APP_CONFIG['valet_admins']) || []
-    valet_admins.include? login
+    return true if valet_admins.include? login
+    # We don't have any more granular permissions!!
+    return true if affils && affils.include?('CUL_allstaff')
+
+    # default case - not an admin
+    return false
   end
 
-  # # UNUSED
-  # def get_scsb_patron_information
-  #   raise # UNUSED
-  #   return {} if barcode.blank?
-  #   institution_id = 'CUL'
-  #   @scsb_patron_information = Recap::ScsbRest.get_patron_information(barcode, institution_id) || {}
-  # end
 
-  # WIP
-  # # Access methods for Voyager patron details
-  # 
-  # def patron_id
-  #   @patron_id ||= @oracle_connection.retrieve_patron_id(uid)
-  #   return @patron_id
-  # end
-  # 
-  # def patron_expired?
-  #   raise
-  #   @oracle_connection.expire_date(@patron_id)
-  # end
-  # 
-  # def patron_blocked?
-  #   @oracle_connection.total_fees_due(@patron_id) > 999
-  # end
-  # 
-  # def patron_has_recalls?
-  #   @oracle_connection.over_recall_notice_count(@patron_id) > 0
-  # end
-  # 
-  # def patron_group
-  # end
-  # 
-  # def patron_has_active_barcode?
-  # end
+  
+  # GETTERS / SETTERS
+  
+  def oracle_connection
+    @oracle_connection ||= Voyager::OracleConnection.new
+  end
+  def oracle_connection=(val)
+    @oracle_connection = val
+  end
+  
+  def patron_record
+    Rails.logger.debug "GETTER patron_record"
+    @patron_record ||= oracle_connection.get_patron_record(uid)
+  end
+  def patron_record=(val)
+    Rails.logger.debug "SETTER patron_record=(val)"
+    @patron_record = val
+  end
+  
+  def patron_id
+    @patron_id ||= patron_record['PATRON_ID']
+  end
+  def patron_id=(val)
+    @patron_id = val
+  end
 
+  def over_recall_notice_count
+    @over_recall_notice_count ||= oracle_connection.get_over_recall_notice_count(patron_id)
+  end
+  def over_recall_notice_count=(val)
+    @over_recall_notice_count = val
+  end
+  
+  def patron_barcode_record
+    @patron_barcode_record ||= oracle_connection.get_patron_barcode_record(patron_id)
+  end
+  def patron_barcode_record=(val)
+    @patron_barcode_record = val
+  end
+      
+  def patron_group
+    patron_barcode_record['PATRON_GROUP_CODE']
+  end
+  def patron_group=(val)
+    @patron_barcode_record['PATRON_GROUP_CODE'] = val
+  end
+
+  def patron_stats
+    @patron_stats || oracle_connection.get_patron_stats(patron_id)
+  end
+  def patron_stats=(val)
+    @patron_stats = val
+  end
+
+  
+
+  # TESTS
+
+  def patron_expired?
+    Rails.logger.debug "patron expired" if patron_record['EXPIRE_DATE'] < Time.now
+    patron_record['EXPIRE_DATE'] < Time.now
+  end
+  
+  def patron_blocked?
+    Rails.logger.debug "patron blocked" if patron_record['TOTAL_FEES_DUE'] > 999
+    patron_record['TOTAL_FEES_DUE'] > 999
+  end
+  
+  def patron_has_recalls?
+    Rails.logger.debug "patron has recalls" if over_recall_notice_count > 0
+    over_recall_notice_count > 0
+  end
+  
+  def patron_2cul?
+    patron_stats.include?('2CU')
+  end
+  
 end

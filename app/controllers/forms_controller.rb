@@ -79,7 +79,6 @@ class FormsController < ApplicationController
     service = determine_service
     return error('Unable to determine service!') unless service
     load_service_config(service)
-    # load_service_module(service)
     authenticate_user! if @config[:authenticate]
     instantiate_service_object(service)
   end
@@ -126,17 +125,6 @@ class FormsController < ApplicationController
                              end
     return error("Cannot constantize #{service_class_name}") if service_class_instance.nil?
     @service = service_class_instance.new
-  end
-
-  # CUMC staff who have not completed security training
-  # may not use authenticated online request services.
-  def cumc_block
-    return unless current_user && current_user.affils
-    return error('Internal error - CUMC Block config missing') unless APP_CONFIG[:cumc]
-    if current_user.has_affil(APP_CONFIG[:cumc][:block_affil])
-      Rails.logger.info "CUMC block: #{current_user.login}"
-      return redirect_to APP_CONFIG[:cumc][:block_url]
-    end
   end
 
   # HELPER METHODS

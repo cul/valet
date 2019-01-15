@@ -20,8 +20,8 @@ Rails.application.routes.draw do
   # - incoming links to /docdel/123 map to #show, with bibkey 123,
   # - #show method builds a form based on bibkey 123 which posts to #create,
   # - #create, the form-handler - logs, emails, bounces, etc.
-  resources :borrowdirect,
-            :recall_hold,
+  # resources :borrowdirect,
+  resources :recall_hold,
             :ill,
             :docdel,
             :intercampus,
@@ -32,6 +32,8 @@ Rails.application.routes.draw do
             :bearstor,
             controller: 'forms',
             only: [:show, :create]
+
+  resources :borrowdirect, only: [:show]
 
   # ILL currently has custom code
   # Offsite currently has custom code

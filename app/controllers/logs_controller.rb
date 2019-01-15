@@ -18,6 +18,9 @@ class LogsController < ApplicationController
       return render action: 'set_list'
     end
 
+    # If they've asked for access to a set, 
+    # make sure they're permitted
+
     # Have they asked to download a year of logs for a given log set?
     # download param may be a year (YYYY) or year/month (YYYY-MM).
     download = log_params[:download]

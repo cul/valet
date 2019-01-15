@@ -30,8 +30,8 @@ module Voyager
       @results = {}
     end
     
-    def retrieve_patron_record(uni)
-      Rails.logger.debug "- retrieve_patron_record(uni=#{uni})"
+    def get_patron_record(uni)
+      Rails.logger.debug "- get_patron_record(uni=#{uni})"
       return nil unless uni.present?
       
       # If we've already fetched the patron record, return it
@@ -53,11 +53,11 @@ module Voyager
       return @patron_record
     end
     
-    def retrieve_patron_id(uni)
-      Rails.logger.debug "- retrieve_patron_id(uni=#{uni})"
+    def get_patron_id(uni)
+      Rails.logger.debug "- get_patron_id(uni=#{uni})"
       return nil unless uni.present?
 
-      @patron_record ||= retrieve_patron_record(uni)
+      @patron_record ||= get_patron_record(uni)
       return nil unless @patron_record.present?
 
       patron_id = @patron_record['PATRON_ID']
@@ -65,40 +65,73 @@ module Voyager
       patron_id
     end
 
-    def retrieve_patron_expire_date(uni)
-      Rails.logger.debug "- retrieve_patron_expire_date(uni=#{uni})"
-      return nil unless uni.present?
+    def get_patron_barcode_record(patron_id)
+      Rails.logger.debug "- get_patron_barcode_record(patron_id=#{patron_id})"
+      return nil unless patron_id.present?
+      
+      # If we've already fetched the patron record, return it
+      return @patron_barcode_record if @patron_barcode_record.present?
 
-      @patron_record ||= retrieve_patron_record(uni)
-      return nil unless @patron_record.present?
+      query = <<-HERE
+          select patron_barcode, 
+                 patron_group_code,
+                 barcode_status
+          from   patron_barcode,
+                 patron_group
+          where  patron_id = ~patron_id~
+          and    barcode_status = '1' 
+          and    patron_barcode.patron_group_id = patron_group.patron_group_id
+      HERE
 
-      expire_date = @patron_record['EXPIRE_DATE']
-      Rails.logger.debug "  found expire_date [#{expire_date}]"
-      expire_date
+      full_query = fill_in_query_placeholders(query, patron_id: patron_id)
+      raw_results = execute_select_command(full_query)
+      if raw_results.size.zero?
+        Rails.logger.warn "  no record found in patron_barcode table for patron_id #{patron_id}!"
+        return nil
+      end
+      @patron_barcode_record = raw_results.first
+      return @patron_barcode_record
     end
 
-    def retrieve_patron_total_fees_due(uni)
-      Rails.logger.debug "- retrieve_patron_expire_date(uni=#{uni})"
-      return nil unless uni.present?
+    # def retrieve_patron_expire_date(uni)
+    #   Rails.logger.debug "- retrieve_patron_expire_date(uni=#{uni})"
+    #   return nil unless uni.present?
+    # 
+    #   @patron_record ||= get_patron_record(uni)
+    #   return nil unless @patron_record.present?
+    # 
+    #   expire_date = @patron_record['EXPIRE_DATE']
+    #   Rails.logger.debug "  found expire_date [#{expire_date}]"
+    #   expire_date
+    # end
 
-      @patron_record ||= retrieve_patron_record(uni)
-      return nil unless @patron_record.present?
+    # def retrieve_patron_total_fees_due(uni)
+    #   return nil unless uni.present?
+    # 
+    #   @patron_record ||= get_patron_record(uni)
+    #   return nil unless @patron_record.present?
+    # 
+    #   total_fees_due = @patron_record['TOTAL_FEES_DUE']
+    #   Rails.logger.debug "  found total_fees_due [#{total_fees_due}]"
+    #   total_fees_due
+    # end
 
-      total_fees_due = @patron_record['TOTAL_FEES_DUE']
-      Rails.logger.debug "  found total_fees_due [#{total_fees_due}]"
-      total_fees_due
-    end
+    def get_over_recall_notice_count(patron_id)
+      return nil unless patron_id.present?
 
-    def retrieve_patron_over_recall_notice_count(patron_id)
-      Rails.logger.debug "- retrieve_patron_expire_date(uni=#{uni})"
-      return nil unless uni.present?
+      query = <<-HERE
+          select   over_recall_notice_count
+          from     columbiadb.circ_transactions
+          where    patron_id = ~patron_id~
+          and      over_recall_notice_count > 0
+      HERE
 
-      @patron_record ||= retrieve_patron_record(uni)
-      return nil unless @patron_record.present?
+      full_query = fill_in_query_placeholders(query, patron_id: patron_id)
+      raw_results = execute_select_command(full_query)
+      return 0 if raw_results.size.zero?
 
-      total_fees_due = @patron_record['TOTAL_FEES_DUE']
-      Rails.logger.debug "  found total_fees_due [#{total_fees_due}]"
-      total_fees_due
+      @circ_transactions_record = raw_results.first
+      return @circ_transactions_record['OVER_RECALL_NOTICE_COUNT']
     end
 
 
@@ -133,7 +166,10 @@ module Voyager
       return nil unless patron_id.present?
 
       query = <<-HERE
-        select patron_id, patron_barcode, patron_group_id, barcode_status
+        select patron_id, 
+               patron_barcode,
+               patron_group_id,
+               barcode_status
         from   columbiadb.patron_barcode
         where  patron_id = ~patron_id~
         and    barcode_status = '1'
@@ -154,6 +190,22 @@ module Voyager
       patron_barcode
     end
 
+    def get_patron_stats(patron_id = nil)
+      return [] unless patron_id
+      
+      query = <<-HERE
+        select   patron_stat_code
+        from     patron_stat_code,
+                 patron_stats
+        where    patron_stat_code.patron_stat_id = patron_stats.patron_stat_id
+        and      patron_stats.patron_id = ~patron_id~
+      HERE
+
+      full_query = fill_in_query_placeholders(query, patron_id: patron_id)
+      raw_results = execute_select_command(full_query)
+      return [] if raw_results.size.zero?
+      raw_results.map { |row| row['PATRON_STAT_CODE'] }
+    end
     #
     # We don't need this method in Offsite Request processing
     #
