@@ -6,7 +6,6 @@ class BorrowdirectController < ApplicationController
   # may not use authenticated online request services.
   before_action :cumc_block
   
-  
   def show
     @config = APP_CONFIG['borrowdirect']
 
@@ -26,10 +25,8 @@ class BorrowdirectController < ApplicationController
     # log
     log_borrowdirect(params, bib_record, current_user, logdata)
     
-
-    # - bounce patron to Relais
+    # bounce patron to Relais
     return redirect_to redirect_url
-    
   end
 
   private
@@ -102,7 +99,7 @@ class BorrowdirectController < ApplicationController
   end
   
   def log_borrowdirect(params, bib_record, current_user, logdata)
-    data = { set: 'borrowdirect'}
+    data = { set: 'Borrow Direct'}
     
     # basic request data - ip, timestamp, etc.
     data.merge! request_data
