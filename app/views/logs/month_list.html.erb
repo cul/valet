@@ -30,7 +30,6 @@
         <td>
           <% next unless @month_counts["#{year}-#{month}"]%>
           <% year_month = "#{year}-#{month}"%>
-          <% # raise %>
           <% link_label = "#{year_month} - #{@month_counts["#{year}-#{month}"]}" %>
           <span class='h5'>
             <%= link_to link_label, logs_path(set: @set, year_month: year_month) %>
