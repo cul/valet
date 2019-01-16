@@ -59,7 +59,7 @@ class LogsController < ApplicationController
     @rows = logs_by_date(@year_month).order(created_at: :desc)
 
     # This set's keys, derived from the JSON logdata of an example row
-    @logdata_keys = get_keys_from_logdata(@rows.last)
+    @logdata_keys = get_keys_from_logdata(@rows.first)
 
     # standard keys for any logged requests (ip, user-agent, etc.)
     @request_keys = request_keys
