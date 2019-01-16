@@ -99,7 +99,7 @@ class BorrowdirectController < ApplicationController
   end
   
   def log_borrowdirect(params, bib_record, current_user, logdata)
-    data = { set: 'Borrow Direct'}
+    data = { set: @config[:label] || 'Borrow Direct'}
     
     # basic request data - ip, timestamp, etc.
     data.merge! request_data

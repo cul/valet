@@ -21,8 +21,7 @@ Rails.application.routes.draw do
   # - #show method builds a form based on bibkey 123 which posts to #create,
   # - #create, the form-handler - logs, emails, bounces, etc.
   # resources :borrowdirect,
-  resources :recall_hold,
-            :ill,
+  resources :ill,
             :docdel,
             :intercampus,
             :inprocess,
@@ -34,6 +33,7 @@ Rails.application.routes.draw do
             only: [:show, :create]
 
   resources :borrowdirect, only: [:show]
+  resources :recall_hold, only: [:show]
 
   # ILL currently has custom code
   # Offsite currently has custom code
@@ -83,8 +83,8 @@ Rails.application.routes.draw do
     collection do
       # bounce the user to another URL, and log it
       get 'bounce'
-      # List known log sets
-      get 'sets'
+      # # List known log sets
+      # get 'sets'
     end
   end
 end

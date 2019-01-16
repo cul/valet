@@ -1,6 +1,8 @@
 class LogsController < ApplicationController
   require 'csv'
 
+  before_action :authenticate_user!
+
   # /logs/set=XXX
   #  - earliest/latest info
   #  - for each year, record-count, download-link
@@ -9,6 +11,8 @@ class LogsController < ApplicationController
   # ... determined by record-count at that level?  (if < N, link)
 
   def index
+    return error('Log access restricted') unless current_user.valet_admin?
+    
     @set = log_params[:set]
 
     # If no set of logs was specified,

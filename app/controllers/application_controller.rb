@@ -15,6 +15,10 @@ class ApplicationController < ActionController::Base
 
   prepend_before_action :cache_dns_lookups
 
+  # Services can store lengthy error message text here
+  # for display on the error page
+  attr_accessor :error
+
   # Overwriting the sign_out redirect path method
   def after_sign_out_path_for(_resource_or_scope)
     cas_opts = YAML.load_file(File.join(Rails.root, 'config', 'cas.yml'))[Rails.env] || {}
@@ -106,12 +110,12 @@ class ApplicationController < ActionController::Base
   # instead of multi-line if/end
   def error(message)
     flash.now[:error] = message
-    service_error = begin
-                      @service.error
-                    rescue
-                      ''
-                    end
-    render '/forms/error', locals: { service_error: service_error }
+    # service_error = begin
+    #                   self.error
+    #                 rescue
+    #                   ''
+    #                 end
+    render '/forms/error', locals: { service_error: @error || '' }
   end
 
 
