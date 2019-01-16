@@ -107,11 +107,12 @@ class BorrowdirectController < ApplicationController
     # the 'logdata' key is service-specific data.
     query = logdata[:query] || 'unknown'
     # - tell about the user
-    logdata =  {user: current_user.present? ? current_user.login : ''}
+    logdata =  {user: current_user.login || ''}
+    logdata.merge!(patron_barcode: (current_user.barcode || '') )
     # - tell about the bib
     logdata.merge! bib_record.basic_log_data
     # - tell about the query, last
-    logdata.merge!({query: query})
+    logdata.merge!(query: query)
     # logdata is stored as in JSON
     data[:logdata] = logdata.to_json
 
