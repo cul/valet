@@ -126,26 +126,27 @@ class LogsController < ApplicationController
 
   def get_year_counts
     # default clause works in MySQL
-    where_clause = 'year(created_at)'
+    group_clause = 'year(created_at)'
 
     # SQLite needs something special
     if ActiveRecord::Base.connection.adapter_name =~ /sqlite/i
-      where_clause = 'strftime("%Y", created_at)'
+      group_clause = 'strftime("%Y", created_at)'
     end
 
-    Log.where(set: @set).order(:created_at).group(where_clause).count
+    Log.where(set: @set).order(:created_at).group(group_clause).count
   end
 
   def get_month_counts
     # default clause works in MySQL
-    where_clause = "concat( year(created_at), '-', month(created_at) )"
+    # where_clause = "concat( year(created_at), '-', month(created_at) )"
+    group_clause = 'date_format(created_at, "%Y-%m")'
 
     # SQLite needs something special
     if ActiveRecord::Base.connection.adapter_name =~ /sqlite/i
-      where_clause = 'strftime("%Y-%m", created_at)'
+      group_clause = 'strftime("%Y-%m", created_at)'
     end
 
-    Log.where(set: @set).order(:created_at).group(where_clause).count
+    Log.where(set: @set).order(:created_at).group(group_clause).count
   end
 
   # download param may be a year (YYYY) or year/month (YYYY-MM).
