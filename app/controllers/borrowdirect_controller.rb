@@ -32,6 +32,10 @@ class BorrowdirectController < ApplicationController
   private
   
   def valid_user?
+    # There must be a Voyager patron record for the current user
+    return false unless current_user.patron_record
+
+    # The patron record must have valid borrowing privileges
     return false if current_user.patron_expired?
     return false if current_user.patron_blocked?
     return false if current_user.patron_has_recalls?

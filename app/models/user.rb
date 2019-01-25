@@ -293,11 +293,11 @@ class User < ApplicationRecord
   end
   
   def patron_record
-    Rails.logger.debug "GETTER patron_record"
+    # Rails.logger.debug "GETTER patron_record"
     @patron_record ||= oracle_connection.get_patron_record(uid)
   end
   def patron_record=(val)
-    Rails.logger.debug "SETTER patron_record=(val)"
+    # Rails.logger.debug "SETTER patron_record=(val)"
     @patron_record = val
   end
   
@@ -341,22 +341,27 @@ class User < ApplicationRecord
   # TESTS
 
   def patron_expired?
-    Rails.logger.debug "patron expired" if patron_record['EXPIRE_DATE'] < Time.now
-    patron_record['EXPIRE_DATE'] < Time.now
+    expired = patron_record['EXPIRE_DATE'] < Time.now
+    Rails.logger.info "patron expired! (#{uid})" if expired
+    return expired
   end
   
   def patron_blocked?
-    Rails.logger.debug "patron blocked" if patron_record['TOTAL_FEES_DUE'] > 999
-    patron_record['TOTAL_FEES_DUE'] > 999
+    blocked = patron_record['TOTAL_FEES_DUE'] > 9999
+    Rails.logger.info "patron blocked! (#{uid})" if blocked
+    return blocked
   end
   
   def patron_has_recalls?
-    Rails.logger.debug "patron has recalls" if over_recall_notice_count > 0
-    over_recall_notice_count > 0
+    recalls = over_recall_notice_count > 0
+    Rails.logger.info "patron has recalls! (#{uid})" if recalls
+    return recalls
   end
   
   def patron_2cul?
-    patron_stats.include?('2CU')
+    is_2cul = patron_stats.include?('2CU')
+    Rails.logger.info "patron is 2cul (#{uid})" if is_2cul
+    return is_2cul
   end
   
 end

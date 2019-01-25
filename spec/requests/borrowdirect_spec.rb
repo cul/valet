@@ -66,6 +66,12 @@ RSpec.describe 'BorrowDirect Request Service' do
   end
 
   # Various invalid-patron conditions....
+
+  it 'user without patron record - redirects to login_failure_url' do
+    sign_in FactoryBot.create(:happyuser, patron_record: nil)
+    get borrowdirect_path('123')
+    expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  end
   
   it 'expired user - redirects to login_failure_url' do
     sign_in FactoryBot.create(:expireduser)
