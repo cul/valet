@@ -13,8 +13,14 @@ class BorrowdirectController < ApplicationController
     return redirect_to @config[:login_failure_url] unless valid_user?
 
     # validate requested bib
-    bib_record = ClioRecord.new_from_bib_id(params['id'])
-    return error("Cannot find bib record (#{params['id']})") unless valid_bib?(bib_record)
+    # If no bib is passed, that's ok, we'll just redirect to BD home page.
+    # If bib is passed, it needs to pass validation.
+    bib_id = params['id']
+    bib_record = nil
+    if bib_id.present?
+      bib_record = ClioRecord.new_from_bib_id(bib_id)
+      return error("Cannot find bib record (#{bib_id})") unless valid_bib?(bib_record)
+    end
 
     # setup logdata 
     logdata = {}
@@ -50,7 +56,7 @@ class BorrowdirectController < ApplicationController
     return false
   end
 
-  # Don't enforce valet-layer bib validation, except that it must exist.
+  # Don't enforce valet-layer bib validation.
   # The CLIO OPAC displays the Borrow Direct service link conditionally,
   # and the Relais BD endpoint also verifies that items is unavailable locally.
   def valid_bib?(bib_record)
@@ -71,7 +77,9 @@ class BorrowdirectController < ApplicationController
     url = 'https://bd.relaisd2d.com/'
     url += '?LS=COLUMBIA'
     url += '&PI=' + current_user.barcode
-    url += '&query=' + build_query(bib_record, logdata)
+    if bib_record.present?
+      url += '&query=' + build_query(bib_record, logdata)
+    end
     url
   end
 
@@ -107,14 +115,17 @@ class BorrowdirectController < ApplicationController
     
     # basic request data - ip, timestamp, etc.
     data.merge! request_data
-
+raise
     # the 'logdata' key is service-specific data.
-    query = logdata[:query] || 'unknown'
+    # the query is the type of Relais query - will be blank if no bib passed
+    query = logdata[:query] || ''
     # - tell about the user
     logdata =  {user: current_user.login || ''}
     logdata.merge!(patron_barcode: (current_user.barcode || '') )
-    # - tell about the bib
-    logdata.merge! bib_record.basic_log_data
+    # - tell about the bib, if there is one
+    if bib_record.present?
+      logdata.merge! bib_record.basic_log_data
+    end
     # - tell about the query, last
     logdata.merge!(query: query)
     # logdata is stored as in JSON

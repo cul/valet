@@ -33,6 +33,8 @@ Rails.application.routes.draw do
             only: [:show, :create]
 
   resources :borrowdirect, only: [:show]
+  get '/borrowdirect', to: 'borrowdirect#show'  
+
   resources :recall_hold, only: [:show]
 
   # ILL currently has custom code

@@ -4,6 +4,16 @@ RSpec.describe 'BorrowDirect Request Service' do
 
   LOGIN_FAILURE_URL = APP_CONFIG[:borrowdirect][:login_failure_url]
 
+  it 'redirects to relais home page when no bib passed' do
+    sign_in FactoryBot.create(:happyuser)
+
+    # hardcode expected URL
+    relais_homepage_url = 'https://bd.relaisd2d.com/?' \
+                 'LS=COLUMBIA&PI=123456789'
+    get '/borrowdirect'
+    expect(response).to redirect_to(relais_homepage_url)
+  end
+
   it 'redirects to relais with ISBN' do
     sign_in FactoryBot.create(:happyuser)
 
