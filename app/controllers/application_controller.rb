@@ -6,6 +6,11 @@ require 'resolv-hosts-dynamic'
 require 'resolv-replace'
 
 class ApplicationController < ActionController::Base
+
+  # Set headers to prevent all caching in authenticated sessions,
+  # so that people can't 'back' in the browser to see possibly secret stuff.
+  before_action :set_cache_headers
+
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception, prepend: true
@@ -14,6 +19,7 @@ class ApplicationController < ActionController::Base
   devise_group :user, contains: [:user]
 
   prepend_before_action :cache_dns_lookups
+
 
   # Services can store lengthy error message text here
   # for display on the error page
@@ -118,5 +124,15 @@ class ApplicationController < ActionController::Base
     render '/forms/error', locals: { service_error: @error || '' }
   end
 
+
+  private
+  
+  def set_cache_headers
+    if current_user
+      response.headers['Cache-Control'] = 'no-cache, no-store'
+      response.headers['Pragma'] = 'no-cache'
+      response.headers['Expires'] = 'Fri, 01 Jan 1990 00:00:00 GMT'
+    end
+  end
 
 end
