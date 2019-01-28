@@ -115,7 +115,7 @@ class BorrowdirectController < ApplicationController
     
     # basic request data - ip, timestamp, etc.
     data.merge! request_data
-raise
+
     # the 'logdata' key is service-specific data.
     # the query is the type of Relais query - will be blank if no bib passed
     query = logdata[:query] || ''
