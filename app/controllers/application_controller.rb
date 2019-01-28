@@ -11,12 +11,17 @@ class ApplicationController < ActionController::Base
   # so that people can't 'back' in the browser to see possibly secret stuff.
   before_action :set_cache_headers
 
+
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception, prepend: true
 
   include Devise::Controllers::Helpers
   devise_group :user, contains: [:user]
+
+  # Referrer might be the CAS server, or might be valet for multi-form services.
+  # Try to capture original non-valet referror for logging purposes.
+  prepend_before_action :set_original_referrer
 
   prepend_before_action :cache_dns_lookups
 
@@ -55,7 +60,7 @@ class ApplicationController < ActionController::Base
     # Also for convenience store name and version
     data[:browser_name] = browser.name
     data[:browser_version] = browser.version
-    data[:referrer]   = request.referrer
+    data[:referrer]   = session[:referrer]
     data[:remote_ip]  = request.remote_ip
     data[:user_agent] = request.user_agent
     data
@@ -133,6 +138,18 @@ class ApplicationController < ActionController::Base
       response.headers['Pragma'] = 'no-cache'
       response.headers['Expires'] = 'Fri, 01 Jan 1990 00:00:00 GMT'
     end
+  end
+  
+  # save original non-valet, non-cas referrer
+  def set_original_referrer
+    # blank referrer
+    return if request.referrer.blank?
+    # self-referrer (multi-form valet service)
+    return if URI(request.referrer).host == request.host
+    # referrer set to authentication host
+    return if URI(request.referrer).host == 'cas.columbia.edu'
+    # ok - looks like an external original referrer that we care about
+    session[:referrer] = request.referrer
   end
 
 end
