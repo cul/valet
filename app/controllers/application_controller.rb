@@ -1,9 +1,10 @@
 # We use the library-number-normalization througout
 require 'library_stdnums'
 
-# UNIX-5942 - work around spotty CUIT DNS
-require 'resolv-hosts-dynamic'
-require 'resolv-replace'
+# now fixed.
+# # UNIX-5942 - work around spotty CUIT DNS
+# require 'resolv-hosts-dynamic'
+# require 'resolv-replace'
 
 class ApplicationController < ActionController::Base
 
@@ -23,7 +24,7 @@ class ApplicationController < ActionController::Base
   # Try to capture original non-valet referror for logging purposes.
   prepend_before_action :set_original_referrer
 
-  prepend_before_action :cache_dns_lookups
+  # prepend_before_action :cache_dns_lookups
 
 
   # Services can store lengthy error message text here
@@ -78,40 +79,40 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  
-  # UNIX-5942 - work around spotty CUIT DNS
-  def cache_dns_lookups
-    dns_cache = []
-    hostnames = [ 'ldap.columbia.edu', 'cas.columbia.edu' ]
-    hostnames.each { |hostname|
-      addr = getaddress_retry(hostname)
-      dns_cache << { 'hostname' => hostname, 'addr' => addr } if addr.present?
-    }
-    return unless dns_cache.size > 0
-    
-    Rails.logger.debug "cache_dns_lookups() dns_cache=#{dns_cache}"
-    
-    cached_resolver = Resolv::Hosts::Dynamic.new(dns_cache)
-    Resolv::DefaultResolver.replace_resolvers( [cached_resolver, Resolv::DNS.new] )
-  end
-  
-  def getaddress_retry(hostname = nil)
-    return unless hostname.present?
-
-    addr = nil
-    (1..3).each do |try|
-      begin
-        addr = Resolv.getaddress(hostname)
-        break if addr.present?
-      rescue => ex
-        # failed?  log, pause, and try again
-        Rails.logger.error "Resolv.getaddress(#{hostname}) failed on try #{try}: #{ex.message}, retrying..."
-        sleep 1
-      end
-    end
-
-    return addr
-  end
+  # apparently now fixed.
+  # # UNIX-5942 - work around spotty CUIT DNS
+  # def cache_dns_lookups
+  #   dns_cache = []
+  #   hostnames = [ 'ldap.columbia.edu', 'cas.columbia.edu' ]
+  #   hostnames.each { |hostname|
+  #     addr = getaddress_retry(hostname)
+  #     dns_cache << { 'hostname' => hostname, 'addr' => addr } if addr.present?
+  #   }
+  #   return unless dns_cache.size > 0
+  #   
+  #   Rails.logger.debug "cache_dns_lookups() dns_cache=#{dns_cache}"
+  #   
+  #   cached_resolver = Resolv::Hosts::Dynamic.new(dns_cache)
+  #   Resolv::DefaultResolver.replace_resolvers( [cached_resolver, Resolv::DNS.new] )
+  # end
+  # 
+  # def getaddress_retry(hostname = nil)
+  #   return unless hostname.present?
+  # 
+  #   addr = nil
+  #   (1..3).each do |try|
+  #     begin
+  #       addr = Resolv.getaddress(hostname)
+  #       break if addr.present?
+  #     rescue => ex
+  #       # failed?  log, pause, and try again
+  #       Rails.logger.error "Resolv.getaddress(#{hostname}) failed on try #{try}: #{ex.message}, retrying..."
+  #       sleep 1
+  #     end
+  #   end
+  # 
+  #   return addr
+  # end
 
   # Many of our services may want to use a common error page,
   # and may want flash errors and/or inset-box errors.
