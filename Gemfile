@@ -83,9 +83,9 @@ end
 gem 'devise', '~> 4.4.0'
 
 # gem 'cul_omniauth'
-# gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-5'
+gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-5'
 # gem 'cul_omniauth', path: '/Users/marquis/src/cul_omniauth'
-gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'cas-5.3'
+# gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'cas-5.3'
 
 
 # Fetch ldap details - first name, last name, etc.

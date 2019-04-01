@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/cul/cul_omniauth.git
   revision: 935af1141f0afab230d6d164189eaaa555969f68
-  branch: cas-5.3
+  branch: rails-5
   specs:
     cul_omniauth (0.5.2)
       cancancan (~> 2.0)
