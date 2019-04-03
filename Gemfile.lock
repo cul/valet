@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/cul/cul_omniauth.git
-  revision: b6720bc542f5bbc44a9f183c269b790615e86c6b
+  revision: 6b22b9cb74dd9b76bc94a7beccc90fad57fb5103
   branch: cas-5.3
   specs:
-    cul_omniauth (0.5.2)
+    cul_omniauth (0.6.1)
       cancancan (~> 2.0)
       devise-guests (~> 0.3)
       omniauth-cas
