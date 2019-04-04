@@ -23,7 +23,13 @@ module Recap
       get_scsb_rest_args
       url ||= @scsb_args[:url]
       Rails.logger.debug "- opening new connection to #{url}"
-      @conn = Faraday.new(url: url)
+      
+      # reduce api timeouts - if the endpoint is up, it'll respond quickly.
+      request_params = { 
+        open_timeout: 10, # opening a connection
+        timeout: 10       # waiting for response
+      }
+      @conn = Faraday.new(url: url, request: request_params)
       raise "Faraday.new(#{url}) failed!" unless @conn
 
       @conn.headers['Content-Type'] = 'application/json'
