@@ -43,7 +43,7 @@
             </div>
           </div>
         </td>
-      <% else %>
+      <% elsif current_user.offsite_edd_eligible? %>
         <td>
           <%= radio_button_tag(:requestType, 'EDD') %>
           <%= label_tag(:requestType_EDD, 'Electronic') %>
@@ -54,6 +54,8 @@
         <td>
           <%= render 'citation_form', f: f %>
         </td>
+      <% else %>
+        <!-- Current user not eligible to make EDD requests -->
       <% end %>
       </tr>
     <% end %>

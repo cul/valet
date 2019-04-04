@@ -50,6 +50,33 @@ RSpec.describe 'Offsite Request Service' do
 
     params = { bib_id: '5396605', mfhd_id: '6224583' }
     get new_offsite_request_path, params: params
-    expect(response.body).to include('select one or more items')
+    expect(response.body).to include('Please select one or more items')
+    expect(response.body).to include('Item to Library')
+    expect(response.body).to include('Citation') # EDD includes Citation form
   end
+
+  it 'blocked users get item-request form with "suspension" message' do
+    affils =  ['CUL_role-clio-REG', 'CUL_role-clio-REG-blocked'] 
+    sign_in FactoryBot.create(:happyuser, affils: affils)
+
+    params = { bib_id: '5396605', mfhd_id: '6224583' }
+    get new_offsite_request_path, params: params
+    expect(response.body).to include('Please select one or more items')
+    expect(response.body).to include('Item to Library')
+    expect(response.body).not_to include('Citation') # EDD includes Citation form
+    expect(response.body).to include('suspension of borrowing privileges')
+  end
+
+  it 'RECAP patron group users get item-request form without EDD option' do
+    sign_in FactoryBot.create(:happyuser, patron_group: 'RECAP')
+
+    params = { bib_id: '5396605', mfhd_id: '6224583' }
+    get new_offsite_request_path, params: params
+    expect(response.body).to include('Please select one or more items')
+    expect(response.body).to include('Item to Library')
+    expect(response.body).not_to include('Citation') # EDD includes Citation form
+    expect(response.body).not_to include('suspension of borrowing privileges')
+    expect(response.body).to include('not eligible to make EDD requests')
+  end
+
 end

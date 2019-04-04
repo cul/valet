@@ -211,6 +211,18 @@ class User < ApplicationRecord
     end
     false
   end
+  
+  # Extra requirements for EDD-eligibility (Electronic Document Delivery)
+  def offsite_edd_eligible?
+    # If the user is in any of these patron groups, no edd 
+    return false if ['RECAP'].include?(patron_group)
+
+    # If the user is currently blocked, don't permit EDD
+    return false if offsite_blocked?
+
+    # default - for any other user, yes, they are eligible to use EDD
+    return true
+  end
 
   def ill_eligible?
     return false unless affils
