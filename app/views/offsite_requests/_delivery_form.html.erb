@@ -31,19 +31,23 @@
 
     <% if current_user.offsite_eligible? %>
       <tr>
-      <% if current_user.offsite_blocked? %>
-        <td colspan='2'>
-          <div class='offset-block'>
-            Electronic delivery is not available 
-            due to suspension of borrowing privileges
+      <% if not current_user.offsite_edd_eligible? %>
+        <% if current_user.offsite_blocked? %>
+          <td colspan='2'>
             <div class='offset-block'>
-              <%= my_library_account_link %>
-              <br>
-              <%= borrowing_info_link %>
+              Electronic delivery is not available 
+              due to suspension of borrowing privileges
+              <div class='offset-block'>
+                <%= my_library_account_link %>
+                <br>
+                <%= borrowing_info_link %>
+              </div>
             </div>
-          </div>
-        </td>
-      <% elsif current_user.offsite_edd_eligible? %>
+          </td>
+        <% else %>
+          <!-- Current user not eligible to make EDD requests -->
+        <% end %>
+      <% else %>
         <td>
           <%= radio_button_tag(:requestType, 'EDD') %>
           <%= label_tag(:requestType_EDD, 'Electronic') %>
@@ -54,8 +58,6 @@
         <td>
           <%= render 'citation_form', f: f %>
         </td>
-      <% else %>
-        <!-- Current user not eligible to make EDD requests -->
       <% end %>
       </tr>
     <% end %>
