@@ -12,9 +12,9 @@ standard_delivery_locations:
   - LE
   - ML
   - MR
+  - MZ
   - CA
   - SW
-  - MZ
 
 # CUSTOMER CODES
 # there are some customer codes which have special delivery rules
