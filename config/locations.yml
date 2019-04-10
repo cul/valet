@@ -5,7 +5,9 @@ BT:  Butler Preservation
 CI:  Interlibrary Loan
 CV:  Milstein Reserves
 MP:  Monographic Recon -- for MRP
-MZ:  ReCAP Coordinator
+# LIBSYS-1647 - Create new Offsite delivery location
+# MZ:  ReCAP Coordinator
+MZ:  Reid Hall (Paris, France)
 IL:  ReCAP Interlibrary Loan
 AR:  Avery Library
 BL:  Barnard Library

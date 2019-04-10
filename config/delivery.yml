@@ -14,6 +14,7 @@ standard_delivery_locations:
   - MR
   - CA
   - SW
+  - MZ
 
 # CUSTOMER CODES
 # there are some customer codes which have special delivery rules
