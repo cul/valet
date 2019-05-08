@@ -2,6 +2,17 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
+$ ->
+  $('input:radio[name="requestType"]').change ->
+    if this.checked && this.value == 'RETRIEVAL'
+      # alert("retrieval!")
+      $("select.retrieval-field").attr("disabled", false)
+      $("input.edd-field").attr("disabled", true)
+    if this.checked && this.value == 'EDD'
+      # alert("edd!")
+      $("select.retrieval-field").attr("disabled", true)
+      $("input.edd-field").attr("disabled", false)
+
 
 @validateOffsiteRequestForm = () ->
 

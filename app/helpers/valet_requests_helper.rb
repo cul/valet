@@ -93,7 +93,7 @@ module ValetRequestsHelper
       [LOCATIONS[delivery_location_code], delivery_location_code]
     end
 
-    select_tag(:deliveryLocation, options_for_select(options_array, delivery_default))
+    select_tag(:deliveryLocation, options_for_select(options_array, delivery_default), class: 'retrieval-field')
   end
 
   def location_label(location_code_or_holding)
