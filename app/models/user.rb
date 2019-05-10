@@ -214,7 +214,7 @@ class User < ApplicationRecord
   
   # Extra requirements for EDD-eligibility (Electronic Document Delivery)
   def offsite_edd_eligible?
-    # If the user is in any of these patron groups, no edd 
+    # LIBSYS-1936 - If the user is in any of these patron groups, no edd 
     # Francie says stall....
       # return false if ['RECAP'].include?(patron_group)
 
