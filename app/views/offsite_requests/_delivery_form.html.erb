@@ -14,6 +14,8 @@
 
   <table class='valet_request'>
 
+    <!-- LIBSYS-2899 - COVID -->
+    <!-- 
     <tr>
       <td width='250px'>
         <%= radio_button_tag(:requestType, 'RETRIEVAL', true) %>
@@ -32,6 +34,7 @@
         <%= delivery_select_tag(@offsite_location_code, @customer_code) %>
       </td>
     </tr>
+    -->
 
     <% if current_user.offsite_eligible? %>
       <tr>
@@ -53,6 +56,8 @@
         <% end %>
       <% else %>
         <td>
+          <!-- LIBSYS-2899 - COVID -->
+          <!-- <%= radio_button_tag(:requestType, 'EDD', true) %> -->
           <%= radio_button_tag(:requestType, 'EDD') %>
           <% label = '<strong>Electronic</strong>'.html_safe %>
           <%= label_tag(:requestType_EDD, label) %>

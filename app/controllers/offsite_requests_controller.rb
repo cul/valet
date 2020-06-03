@@ -204,6 +204,10 @@ class OffsiteRequestsController < ApplicationController
   end
 
   def ineligible
+    # LIBSYS-2899 - COVID
+    # To display the Valet-internal ineligible.html.erb file,
+    # just remove the below line, to restore Rails default behavior.
+    return redirect_to('https://library.columbia.edu/about/news/alert.html')
   end
 
   def error
