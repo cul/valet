@@ -359,12 +359,17 @@ class User < ApplicationRecord
   end
   
   def patron_blocked?
-    blocked = patron_record['TOTAL_FEES_DUE'] > 9999
+    # LIBSYS-2888 - temporarily bump blocked-fees limit from $99 to $9,999
+    # blocked = patron_record['TOTAL_FEES_DUE'] > 9999
+    blocked = patron_record['TOTAL_FEES_DUE'] > 999900
     Rails.logger.info "patron blocked! (#{uid})" if blocked
     return blocked
   end
   
   def patron_has_recalls?
+    # LIBSYS-2888 - temporarily allow BD while having outstanding recalls
+    return false
+
     recalls = over_recall_notice_count > 0
     Rails.logger.info "patron has recalls! (#{uid})" if recalls
     return recalls
