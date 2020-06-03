@@ -55,10 +55,10 @@
           <!-- Current user not eligible to make EDD requests -->
         <% end %>
       <% else %>
-        <td>
+        <td width="40%">
           <!-- LIBSYS-2899 - COVID -->
-          <!-- <%= radio_button_tag(:requestType, 'EDD', true) %> -->
-          <%= radio_button_tag(:requestType, 'EDD') %>
+          <!-- <%= radio_button_tag(:requestType, 'EDD') %> -->
+          <%= radio_button_tag(:requestType, 'EDD', true) %>
           <% label = '<strong>Electronic</strong>'.html_safe %>
           <%= label_tag(:requestType_EDD, label) %>
           <div class='offset-block'>
@@ -68,7 +68,7 @@
           <% label = 'A small portion of the work, such as a chapter or article, will be scanned & delivered in 1-2 business days' %>
           <%= label_tag(:requestType_EDD, label) %>
         </td>
-        <td>
+        <td width="60%">
           <%= render 'citation_form', f: f %>
         </td>
       <% end %>
