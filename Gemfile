@@ -61,8 +61,9 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 
-  # Better error page for Rack apps
-  gem 'better_errors'
+  # browser-based live debugger and REPL
+  # HAML REPL breaks in 2.7.0/2.7.1 ???
+  gem 'better_errors', '~> 2.6.0'
   # And get a REPL
   gem 'binding_of_caller'
 

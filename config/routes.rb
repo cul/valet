@@ -21,7 +21,8 @@ Rails.application.routes.draw do
   # - #show method builds a form based on bibkey 123 which posts to #create,
   # - #create, the form-handler - logs, emails, bounces, etc.
   # resources :borrowdirect,
-  resources :ill,
+  resources :paging,
+            :ill,
             :docdel,
             :intercampus,
             :inprocess,

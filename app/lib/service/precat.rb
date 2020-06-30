@@ -37,13 +37,17 @@ module Service
       FormMailer.with(precat_params).precat.deliver_now
     end
 
-    def get_confirm_params(params, bib_record, current_user)
-      precat_params = get_precat_params(params, bib_record, current_user)
-      confirm_params = {
-        template: '/forms/precat_confirm',
-        locals:   precat_params
-      }
-      confirm_params
+    # def get_confirm_params(params, bib_record, current_user)
+    #   precat_params = get_precat_params(params, bib_record, current_user)
+    #   confirm_params = {
+    #     template: '/forms/precat_confirm',
+    #     locals:   precat_params
+    #   }
+    #   confirm_params
+    # end
+    
+    def get_confirmation_locals(params, bib_record, current_user)
+      get_precat_params(params, bib_record, current_user)
     end
 
     def get_precat_holdings(bib_record)

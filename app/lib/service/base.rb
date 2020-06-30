@@ -18,13 +18,21 @@ module Service
       nil
     end
 
-    def get_confirm_params(_params, _bib_record, _current_user)
+    # def get_confirm_params(_params, _bib_record, _current_user)
+    #   {}
+    # end
+
+    def get_confirmation_locals(_params, _bib_record, _current_user)
       {}
     end
 
     def setup_form_locals(bib_record = nil)
       locals = { bib_record: bib_record }
       locals
+    end
+
+    def send_emails(params, bib_record, current_user)
+      nil
     end
 
     # COMMON LOGIC

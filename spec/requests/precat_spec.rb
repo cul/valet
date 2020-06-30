@@ -3,14 +3,14 @@
 RSpec.describe 'Precat Request Service' do
   it 'precat request renders form' do
     sign_in FactoryBot.create(:happyuser)
-    get precat_path('6120282')
+    get precat_path('11519424')
     expect(response.body).to include('Precataloging Item Request')
   end
 
   it 'precat form submission renders confirm and sends email' do
     user = FactoryBot.create(:happyuser)
     sign_in user
-    params = { id: '6120282', note: 'testing' }
+    params = { id: '11519424', note: 'testing' }
     post precat_index_path, params: params
 
     # confirm page

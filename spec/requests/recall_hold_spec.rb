@@ -23,7 +23,7 @@ RSpec.describe 'Recall / Hold Request Service' do
   end
 
   it 'renders error page for law item' do
-    get recall_hold_url('b734216')
+    get recall_hold_url('b228777')
     expect(response.body).to include('not owned by Columbia')
   end
 

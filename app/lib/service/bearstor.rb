@@ -63,9 +63,24 @@ module Service
       FormMailer.with(mail_params).bearstor_confirm.deliver_now
     end
 
-    def get_confirm_params(params, bib_record, current_user)
-      #   # redirect patron browser to confirm webpage
-      #   render 'bearstor_confirm', locals: bearstor_params
+    # def get_confirm_params(params, bib_record, current_user)
+    #   #   # redirect patron browser to confirm webpage
+    #   #   render 'bearstor_confirm', locals: bearstor_params
+    #   confirm_locals = {
+    #     bib_record: bib_record,
+    #     barcodes:  params[:itemBarcodes],
+    #     patron_uni: current_user.uid,
+    #     patron_email: current_user.email,
+    #     staff_email: APP_CONFIG[:bearstor][:staff_email]
+    #   }
+    #   confirm_params = {
+    #     template: '/forms/bearstor_confirm',
+    #     locals:   confirm_locals
+    #   }
+    #   confirm_params
+    # end
+
+    def get_confirmation_locals(params, bib_record, current_user)
       confirm_locals = {
         bib_record: bib_record,
         barcodes:  params[:itemBarcodes],
@@ -73,11 +88,7 @@ module Service
         patron_email: current_user.email,
         staff_email: APP_CONFIG[:bearstor][:staff_email]
       }
-      confirm_params = {
-        template: '/forms/bearstor_confirm',
-        locals:   confirm_locals
-      }
-      confirm_params
+      confirm_locals
     end
 
     def get_bearstor_holdings(bib_record)

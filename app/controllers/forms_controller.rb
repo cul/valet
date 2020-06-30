@@ -34,7 +34,7 @@ class FormsController < ApplicationController
       return error("No 'type' defined for service #{@config['label']}")
     end
 
-    error("Valet error: unknown show() failure for service #{@config['label']}")
+    return error("Valet error: unknown show() failure for service #{@config['label']}")
   end
 
   # form processor
@@ -58,12 +58,15 @@ class FormsController < ApplicationController
     redirect_url = @service.build_service_url(params, bib_record, current_user)
     return redirect_to redirect_url if redirect_url.present?
 
-    # Service may want to render a confirm page
-    confirm_params = @service.get_confirm_params(params, bib_record, current_user)
-    return render(confirm_params) if confirm_params.present?
+    # Service may want to render a confirmation page
+    # confirm_params = @service.get_confirm_params(params, bib_record, current_user)
+    # return render(confirm_params) if confirm_params.present?
+
+    locals = @service.get_confirmation_locals(params, bib_record, current_user)
+    return render("#{@config[:service]}_confirm", locals: locals) if locals.present?
 
     # If the service didn't render or redirect??
-    error("Service #{@config.service} ")
+    return error("Valet error: No confirm page or redirect defined for service #{@config['label']}")
 
     # # For now, just send it to the service module,
     # # with the most commonly used args - the bib and the user
@@ -151,7 +154,7 @@ class FormsController < ApplicationController
     end
 
     # Unable to build a bounce URL?  Error!
-    error("Cannot determine bounce url for service #{@config['label']}")
+    return error("Cannot determine bounce url for service #{@config['label']}")
   end
 
   # DEFAULT LOGGING
