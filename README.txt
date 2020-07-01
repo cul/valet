@@ -1,25 +1,74 @@
 
 
-MAYBE
+Creating a new Valet service
+============================
+
+Valet has gone through a few different code arrangements.
+
+BearStor is the model for the most current arrangement.
 
 
-data = {
-  current_user
-  CGI params
-}
+Update app_config.yml
+---------------------
+Your new service should have a section in app_config with
+some basic settings filled in.
 
-action = process( data )
-
-case action.type
-when 'render'
-  render action.render_params
-when 'redirect'
-  redirect action.redirect_params
-  
-  
+  paging:
+    label: 'Paging'
+    authenticate: true
+    type: form
 
 
-  TODO  ???
+Update routes.rb
+---------------------
+Your new service should be one of the many service-names
+listed which map to controller: 'forms'
 
-  precat - availability status
-  precat - extra display fields - location name?  summary?
+  resources :paging,
+            :ill,
+            :docdel,
+            :intercampus,
+            :inprocess,
+            :precat,
+            :itemfeedback,
+            :notonshelf,
+            :bearstor,
+            controller: 'forms',
+            only: [:show, :create]
+
+
+Create service-specific library
+-------------------------------
+Within /app/lib/service/ create a new .rb file for the service.
+Minimally, you need this:
+
+module Service
+  class Paging < Service::Base
+  end
+end
+
+But add in any other logic you need, refer to base.rb for 
+what methods to override, and look at other services for
+examples of override logic.
+
+
+Optional - create confirmation page 
+-----------------------------------
+If after collecting information you'd like this service to redirect
+to a confirmation page, you'll need to do two things:
+
+1) write a get_confirmation_locals() method, to gather local variables,
+
+2) write an /app/views/forms/SERVICE_confirm.html.erb form, to display the variables
+
+
+Optional - send email
+---------------------
+If after collection information you'd like this service to send
+email, you'll need to do three things:
+
+1) write a send_emails() method, which will gather params
+
+2) add a method to /app/mailers/form_mailer.rb to process params and send mail
+
+3) write mail template, named the same as the method, under /app/views/form_mailer/SERVICE.text.erb 
