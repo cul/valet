@@ -47,8 +47,9 @@ class FormsController < ApplicationController
     bib_record = ClioRecord.new_from_bib_id(bib_id)
 
     # All should log, so that should happen here.
-    # (should add service-specific fields)
-    log(bib_record, current_user)
+    # Some services will pass along extra params from the submission form.
+    extra_log_params = @service.get_extra_log_params(params) || {}
+    log(bib_record, current_user, extra_log_params)
 
     # Service may want to send emails.
     @service.send_emails(params, bib_record, current_user)
@@ -159,7 +160,7 @@ class FormsController < ApplicationController
 
   # DEFAULT LOGGING
   # We'll probably need to support custom logging as well
-  def log(bib_record = nil, current_user = nil)
+  def log(bib_record = nil, current_user = nil, extra_log_params = {})
     # basic request data - ip, timestamp, etc.
     data = request_data
 
@@ -172,9 +173,13 @@ class FormsController < ApplicationController
     # - tell about the user
     login = current_user.present? ? current_user.login : ''
     logdata[:user] = login
+    
+    # -some services will pass along extra data for the log
+    logdata.merge!(extra_log_params) if extra_log_params.present?
+    
     # logdata is stored as in JSON
     data[:logdata] = logdata.to_json
-
+    
     # Log it!
     begin
       # If logging fails, don't die - report the error and continue

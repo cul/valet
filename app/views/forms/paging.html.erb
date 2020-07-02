@@ -5,6 +5,7 @@
 
   <!-- what we'll need to make the request -->
   <%= form.hidden_field(:id, value: bib_record.id) %>
+  <%= form.hidden_field(:call_number, value: bib_record.call_number) %>
 
   <!-- display basic bib data -->
   <%= render 'bib', bib_record: bib_record %>
@@ -16,6 +17,39 @@
     <%= render 'holding', bib_record: bib_record, holding: holding %>
   <% end %>
 
+  <br>
+  
+  <div>
+    <table class='valet_request'>
+      <tbody>
+        <tr>
+          <td width='200px'>
+            <strong>Volume:</strong>
+            <br>
+            (For multivolume works, details
+            <br>
+             on what item you'd like paged)  
+          </td>
+          <td>
+            <%= form.text_area :volume_note, id: :volume_note, class: 'form-control' %>
+          </td>
+        </tr>
+        <tr>
+          <td width='200px'>
+            <strong>Note:</strong>
+            <br>
+            (Any extra information to help
+            <br>
+             staff fulfill your request)  
+          </td>
+          <td>
+            <%= form.text_area :note, id: :note, class: 'form-control' %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
   <br>
   
   <%= form.submit('Submit Request') %>

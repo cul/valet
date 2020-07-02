@@ -129,6 +129,9 @@ gem 'exception_notification'
 # Parse User Agent into browser name, version
 gem 'browser'
 
+# Some services (e.g., paging) want to log a sortable call number
+gem 'lcsort'
+
 # now fixed.
 # # UNIX-5942 - work around spotty CUIT DNS
 # gem 'resolv-hosts-dynamic'

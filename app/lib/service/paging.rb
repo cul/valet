@@ -20,6 +20,18 @@ module Service
       FormMailer.with(mail_params).paging.deliver_now
     end
 
+    def get_extra_log_params(params)
+      call_number = params[:call_number] || ''
+      callnumber_sortable = Lcsort.normalize(call_number)
+      
+      extra_log_params = {
+        barcodes:      params[:itemBarcodes].join('/ '),
+        callnumber:    call_number,
+        callnumber_sortable:  callnumber_sortable,
+        volumne_note:  params[:volume_note],
+        note:          params[:note],
+      }
+    end
 
     def get_confirmation_locals(params, bib_record, current_user)
       confirm_locals = {
