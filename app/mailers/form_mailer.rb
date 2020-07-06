@@ -35,14 +35,15 @@ class FormMailer < ApplicationMailer
     mail(to: to, from: from, subject: subject)
   end
 
-  ###
-  ### PAGING - mail to staff
-  ###
-  def paging
-    to = params[:staff_email]
-    from = "Butler Circulation <#{params[:staff_email]}>"
-    title = params[:bib_record].title
-    subject = "Paging Request [#{title}]"
-    mail(to: to, from: from, subject: subject)
-  end
+  # ###
+  # ### PAGING - mail to staff
+  # ###
+  # def paging
+  #   to = params[:staff_email]
+  #   from = "Butler Circulation <#{params[:staff_email]}>"
+  #   title = params[:bib_record].title
+  #   subject = "Paging Request [#{title}]"
+  #   mail(to: to, from: from, subject: subject)
+  # end
+
 end

@@ -11,12 +11,12 @@ BearStor is the model for the most current arrangement.
 Update app_config.yml
 ---------------------
 Your new service should have a section in app_config with
-some basic settings filled in.
+some basic settings filled in.  Type can be 'form' or 'bounce'.
 
   paging:
     label: 'Paging'
     authenticate: true
-    type: form
+    type: bounce
 
 
 Update routes.rb
@@ -52,6 +52,19 @@ what methods to override, and look at other services for
 examples of override logic.
 
 
+Bounce - redirect browser to another URL
+----------------------------------------
+Services configured as type:bounce, need to implement:
+
+    build_service_url(params, bib_record, current_user)
+    
+If the service is linked directly from CLIO, then 'params' will
+likely be just the bib id.  That's already been used to fetch a
+full ClioRecord object, which is the 2nd arg - the bib_record. 
+
+
+
+
 Optional - create confirmation page 
 -----------------------------------
 If after collecting information you'd like this service to redirect
@@ -60,6 +73,7 @@ to a confirmation page, you'll need to do two things:
 1) write a get_confirmation_locals() method, to gather local variables,
 
 2) write an /app/views/forms/SERVICE_confirm.html.erb form, to display the variables
+
 
 
 Optional - send email
