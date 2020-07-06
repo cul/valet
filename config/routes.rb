@@ -33,23 +33,26 @@ Rails.application.routes.draw do
             controller: 'forms',
             only: [:show, :create]
 
+
   resources :borrowdirect, only: [:show]
   get '/borrowdirect', to: 'borrowdirect#show'  
 
-  resources :recall_hold, only: [:show]
+  # This needs to be rewritten before prod rollout to use newer simplified forms-controller approach
+  # resources :recall_hold, only: [:show]
+
 
   # ILL currently has custom code
   # Offsite currently has custom code
   # 'Barnard' currently has custom code
 
-  resources :ill_requests do
-    collection do
-      get 'affiliation'
-      get 'bib'
-      get 'ineligible'
-      get 'error'
-    end
-  end
+  # resources :ill_requests do
+  #   collection do
+  #     get 'affiliation'
+  #     get 'bib'
+  #     get 'ineligible'
+  #     get 'error'
+  #   end
+  # end
 
   resources :offsite_requests do
     collection do

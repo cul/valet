@@ -1,5 +1,6 @@
 module Service
   class Ill < Service::Base
+
     def form_handler(params, bib_record, _current_user)
       openurl = bib_record.openurl
       ezproxy_url = @config[:ezproxy_url]
@@ -19,5 +20,6 @@ module Service
                    campus + '/illiad.dll/OpenURL'
       illiad_url
     end
+
   end
 end

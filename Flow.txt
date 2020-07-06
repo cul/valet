@@ -1,4 +1,10 @@
-Valet Application flow
+---------------------------------------------------
+Valet Application flow for Offsite Requests (ReCAP)
+---------------------------------------------------
+Offsite Requests was the first request service developed 
+within Valet, and is the most awkward/complicated.
+New services are managed by the Forms controller using
+a consistent abstracted approach.
 
 
 1) Valet Home Page
