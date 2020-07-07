@@ -32,10 +32,18 @@ module Service
       
       # Illiad param keys need to match the Illiad form field names
       illiad_params['Action']   = '10'
-      illiad_params['Form']     = '99'
+      illiad_params['Form']     = '30'
       
-      illiad_params['title']    = bib_record.title
-      illiad_params['author']   = bib_record.author
+      illiad_params['LoanTitle']     = bib_record.title
+      illiad_params['LoanAuthor']    = bib_record.author
+      illiad_params['ISSN']          = bib_record.isbn.first
+      illiad_params['ESPNumber']     = bib_record.oclc_number
+      illiad_params['LoanEdition']   = bib_record.edition
+      illiad_params['LoanPlace']     = bib_record.pub_place
+      illiad_params['LoanPublisher'] = bib_record.pub_name
+      illiad_params['LoanDate']      = bib_record.pub_date
+      illiad_params['CitedIn']       = 'https://clio.columbia.edu/catalog/' + bib_record.id
+      
       
       return illiad_params
     end
