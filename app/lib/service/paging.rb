@@ -51,7 +51,7 @@ module Service
       illiad_params['LoanPublisher'] = bib_record.pub_name
       illiad_params['LoanDate']      = bib_record.pub_date
       # illiad_params['CitedIn']       = 'https://clio.columbia.edu/catalog/' + bib_record.id
-      illiad_params['CitedIn']       = 'CLIO_OPAC-DOCDEL'
+      illiad_params['CitedIn']       = 'CLIO_OPAC-PAGING'
       
       return illiad_params
     end
@@ -72,7 +72,7 @@ module Service
       illiad_params['pub_date']   = bib_record.pub_date
 
       # Extra params related to request processing
-      illiad_params['sid']        = 'CLIO_OPAC-DOCDEL'
+      illiad_params['sid']        = 'CLIO_OPAC-PAGING'
       illiad_params['notes']      = 'https://clio.columbia.edu/catalog/' + bib_record.id
       illiad_params['genre']      = 'PDD'
       
