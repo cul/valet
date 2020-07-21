@@ -46,6 +46,7 @@ module Service
       illiad_params['ISSN']          = bib_record.isbn.first
       illiad_params['CallNumber']    = bib_record.call_number
       illiad_params['ESPNumber']     = bib_record.oclc_number
+      illiad_params['ItemNumber']    = (bib_record.barcodes.size == 1 ? bib_record.barcodes.first : '')
       illiad_params['LoanEdition']   = bib_record.edition
       illiad_params['LoanPlace']     = bib_record.pub_place
       illiad_params['LoanPublisher'] = bib_record.pub_name
