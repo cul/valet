@@ -201,7 +201,31 @@ class ClioRecord
   end
 
   def call_number
+    # First try to get call number from the 992 (local field)
+    tag992 = @marc_record['992']
+    call_number_992 = call_number_from_992(tag992)
+    return call_number_992 if call_number_992.present?
+
+    # If that didn't work, try to get call number from the 050
     tag050 = @marc_record['050']
+    call_number_050 = call_number_from_050(tag050)
+    return call_number_050 || ''
+  end
+  
+  CALL_NUMBER_ONLY = /^.* \>\> (.*)\|DELIM\|.*/
+  
+  def call_number_from_992(tag992 = nil)
+    return nil unless tag992 && tag992['b']
+
+    # If the regexp finds a call-number, return it.
+    if matchdata = tag992['b'].match(CALL_NUMBER_ONLY)
+      return matchdata[1] 
+    else
+      return nil
+    end
+  end
+  
+  def call_number_from_050(tag050 = nil)
     return '' unless tag050
 
     subfield_values = []
