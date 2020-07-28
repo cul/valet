@@ -56,9 +56,7 @@ https://valet-dev.cul.columbia.edu/offsite_requests/new?bib_id=SCSB-767649&mfhd_
   "Select delivery method"
 - Button to Submit
 
-5) Offsite Request Submission Confirmation Screen
-(No direct URL, has to be the result of form submission)
-- Expects a complex form to be submitted
+--------------------------------------------------- Expects a complex form to be submitted
 - Calls SCSB Request Item API to create a request
 - Tell patron "Your request for XXXXX has been submitted"
 - Echo back the response message from the SCSB API call

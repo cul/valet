@@ -5,18 +5,24 @@ class FormsController < ApplicationController
   before_action :initialize_service
 
   # CUMC staff who have not completed security training
-  # may not use authenticated online request services.
+  # may not use ANY authenticated online request services.
   before_action :cumc_block
 
   # Given a bib record id as an 'id' param,
   # Lookup bibliographic information on that bib,
-  # Lookup form details in app_config,
+  # Lookup service configuration details in app_config,
   # Either:
   # - build an appropriate form
   # - bounce directly to URL
   def show
-    # validate user
-    return error("Current user is not elible for service #{@config['label']}") unless @service.patron_eligible?(current_user)
+    # Is the user eligible to use this service?
+    if not @service.patron_eligible?(current_user)
+      # There may be a service-specific message or URL
+      return redirect_to(@config['ineligible_url']) if @config['ineligible_url']
+      return error(@config['ineligible_message']) if @config['ineligible_message']
+      # Otherwise, use the default.
+      return error("Current user is not elible for service #{@config['label']}") 
+    end
 
     # validate bib record
     bib_id = params['id']
