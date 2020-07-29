@@ -20,7 +20,9 @@ class ClioRecord
     # self.fetch_locations
     # self.fetch_availabilty
 
-    @scsb_availability = {}
+    # instance variables to hold hash of per-item/per-barcode availability.
+    @scsb_availability = nil
+    @voyager_availability = nil
   end
 
   def self.new_from_bib_id(bib_id = nil)
@@ -387,15 +389,29 @@ class ClioRecord
     @barcodes = barcodes
   end
 
+  # Return the availability for the passed item.
+  # We don't know which holding this item is in.
+  # It may be offsite or local.
+  # (NB, offsite items also have a Voyager availabilty - which is masked.)
+  def get_item_availability(item)
+    # First, try offsite.  If the item is offsite, return SCSB availability.
+    if self.offsite_holdings.size > 0
+      self.fetch_scsb_availabilty unless @scsb_availability
+      return @scsb_availability[ item[:barcode] ] if @scsb_availability.has_key?(item[:barcode])
+    end
+    # If we didn't find an offsite availability for this item, check Voyager availability
+    self.fetch_voyager_availability unless @voyager_availability
+    return @voyager_availability[ item[:item_id] ]
+    # fill in both SCSB and 
+    # Ranked order - first, the SCSB availabilty, secondly, the Voyager availability
+    
+  end
+
   # Fetch availability for each barcode from SCSB
   # @scsb_availability format:
   #   { barcode: availability, barcode: availability, ...}
   def fetch_scsb_availabilty
-    @scsb_availability = Recap::ScsbRest.get_bib_availability(owningInstitutionBibId, owningInstitution) || {}
-
-    # @available_item_count = @scsb_availability.select{ |barcode, availability_status|
-    #   availability_status == 'Available'
-    # }.count
+    @scsb_availability ||= Recap::ScsbRest.get_bib_availability(owningInstitutionBibId, owningInstitution) || {}
   end
 
   # Fetch availability for each barcode from Voyager (via clio-backend)

@@ -144,7 +144,8 @@ class FormsController < ApplicationController
   # - render the service-specific form
   def build_form(bib_record = nil)
     locals = @service.setup_form_locals(bib_record)
-    # render @config[:service], locals: {bib_record: bib_record}
+    # form_template = @service.get_form_template(@config[:service], params)
+    # render form_template, locals: locals
     render @config[:service], locals: locals
   end
 

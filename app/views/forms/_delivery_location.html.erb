@@ -1,0 +1,30 @@
+
+<!-- views/forms/_delivery_location.html.erb -->
+
+<!--  "RETRIEVAL" means physical delivery -->
+<%= hidden_field_tag('requestType', 'RETRIEVAL') %>
+
+<div class='delivery_location_form'>
+
+  <table class='valet_request'>
+    <tr>
+      <td width='250px'>
+        <strong>Item to Library</strong>
+        <div class='offset-block'>
+          <%= to_library_info_link %>
+        </div>
+
+        <br>
+        Hardcopy item will be delivered to a service desk of your choice in 1-2 business days.
+
+      <td>
+        <p class="text-center">
+          <strong>Preferred Campus Delivery Location</strong>
+        </p>
+        <%= delivery_select_tag(@offsite_location_code, @customer_code) %>
+      </td>
+    </tr>
+  </table>
+
+</div>
+

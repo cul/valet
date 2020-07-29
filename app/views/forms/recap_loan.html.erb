@@ -1,0 +1,57 @@
+
+<h4><%=@config['label']%></h4>
+
+<%= form_with url: recap_scan_index_path do |form| %>
+
+  <!-- what we'll need to make the request -->
+  <%= form.hidden_field(:id, value: bib_record.id) %>
+
+  <!-- display basic bib data -->
+  <%= render 'bib', bib_record: bib_record %>
+
+  <br>
+  
+  <div class='instructional_title'>
+    Please select one or more items:
+  </div>
+  <% if bib_record.holdings.length > 1 %>
+    <div>
+      Multiple holdings are listed below.
+      All items selections must be within the same holding.
+    </div>
+  <% end %>
+
+  <br>
+
+  <!-- which items from which holdings? -->
+  <div class='all_recap_holding_details'>
+
+    <% first_holding = bib_record.holdings.first %>
+    <%= form.hidden_field(:location_code, value: first_holding[:location_code]) %>
+    <%= form.hidden_field(:customer_code, value: first_holding[:customer_code]) %>
+
+    <% bib_record.holdings.each do |holding| %>
+  
+      <div class='recap_holding_detail' id="holding_<%=holding[:mfhd_id]%>" data-location-code="<%=holding[:location_code]%>" data-customer-code="<%=holding[:customer_code]%>">
+
+        <!-- All holdings that are not the first are rendered disabled -->
+        <% disabled = (holding !=  bib_record.holdings.first) %>
+        <%= render 'holding', bib_record: bib_record, holding: holding, disabled: disabled %>
+
+      </div>
+
+      <br>
+    <% end %>
+  </div>
+
+
+  <!-- physical delivery details -->
+  <%= render 'delivery_location', bib_record: bib_record %>
+
+
+
+  <br>
+  
+  <%= form.submit('Submit Offsite Loan Request') %>
+
+<% end %>

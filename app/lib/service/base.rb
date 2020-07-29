@@ -27,6 +27,12 @@ module Service
       locals
     end
 
+    # This level of service customization is not yet needed
+    # # default is for the form template to be named the same as the service
+    # def get_form_template(service, _params = nil)
+    #   return service
+    # end
+
     def get_extra_log_params(_params = nil)
       {}
     end

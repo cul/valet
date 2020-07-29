@@ -98,21 +98,31 @@ module ValetRequestsHelper
 
   def location_label(location_code_or_holding)
     return '' unless location_code_or_holding
+    location_code = ''
+    location_name = ''
 
     # old logic, brought over from CGIs, uses hardcoded table
     if location_code_or_holding.is_a? String
       location_code = location_code_or_holding
       location_name = LOCATIONS[location_code] || 'Offsite'
-      location_code = location_code_or_holding
-      return "#{location_name} (#{location_code.upcase})"
+      # location_code = location_code_or_holding
     end
     # new logic, pull location name and code out of the holding
     if location_code_or_holding.is_a? Hash
       holding = location_code_or_holding
-      location_name = holding[:location_display]
       location_code = holding[:location_code]
-      return "#{location_name} (#{location_code})"
+      location_name = holding[:location_display]
+      # return "#{location_name} (#{location_code})"
     end
+
+    # CLEANUP location name - similar to CLIO cleanup rules
+    # from = 'delivery within 2 business days'
+    # to   = 'electronic delivery'
+    from = 'Place Request for delivery within 2 business days'
+    to   = ''
+    location_name.gsub!(/#{from}/, to)
+
+    return "#{location_name} (#{location_code.upcase})"
   end
 
   def holding_radio_button_label(holding)
@@ -155,7 +165,8 @@ module ValetRequestsHelper
   # There's a bit of complexity in the offsite request item checkboxes.
   # The barcode filter is for when the request is for a precise barcode,
   # for example, requesting the container item of a bound-with relationship.
-  def request_item_check_box_tag(item, barcode_filter = nil)
+  #   disabled - boolean, if true, render checkbox as disabled
+  def request_item_check_box_tag(item, barcode_filter = nil, disabled = nil)
     return '' unless item.present?
     # if we have a barcode filter, skip anything that doesn't match the filter
     return '' if barcode_filter.present? && item[:barcode] != barcode_filter
@@ -166,9 +177,15 @@ module ValetRequestsHelper
 
     # Setup data attributes
     options = item_data_hash(item)
+    
+    # mark all item checkboxes with a single class
+    options[:class] = 'item_check_box'
 
     # Checkbox state immutable if barcode filter is active
     options[:onclick] = 'return false;' if barcode_filter.present?
+    
+    # Some services may want to render checkboxes as disabled
+    options[:disabled] = 'true' if disabled
 
     check_box_tag('itemBarcodes[]', item[:barcode], checked_state, options)
   end
