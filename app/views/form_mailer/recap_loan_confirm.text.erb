@@ -1,0 +1,28 @@
+
+  You have requested the following from Offsite:
+
+  TITLE :   <%= @params['titleIdentifier'] %>
+  CALL NO : <%= @params['callNumber'] %>
+  BARCODE:  <%= Array(@params['itemBarcodes']).join(', ') %>
+
+  <% if @params['service_response']['success'] != true %>
+  ---------------------------------------------
+  ERROR : This submission was not successful.
+  Please check the message below.
+  ---------------------------------------------
+  <% end %>
+
+  Response message:
+      <%= @params['service_response']['screenMessage'] %>
+
+
+  Requests submitted before 2:30pm Mon-Fri will be filled in one business day; all requests filled in two business days.
+
+  You will be contacted by email (to <%= @params['emailAddress'] %>) when the item is available.
+
+  In order to best serve the Columbia community, please request 20 items or fewer per day. Contact recap@libraries.cul.columbia.edu with questions and comments.
+
+      You can check the status of your request via My Library Account in CLIO:
+      http://www.columbia.edu/cgi-bin/cul/resolve?lweb0087
+
+  Thank you for using Offsite collections!

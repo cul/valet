@@ -80,7 +80,7 @@ module Service
       return illiad_params
     end
     
-    # def setup_form_locals(bib_record)
+    # def setup_form_locals(params, bib_record, current_user)
     #   bib_record.fetch_voyager_availability
     #
     #   locals = { bib_record: bib_record }

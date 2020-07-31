@@ -165,8 +165,7 @@ module ValetRequestsHelper
   # There's a bit of complexity in the offsite request item checkboxes.
   # The barcode filter is for when the request is for a precise barcode,
   # for example, requesting the container item of a bound-with relationship.
-  #   disabled - boolean, if true, render checkbox as disabled
-  def request_item_check_box_tag(item, barcode_filter = nil, disabled = nil)
+  def request_item_check_box_tag(item, barcode_filter = nil)
     return '' unless item.present?
     # if we have a barcode filter, skip anything that doesn't match the filter
     return '' if barcode_filter.present? && item[:barcode] != barcode_filter
@@ -184,9 +183,6 @@ module ValetRequestsHelper
     # Checkbox state immutable if barcode filter is active
     options[:onclick] = 'return false;' if barcode_filter.present?
     
-    # Some services may want to render checkboxes as disabled
-    options[:disabled] = 'true' if disabled
-
     check_box_tag('itemBarcodes[]', item[:barcode], checked_state, options)
   end
 

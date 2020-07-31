@@ -34,6 +34,18 @@ class FormMailer < ApplicationMailer
     subject = "Precat Search Request [#{title}]"
     mail(to: to, from: from, subject: subject)
   end
+  
+  def recap_loan_confirm
+    to = params['emailAddress']
+    from = 'recap@library.columbia.edu'
+    recap_subject = 'ReCAP Loan Request Submission Confirmation'
+    recap_subject += " [#{params['titleIdentifier']}]" if params['titleIdentifier']
+    recap_subject += " (#{Rails.env})" if Rails.env != 'valet_prod'
+    subject = recap_subject
+    # Make params available within template by using an instance variable
+    @params = params
+    mail(to: to, from: from, subject: subject)
+  end
 
   # ###
   # ### PAGING - mail to staff

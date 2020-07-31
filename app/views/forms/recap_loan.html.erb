@@ -1,10 +1,23 @@
 
 <h4><%=@config['label']%></h4>
 
-<%= form_with url: recap_scan_index_path do |form| %>
+<%= form_with url: recap_loan_index_path do |form| %>
 
   <!-- what we'll need to make the request -->
   <%= form.hidden_field(:id, value: bib_record.id) %>
+
+  <!-- The SCSB API requires a number of parameters: -->
+  <!-- Fixed-value request parameters -->
+  <%= hidden_field_tag(:requestingInstitution, 'CUL') %>
+  <%= hidden_field_tag(:requestType, 'RETRIEVAL') %>
+  <%= hidden_field_tag(:patronBarcode, current_user.barcode) %>
+  <%= hidden_field_tag(:emailAddress, current_user.email) %>
+  <!-- Record-specific request parameters -->
+  <%= hidden_field_tag(:itemOwningInstitution, bib_record.owningInstitution) %>
+  <%= hidden_field_tag(:bibId, bib_record.id) %>
+  <%= hidden_field_tag(:titleIdentifier, bib_record.titleIdentifier) %>
+  <%= hidden_field_tag(:callNumber, holding[:display_call_number]) %>
+  <!-- And other parameters, filled in by form elements: itemBarcodes, deliveryLocation  -->
 
   <!-- display basic bib data -->
   <%= render 'bib', bib_record: bib_record %>
@@ -14,44 +27,28 @@
   <div class='instructional_title'>
     Please select one or more items:
   </div>
-  <% if bib_record.holdings.length > 1 %>
-    <div>
-      Multiple holdings are listed below.
-      All items selections must be within the same holding.
-    </div>
-  <% end %>
 
   <br>
 
-  <!-- which items from which holdings? -->
-  <div class='all_recap_holding_details'>
+  <%= render 'holding', bib_record: bib_record, holding: holding %>
 
-    <% first_holding = bib_record.holdings.first %>
-    <%= form.hidden_field(:location_code, value: first_holding[:location_code]) %>
-    <%= form.hidden_field(:customer_code, value: first_holding[:customer_code]) %>
-
-    <% bib_record.holdings.each do |holding| %>
+  <br>
   
-      <div class='recap_holding_detail' id="holding_<%=holding[:mfhd_id]%>" data-location-code="<%=holding[:location_code]%>" data-customer-code="<%=holding[:customer_code]%>">
-
-        <!-- All holdings that are not the first are rendered disabled -->
-        <% disabled = (holding !=  bib_record.holdings.first) %>
-        <%= render 'holding', bib_record: bib_record, holding: holding, disabled: disabled %>
-
-      </div>
-
-      <br>
-    <% end %>
+  <div class='instructional_title'>
+    Please select campus delivery location:
   </div>
-
-
+  <div class='instructional_description'>
+    (Requests submitted before 2:30pm Mon-Fri 
+    will be filled in one business day;
+    all requests filled in two business days.)
+  </div>
+  
+  
   <!-- physical delivery details -->
-  <%= render 'delivery_location', bib_record: bib_record %>
-
-
+  <%= render 'delivery_location', bib_record: bib_record, holding: holding %>
 
   <br>
   
-  <%= form.submit('Submit Offsite Loan Request') %>
+  <%= form.submit('Submit Offsite Loan Request', name: 'submit', onclick: 'return validateRecapLoanRequestForm()') %>
 
 <% end %>

@@ -16,7 +16,7 @@ module Service
       false
     end
 
-    def setup_form_locals(bib_record)
+    def setup_form_locals(params, bib_record, current_user)
       # We'll want to give lots of info details about the
       # precat holding and it's availability
       precat_holdings = get_precat_holdings(bib_record)

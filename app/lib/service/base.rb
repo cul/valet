@@ -18,20 +18,22 @@ module Service
       nil
     end
 
-    def get_confirmation_locals(_params, _bib_record, _current_user)
-      {}
-    end        
-
-    def setup_form_locals(bib_record = nil)
+    def setup_form_locals(_params, bib_record = nil, _current_user)
       locals = { bib_record: bib_record }
       locals
     end
 
-    # This level of service customization is not yet needed
-    # # default is for the form template to be named the same as the service
-    # def get_form_template(service, _params = nil)
-    #   return service
-    # end
+    # Forms Controller manages redirects, emails, and confirms.
+    # If the service needs to do any form-param processing before all that,
+    # they can override this method.
+    def service_form_handler(_params)
+      nil
+    end
+    
+    def get_confirmation_locals(_params, _bib_record, _current_user)
+      {}
+    end        
+
 
     def get_extra_log_params(_params = nil)
       {}

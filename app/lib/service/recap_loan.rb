@@ -12,5 +12,70 @@ module Service
     end
 
 
+    def setup_form_locals(params, bib_record, current_user)
+      # find the holding being requested
+      target_holding = bib_record.holdings.select do |holding|
+        holding[:mfhd_id] == params[:mfhd_id]
+      end.first
+
+      # pass along the bib and the holding being requested
+      locals = {
+        bib_record: bib_record,
+        holding: target_holding,
+      }
+      locals
+    end
+
+    # Service-specific form-param handling, before any email or confirm screen.
+    # For ReCAP services, this is where the actual SCSB API request is made.
+    def service_form_handler(params)
+      service_response = Recap::ScsbRest.request_item(params)
+    end
+    
+    # Basic request data (bib, user, datestamp, IP) is automatically logged.
+    # Services may return a hash of additional data to be logged.
+    def get_extra_log_params(params)
+      extra_log_params = {}
+      
+      extra_log_params['patronBarcode'] = params['patronBarcode']
+      extra_log_params['emailAddress'] = params['emailAddress']
+      
+      success = params['service_response']['success'] ||  params['service_response']['error'] || 'false'
+      extra_log_params['success'] = success
+
+      screenMessage = params['service_response']['screenMessage'] ||  params['service_response']['message'] || ''
+      extra_log_params['screenMessage'] = screenMessage
+
+      extra_log_params['requestType'] = params['requestType']
+      extra_log_params['deliveryLocation'] = params['deliveryLocation']
+
+      extra_log_params['itemOwningInstitution'] = params['itemOwningInstitution']
+      extra_log_params['itemBarcodes'] = Array(params['itemBarcodes']).join(' / ')
+      extra_log_params['callNumber'] = params['callNumber']
+
+      extra_log_params
+    end
+    
+    def send_emails(params, bib_record, current_user)
+      # Call recap_loan() method of /app/mailers/form_mailer.rb
+      # Pass along all our params to be used in email subject and body template
+      FormMailer.with(params).recap_loan_confirm.deliver_now
+    end
+    
+    # The ReCAP services will give the patrons a confirmation screen,
+    # so they need to define a locals hash for the template
+    def get_confirmation_locals(params, bib_record, current_user)
+      confirm_locals = {
+        params: params
+        # bib_record: bib_record,
+        # barcodes:  params[:itemBarcodes],
+        # patron_uni: current_user.uid,
+        # patron_email: current_user.email,
+        # staff_email: APP_CONFIG[:bearstor][:staff_email]
+      }
+      confirm_locals
+    end
+
+    
   end
 end

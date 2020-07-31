@@ -33,7 +33,7 @@ module Service
       false
     end
 
-    def setup_form_locals(bib_record)
+    def setup_form_locals(params, bib_record, current_user)
       availability ||= bib_record.fetch_voyager_availability
       bearstor_holdings = get_bearstor_holdings(bib_record)
       available_bearstor_items = get_available_items(bearstor_holdings, availability)

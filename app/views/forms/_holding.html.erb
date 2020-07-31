@@ -2,7 +2,6 @@
 <!-- generic display of item details within a single holding -->
 
 <% filter_barcode ||= nil %>
-<% disabled ||= false %>
 
 <% holding[:summary_holdings].each do |summary| %>
   <%= summary%>
@@ -24,7 +23,7 @@
           <%= summary%>
           <br>
         <% end %>
-        <% if current_user.admin? %>
+        <% if current_user.admin? && false %>
           <b><i><small>DEBUG - Customer Code: <%= holding[:customer_code]%></small></i></b>
         <% end %>
       </td>
@@ -43,8 +42,8 @@
       <tr>
         <td>
           <% case availability
-             when 'Available' %>               <!-- -->
-               <%= request_item_check_box_tag(item, filter_barcode, disabled) %>
+             when 'Available' %>
+               <%= request_item_check_box_tag(item, filter_barcode) %>
           <% else %>
             OUT
           <% end %>

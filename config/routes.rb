@@ -15,6 +15,20 @@ Rails.application.routes.draw do
     get 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
+  # special admin page
+  get 'admin/system'
+
+  # all requests generate logs
+  resources :logs do
+    collection do
+      # bounce the user to another URL, and log it
+      get 'bounce'
+      # # List known log sets
+      # get 'sets'
+    end
+  end
+
+  # === SIMPLE SERVICES ===
   # Valet maps all these requests to the Forms Controller,
   # with each path mapping to a key in app_config.yml
   # - incoming links to /docdel/123 map to #show, with bibkey 123,
@@ -22,8 +36,8 @@ Rails.application.routes.draw do
   # - #create, the form-handler - logs, emails, bounces, etc.
   # resources :borrowdirect,
   resources :paging,
-            :recap_scan,
-            :recap_loan,
+            # :recap_scan,
+            # :recap_loan,
             :ill,
             :docdel,
             :intercampus,
@@ -35,27 +49,28 @@ Rails.application.routes.draw do
             controller: 'forms',
             only: [:show, :create]
 
+  # === NOT-SO-SIMPLE SERVICES ===
+  # These services require extra information beyond the bib key
+  
+  # The ReCAP services act upon a specific holding within a bib,
+  # so they need both args passed in, like so:
+  #     https://valet.cul.columbia.edu/recap_loan/2929292/10086
+  #     https://valet.cul.columbia.edu/recap_scan/2929292/10086
+  # Here's the routing magic to generate the correct bound routes:
+  resources :recap_loan, 
+            :recap_scan, 
+            controller: 'forms',
+            only: [:create] do
+    get ':mfhd_id', action: :show, on: :member
+  end
+
+
+  # === OLD CRUD BELOW ===
 
   resources :borrowdirect, only: [:show]
   get '/borrowdirect', to: 'borrowdirect#show'  
 
-  # This needs to be rewritten before prod rollout to use newer simplified forms-controller approach
-  # resources :recall_hold, only: [:show]
-
-
-  # ILL currently has custom code
   # Offsite currently has custom code
-  # 'Barnard' currently has custom code
-
-  # resources :ill_requests do
-  #   collection do
-  #     get 'affiliation'
-  #     get 'bib'
-  #     get 'ineligible'
-  #     get 'error'
-  #   end
-  # end
-
   resources :offsite_requests do
     collection do
       # different entry points to the request workflow
@@ -69,30 +84,8 @@ Rails.application.routes.draw do
     end
   end
 
-  # resources :barnard_remote_requests do
-  #   collection do
-  #     # different entry points to the request workflow
-  #     get 'bib'
-  #     get 'holding'
-  #
-  #     # exception conditions
-  #     get 'ineligible'
-  #     get 'error'
-  #   end
-  # end
-
-  # special admin pages
-  get 'admin/system'
+  # OLD first-generation approach to logfiles
   get 'admin/logs'
   get 'admin/log_file'
 
-  # all requests generate logs
-  resources :logs do
-    collection do
-      # bounce the user to another URL, and log it
-      get 'bounce'
-      # # List known log sets
-      # get 'sets'
-    end
-  end
 end

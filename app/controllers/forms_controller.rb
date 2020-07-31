@@ -51,33 +51,32 @@ class FormsController < ApplicationController
   def create
     bib_id = params['id']
     bib_record = ClioRecord.new_from_bib_id(bib_id)
+    
+    # Some services need to do some custom form processing.
+    # If they do, stash any result of that processing into 'params'
+    service_response = @service.service_form_handler(params)
+    params['service_response'] = service_response if service_response
 
     # All should log, so that should happen here.
     # Some services will pass along extra params from the submission form.
     extra_log_params = @service.get_extra_log_params(params) || {}
     log(bib_record, current_user, extra_log_params)
 
-    # Service may want to send emails.
+    # Now that we have user-input params, the service may want to:
+
+    # --- send emails
     @service.send_emails(params, bib_record, current_user)
 
-    # Now that we have user-input params,
-    # the service may want to redirect to an external URL
+    # --- redirect browser to an external URL
     redirect_url = @service.build_service_url(params, bib_record, current_user)
     return redirect_to redirect_url if redirect_url.present?
 
-    # Service may want to render a confirmation page
-    # confirm_params = @service.get_confirm_params(params, bib_record, current_user)
-    # return render(confirm_params) if confirm_params.present?
-
+    # --- render a confirmation page
     locals = @service.get_confirmation_locals(params, bib_record, current_user)
     return render("#{@config[:service]}_confirm", locals: locals) if locals.present?
 
     # If the service didn't render or redirect??
     return error("Valet error: No confirm page or redirect defined for service #{@config['label']}")
-
-    # # For now, just send it to the service module,
-    # # with the most commonly used args - the bib and the user
-    # @service.form_handler(params, bib_record, current_user)
   end
 
   private
@@ -143,9 +142,7 @@ class FormsController < ApplicationController
   # - setup service-specific local variables for the form
   # - render the service-specific form
   def build_form(bib_record = nil)
-    locals = @service.setup_form_locals(bib_record)
-    # form_template = @service.get_form_template(@config[:service], params)
-    # render form_template, locals: locals
+    locals = @service.setup_form_locals(params, bib_record, current_user)
     render @config[:service], locals: locals
   end
 
