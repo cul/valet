@@ -3,7 +3,9 @@ module Service
 
     # Is the current patron allowed to use the Paging service?
     def patron_eligible?(current_user = nil)
-      permitted_affils = APP_CONFIG[:paging][:permitted_affils]
+      return false unless current_user && current_user.affils
+
+      permitted_affils = APP_CONFIG[:paging][:permitted_affils] || []
       permitted_affils.each do |affil|
         return true if current_user.affils.include?(affil)
       end
