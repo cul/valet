@@ -1,6 +1,15 @@
 module Service
   class Paging < Service::Base
 
+    # Is the current patron allowed to use the Paging service?
+    def patron_eligible?(current_user = nil)
+      permitted_affils = APP_CONFIG[:paging][:permitted_affils]
+      permitted_affils.each do |affil|
+        return true if current_user.affils.include?(affil)
+      end
+      return false
+    end
+
     def build_service_url(params, bib_record, current_user)
 
       # Explicitly select the form, and explicitly set form field values
