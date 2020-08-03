@@ -19,15 +19,14 @@ module Service
       
       # FIRST - process the campus triage form.
       campus = params['campus']
-      # For TC and Law, redirect to the URL found in the Illiad CGI scripts
-      # TC
-      return 'http://docdel.tc-library.org'
-      # LAW
-      return 'http://www.law.columbia.edu/library/services'
+      # TC - Teachers College Library
+      return 'https://library.tc.columbia.edu' if campus == 'tc'
+      # LAW - Arthur W. Diamond Law Library
+      return 'http://www.law.columbia.edu/library/services' if campus == 'law'
 
       # Otherwise, proceed with a redirect to OCLC ILLiad
-      # MCC
-      # TC
+      # MCC - Medical Center Campus, a.k.a., HSL
+      # MBUTS - Morningside, Barnard, UTS
 
       illiad_base_url = APP_CONFIG[:paging][:illiad_base_url]
       illiad_params = get_illiad_params_explicit(bib_record)
