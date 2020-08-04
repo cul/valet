@@ -18,10 +18,17 @@ module Service
         holding[:mfhd_id] == params[:mfhd_id]
       end.first
 
+      # form has special handling for zero-available-items
+      available_count = 0
+      target_holding[:items].each do |item|
+        available_count += 1 if (bib_record.fetch_scsb_availabilty[item[:barcode]] == 'Available')
+      end
+
       # pass along the bib and the holding being requested
       locals = {
         bib_record: bib_record,
         holding: target_holding,
+        available_count: available_count
       }
       locals
     end

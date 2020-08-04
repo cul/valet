@@ -1,5 +1,5 @@
 
-<h4><%=@config['label']%></h4>
+<h4><%=@config['label']%> Request</h4>
 
 <%= form_with url: recap_loan_index_path do |form| %>
 
@@ -21,6 +21,16 @@
 
   <!-- display basic bib data -->
   <%= render 'bib', bib_record: bib_record %>
+
+  <% if available_count == 0 %>
+    <!-- No Available Offsite Items - patron should not have been sent to Valet -->
+    <div class='danger-block'>
+      <strong>NOTICE:</strong>
+      No available offsite items for this record.
+      <br>The Offsite Request System cannot be used for this record.
+      <br>Please locate the material in CLIO and try Borrow Direct or ILL.
+    </div>
+  <% end %>
 
   <br>
   

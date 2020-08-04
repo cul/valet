@@ -128,6 +128,10 @@ module Recap
       response_data = JSON.parse(response.body)
       availabilities = {}
       response_data.each do |item|
+        if item['errorMessage']
+          Rails.logger.error "ERROR: #{item['errorMessage']}"
+          next
+        end
         availabilities[item['itemBarcode']] = item['itemAvailabilityStatus']
       end
       availabilities

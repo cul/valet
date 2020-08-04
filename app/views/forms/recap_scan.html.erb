@@ -1,23 +1,64 @@
 
-<h4><%=@config['label']%></h4>
+<h4><%=@config['label']%> Request</h4>
 
 <%= form_with url: recap_scan_index_path do |form| %>
 
   <!-- what we'll need to make the request -->
   <%= form.hidden_field(:id, value: bib_record.id) %>
 
+  <!-- The SCSB API requires a number of parameters: -->
+  <!-- Fixed-value request parameters -->
+  <%= hidden_field_tag(:requestingInstitution, 'CUL') %>
+  <%= hidden_field_tag(:requestType, 'EDD') %>
+  <%= hidden_field_tag(:patronBarcode, current_user.barcode) %>
+  <%= hidden_field_tag(:emailAddress, current_user.email) %>
+  <!-- Record-specific request parameters -->
+  <%= hidden_field_tag(:itemOwningInstitution, bib_record.owningInstitution) %>
+  <%= hidden_field_tag(:bibId, bib_record.id) %>
+  <%= hidden_field_tag(:titleIdentifier, bib_record.titleIdentifier) %>
+  <%= hidden_field_tag(:callNumber, holding[:display_call_number]) %>
+  <!-- And other parameters, filled in by form elements: itemBarcodes  -->
+
   <!-- display basic bib data -->
   <%= render 'bib', bib_record: bib_record %>
 
-  <br>
 
-  <!-- what to collect from the patron -->
-  <% bib_record.holdings.each do |holding| %>
-    <%= render 'holding', bib_record: bib_record, holding: holding %>
+  <% if available_count == 0 %>
+    <!-- No Available Offsite Items - patron should not have been sent to Valet -->
+    <div class='danger-block'>
+      <strong>NOTICE:</strong>
+      No available offsite items for this record.
+      <br>The Offsite Request System cannot be used for this record.
+      <br>Please locate the material in CLIO and try Borrow Direct or ILL.
+    </div>
   <% end %>
 
   <br>
   
-  <%= form.submit('Submit Request') %>
+  <div class='instructional_title'>
+    Please select an item:
+  </div>
+  <div class='instructional_description'>
+    For electronic delivery service (scan) only one item may be requested at a time.
+  </div>
+  
+
+  <!-- what to collect from the patron -->
+  <%= render 'holding', bib_record: bib_record, holding: holding %>
+
+  <br>
+
+  <div class='instructional_title'>
+    Please enter citation details:
+  </div>
+
+  <br> 
+  
+  <!-- electronic document delivery details -->
+  <%= render 'citation', bib_record: bib_record, holding: holding %>
+
+  <br>
+  
+  <%= form.submit('Submit Offsite Scan Request', name: 'submit', onclick: 'return validateRecapScanRequestForm()') %>
 
 <% end %>

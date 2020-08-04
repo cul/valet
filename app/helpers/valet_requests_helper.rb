@@ -111,7 +111,7 @@ module ValetRequestsHelper
     if location_code_or_holding.is_a? Hash
       holding = location_code_or_holding
       location_code = holding[:location_code]
-      location_name = holding[:location_display]
+      location_name = holding[:location_display] || 'Offsite'
       # return "#{location_name} (#{location_code})"
     end
 

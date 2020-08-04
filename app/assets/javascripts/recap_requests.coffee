@@ -67,11 +67,11 @@
 
   # A title must be given for all EDD requests
   if $('#chapterTitle').val().length == 0
-    errors.push "  * When choosing 'Electronic' delivery, you must include a Title."
+    errors.push "  * You must include a Title."
 
   # Start Page and End Page must both be filled in
   if $('#startPage').val().length == 0 || $('#endPage').val().length == 0
-    errors.push "  * When choosing 'Electronic' delivery, you must include both a Start Page and an End Page.  If that information is not available, please enter 0."
+    errors.push "  * You must include both a Start Page and an End Page.  If that information is not available, please enter 0."
   # ==================================================
 
   # IF WE HAVE ERRORS, alert the user, and fail the form validation
