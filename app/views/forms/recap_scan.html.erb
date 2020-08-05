@@ -23,6 +23,24 @@
   <%= render 'bib', bib_record: bib_record %>
 
 
+
+  <br>
+  
+  <div class='instructional_title'>
+    Please select an item:
+  </div>
+  <div class='instructional_description'>
+    For electronic delivery delivery (scan) only 
+    <strong>one</strong>
+    item may be requested at a time.
+  </div>
+  
+
+  <!-- what to collect from the patron -->
+  <%= render 'holding', bib_record: bib_record, holding: holding %>
+
+  <br>
+
   <% if available_count == 0 %>
     <!-- No Available Offsite Items - patron should not have been sent to Valet -->
     <div class='danger-block'>
@@ -33,32 +51,29 @@
     </div>
   <% end %>
 
-  <br>
+
+  <% if available_count > 0 %>
+    <!-- The rest of the form, only if there are available items -->
+
+    <div class='instructional_title'>
+      Please enter citation details:
+    </div>
+
+    <br> 
   
-  <div class='instructional_title'>
-    Please select an item:
-  </div>
-  <div class='instructional_description'>
-    For electronic delivery service (scan) only one item may be requested at a time.
-  </div>
+    <!-- electronic document delivery details -->
+    <%= render 'citation', bib_record: bib_record, holding: holding %>
+
+    <br>
+
+    <!-- copyright attestation -->
+    <%= render 'copyright_attestation' %>
+
+    <br>
+
+    <%= form.submit('Submit Offsite Scan Request', name: 'submit', onclick: 'return validateRecapScanRequestForm()') %>
+
+  <% end %>
   
-
-  <!-- what to collect from the patron -->
-  <%= render 'holding', bib_record: bib_record, holding: holding %>
-
-  <br>
-
-  <div class='instructional_title'>
-    Please enter citation details:
-  </div>
-
-  <br> 
-  
-  <!-- electronic document delivery details -->
-  <%= render 'citation', bib_record: bib_record, holding: holding %>
-
-  <br>
-  
-  <%= form.submit('Submit Offsite Scan Request', name: 'submit', onclick: 'return validateRecapScanRequestForm()') %>
 
 <% end %>

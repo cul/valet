@@ -57,6 +57,11 @@
   # ==================================================
   # Validation rules for Electronic Document Delivery (a.k.a., Scan)
 
+  # Is the Copyright Attestation checked?
+  copyright_attestation = $('input[name="copyright_attestation"]:checked')
+  if copyright_attestation.length == 0
+    errors.push "  * You must check the box in the copyright acknowledgment."
+
   # EDD requests are made against a single volume
   if checked_barcodes_count > 1
     errors.push "  * Only one barcode may be selected for scan requests."
