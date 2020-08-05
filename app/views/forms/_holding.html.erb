@@ -38,7 +38,7 @@
 
     <% holding[:items].each do |item| %>
       <% # next unless availability = bib_record.voyager_availability[ item[:item_id] ] %>
-      <% next unless availability = bib_record.get_item_availability(item) %>
+      <% next unless availability = bib_record.get_item_availability(holding, item) %>
       <tr>
         <td>
           <% case availability

@@ -89,6 +89,10 @@ module ValetRequestsHelper
     delivery_options ||= get_delivery_options(offsite_location_code)
     delivery_default ||= get_delivery_default(offsite_location_code)
 
+    # LIBSYS-3154 - OVERRIDE - hardcode for first phase
+    delivery_options = [ 'BU' ]
+    delivery_default = 'BU'
+
     options_array = delivery_options.map do |delivery_location_code|
       [LOCATIONS[delivery_location_code], delivery_location_code]
     end

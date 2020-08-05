@@ -6,7 +6,7 @@
 
   <table class='valet_request'>
     <tr>
-      <td width='250px'>
+      <td width='40%'>
         <strong>Item to Library</strong>
         <br>
         Hardcopy item will be delivered to a service desk of your choice in 1-2 business days.
@@ -21,6 +21,9 @@
           <strong>Preferred Campus Delivery Location</strong>
         </p>
         <%= delivery_select_tag(holding[:location_code], holding[:customer_code]) %>
+        <br>
+        <br>
+        ( campus delivery locations temporarily limited )
       </td>
     </tr>
   </table>

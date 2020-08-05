@@ -22,6 +22,16 @@
   <!-- display basic bib data -->
   <%= render 'bib', bib_record: bib_record %>
 
+  <br>
+
+  <div class='instructional_title'>
+    Please select one or more items:
+  </div>
+
+  <%= render 'holding', bib_record: bib_record, holding: holding %>
+
+  <br>
+
   <% if available_count == 0 %>
     <!-- No Available Offsite Items - patron should not have been sent to Valet -->
     <div class='danger-block'>
@@ -32,33 +42,24 @@
     </div>
   <% end %>
 
-  <br>
   
-  <div class='instructional_title'>
-    Please select one or more items:
-  </div>
+  <% if available_count > 0 %>
 
-  <br>
+    <div class='instructional_title'>
+      Please select campus delivery location:
+    </div>
+    <div class='instructional_description'>
+      (Requests submitted before 2:30pm Mon-Fri 
+      will be filled in one business day;
+      all requests filled in two business days.)
+    </div>
+  
+    <!-- physical delivery details -->
+    <%= render 'delivery_location', bib_record: bib_record, holding: holding %>
 
-  <%= render 'holding', bib_record: bib_record, holding: holding %>
-
-  <br>
+    <br>
   
-  <div class='instructional_title'>
-    Please select campus delivery location:
-  </div>
-  <div class='instructional_description'>
-    (Requests submitted before 2:30pm Mon-Fri 
-    will be filled in one business day;
-    all requests filled in two business days.)
-  </div>
-  
-  
-  <!-- physical delivery details -->
-  <%= render 'delivery_location', bib_record: bib_record, holding: holding %>
-
-  <br>
-  
-  <%= form.submit('Submit Offsite Loan Request', name: 'submit', onclick: 'return validateRecapLoanRequestForm()') %>
+    <%= form.submit('Submit Offsite Loan Request', name: 'submit', onclick: 'return validateRecapLoanRequestForm()') %>
+  <% end %>
 
 <% end %>

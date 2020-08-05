@@ -390,21 +390,18 @@ class ClioRecord
   end
 
   # Return the availability for the passed item.
-  # We don't know which holding this item is in.
-  # It may be offsite or local.
-  # (NB, offsite items also have a Voyager availabilty - which is masked.)
-  def get_item_availability(item)
-    # First, try offsite.  If the item is offsite, return SCSB availability.
-    if self.offsite_holdings.size > 0
+  # For Offsite items, return SCSB availability
+  #   (Not the Voyager availability of the matching Voyager item)
+  def get_item_availability(holding, item)
+    is_offsite = LOCATIONS['offsite_locations'].include? holding[:location_code]
+    if is_offsite
       self.fetch_scsb_availabilty unless @scsb_availability
       return @scsb_availability[ item[:barcode] ] if @scsb_availability.has_key?(item[:barcode])
-    end
-    # If we didn't find an offsite availability for this item, check Voyager availability
-    self.fetch_voyager_availability unless @voyager_availability
-    return @voyager_availability[ item[:item_id] ]
-    # fill in both SCSB and 
-    # Ranked order - first, the SCSB availabilty, secondly, the Voyager availability
-    
+    else
+      # If we didn't find an offsite availability for this item, check Voyager availability
+      self.fetch_voyager_availability unless @voyager_availability
+      return @voyager_availability[ item[:item_id] ]
+    end    
   end
 
   # Fetch availability for each barcode from SCSB
