@@ -1,5 +1,5 @@
 module Service
-  class Paging < Service::Base
+  class CampusPaging < Service::Base
 
     # Is the current patron allowed to use the Paging service?
     def patron_eligible?(current_user = nil)
