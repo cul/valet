@@ -1,6 +1,6 @@
 <%= link_to "back", logs_path %>
 <h3>
-<%= @set%> Logs are available for the following months
+<%= @logset%> Logs are available for the following months
 </h3>
 
 
@@ -17,8 +17,8 @@
           &nbsp;
           &nbsp;
           <% label = "( download csv #{download_glyph})"%>
-          <%#= link_to '( download csv )', logs_path(set: @set, download: year, format: 'csv') %>
-          <%= link_to download_label, logs_path(set: @set, download: year, format: 'csv') %>
+          <%#= link_to '( download csv )', logs_path(logset: @logset, download: year, format: 'csv') %>
+          <%= link_to download_label, logs_path(logset: @logset, download: year, format: 'csv') %>
           
         </th>
       </tr>
@@ -32,10 +32,10 @@
           <% year_month = "#{year}-#{month}"%>
           <% link_label = "#{year_month} - #{@month_counts["#{year}-#{month}"]}" %>
           <span class='h5'>
-            <%= link_to link_label, logs_path(set: @set, year_month: year_month) %>
+            <%= link_to link_label, logs_path(logset: @logset, year_month: year_month) %>
           </span>
           &nbsp;
-          <%= link_to download_label(''), logs_path(set: @set, download: year_month, format: 'csv') %>
+          <%= link_to download_label(''), logs_path(logset: @logset, download: year_month, format: 'csv') %>
         </td>
         <% end %>
       </tr>
@@ -46,10 +46,10 @@
             <% year_month = "#{year}-#{month}"%>
             <% link_label = "#{year_month} - #{@month_counts["#{year}-#{month}"]}" %>
             <span class='h5'>
-              <%= link_to link_label, logs_path(set: @set, year_month: year_month) %>
+              <%= link_to link_label, logs_path(logset: @logset, year_month: year_month) %>
             </span>
             &nbsp;
-            <%= link_to download_label(''), logs_path(set: @set, download: year_month, format: 'csv') %>
+            <%= link_to download_label(''), logs_path(logset: @logset, download: year_month, format: 'csv') %>
           </td>
         <% end %>
       </tr>

@@ -13,23 +13,23 @@ class LogsController < ApplicationController
   def index
     return error('Log access restricted') unless current_user.valet_admin?
     
-    @set = log_params[:set]
+    @logset = log_params[:logset]
 
     # If no set of logs was specified,
     # ask for which one.
-    if @set.blank?
-      @set_counts = Log.group('set').distinct.count
-      return render action: 'set_list'
+    if @logset.blank?
+      @logset_counts = Log.group('logset').distinct.count
+      return render action: 'logset_list'
     end
 
     # If they've asked for access to a set, 
     # make sure they're permitted
 
-    # Have they asked to download a year of logs for a given log set?
+    # Have they asked to download a year of logs for a given logset?
     # download param may be a year (YYYY) or year/month (YYYY-MM).
     download = log_params[:download]
     if download.present?
-      # @rows = Log.where(set: @set).by_year(download).order(:created_at)
+      # @rows = Log.where(logset: @logset).by_year(download).order(:created_at)
       @rows = logs_by_date(download).order(created_at: :asc)
 
       # This set's keys, derived from the JSON logdata of an example row
@@ -37,7 +37,7 @@ class LogsController < ApplicationController
       # standard keys for any logged requests (ip, user-agent, etc.)
       @request_keys = request_keys
 
-      filename = "#{@set} #{download}".parameterize.underscore + '.csv'
+      filename = "#{@logset} #{download}".parameterize.underscore + '.csv'
 
       response.headers['Content-Type'] = 'text/csv'
       response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
@@ -55,10 +55,10 @@ class LogsController < ApplicationController
     end
 
     # OK, we're going to move forward and display an interactive JS datatable
-    # of a given year/month for a given log set.
+    # of a given year/month for a given logset.
     @rows = logs_by_date(@year_month).order(created_at: :desc)
 
-    # This set's keys, derived from the JSON logdata of an example row
+    # This logset's keys, derived from the JSON logdata of an example row
     @logdata_keys = get_keys_from_logdata(@rows.first)
 
     # standard keys for any logged requests (ip, user-agent, etc.)
@@ -97,13 +97,13 @@ class LogsController < ApplicationController
 
   # Display a list of available log sets
   # ('ILL', 'Scan & Deliver', etc.)
-  def sets
+  def logsets
   end
 
   private
 
   def log_params
-    params.permit(:set, :logdata, :url, :year_month, :download, :format)
+    params.permit(:logset, :logdata, :url, :year_month, :download, :format)
   end
 
   # return array of keys of the basic request fields
@@ -111,7 +111,7 @@ class LogsController < ApplicationController
     [:created_at, :user_agent, :browser_name, :browser_version, :referrer, :remote_ip]
   end
 
-  # Figure out appropriate keys for this log set by looking
+  # Figure out appropriate keys for this logset by looking
   # at the JSON logdata of the first retrieved row
   def get_keys_from_logdata(row)
     return [] if row.blank?
@@ -133,7 +133,7 @@ class LogsController < ApplicationController
       group_clause = 'strftime("%Y", created_at)'
     end
 
-    Log.where(set: @set).order(:created_at).group(group_clause).count
+    Log.where(logset: @logset).order(:created_at).group(group_clause).count
   end
 
   def get_month_counts
@@ -145,7 +145,7 @@ class LogsController < ApplicationController
       group_clause = 'strftime("%Y-%m", created_at)'
     end
 
-    Log.where(set: @set).order(:created_at).group(group_clause).count
+    Log.where(logset: @logset).order(:created_at).group(group_clause).count
   end
 
   # download param may be a year (YYYY) or year/month (YYYY-MM).
@@ -166,7 +166,7 @@ class LogsController < ApplicationController
       where_clause = "strftime('%Y', created_at) = '#{download}'"
     end
 
-    Log.where(set: @set).where(where_clause)
+    Log.where(logset: @logset).where(where_clause)
   end
 
   def log_by_month(download)
@@ -179,6 +179,6 @@ class LogsController < ApplicationController
       where_clause = "strftime('%Y', created_at) = '#{year}' AND strftime('%m', created_at) = '#{month}'"
     end
 
-    Log.where(set: @set).where(where_clause)
+    Log.where(logset: @logset).where(where_clause)
   end
 end

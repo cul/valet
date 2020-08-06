@@ -169,7 +169,7 @@ class FormsController < ApplicationController
     data = request_data
 
     # which log set?
-    data[:set] = @config['label']
+    data[:logset] = @config['logset'] || @config[:service].titleize
 
     # build up logdata for this specific transation
     # - tell about the bib

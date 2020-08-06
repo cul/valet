@@ -10,11 +10,11 @@
   </thead>
 
   <tbody>
-    <% @set_counts.each do |set, count| %>
+    <% @logset_counts.each do |logset, count| %>
       <tr>
         <td>
           <h4>
-            <%= link_to set, logs_path(set: set) %>
+            <%= link_to logset, logs_path(logset: logset) %>
           </h4>
         </td>
         <td>
