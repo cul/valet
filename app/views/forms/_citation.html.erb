@@ -1,7 +1,6 @@
 
 <!-- views/forms/_citation.html.erb -->
 
-
 <div class='citation_form'>
 
   <table class='valet_request'>
@@ -28,42 +27,49 @@
           <div class='form-group form-group-sm'>
             <label for='chapterTitle' class='col-sm-4 control-label'>Chapter/Article Title:</label>
             <div class='col-sm-8'>
-              <%= text_field_tag(:chapterTitle, @wanted_title || '', size: '30', class: 'form-control edd-field', disabled: false) %>
+              <%= text_field_tag(:chapterTitle, @wanted_title || '', size: '30', maxlength: '50', class: 'form-control', disabled: false) %>
             </div>
           </div>
 
           <div class='form-group form-group-sm'>
             <label for='startPage' class='col-sm-4 control-label'>Start Page:</label>
             <div class='col-sm-8'>
-              <%= text_field_tag(:startPage, '', size: '30', class: 'form-control edd-field', disabled: false) %>
+              <%= text_field_tag(:startPage, '', size: '30', maxlength: '60', class: 'form-control', disabled: false) %>
             </div>
           </div>
 
           <div class='form-group form-group-sm'>
             <label for='endPage' class='col-sm-4 control-label'>End Page:</label>
-            <div class='col-sm-8'>
-              <%= text_field_tag(:endPage, '', size: '30', class: 'form-control edd-field', disabled: false) %>
+            <div class='col-sm-3'>
+              <%= text_field_tag(:endPage, '', size: '10', maxlength: '8', class: 'form-control', disabled: false) %>
             </div>
           </div>
 
           <div class='form-group form-group-sm'>
             <label for='author' class='col-sm-4 control-label'>Article Author:</label>
-            <div class='col-sm-8'>
-              <%= text_field_tag(:author, '', size: '30', class: 'form-control edd-field', disabled: false) %>
+            <div class='col-sm-3'>
+              <%= text_field_tag(:author, '', size: '10', maxlength: '8', class: 'form-control', disabled: false) %>
             </div>
           </div>
 
           <div class='form-group form-group-sm'>
             <label for='volume' class='col-sm-4 control-label'>Volume #:</label>
-            <div class='col-sm-8'>
-              <%= text_field_tag(:volume, '', size: '30', class: 'form-control edd-field', disabled: false) %>
+            <div class='col-sm-3'>
+              <%= text_field_tag(:volume, '', size: '10', maxlength: '7', class: 'form-control', disabled: false) %>
             </div>
           </div>
 
           <div class='form-group form-group-sm'>
             <label for='issue' class='col-sm-4 control-label'>Issue #, Date:</label>
+            <div class='col-sm-3'>
+              <%= text_field_tag(:issue, @wanted_enum_chron || '', size: '10', maxlength: '6', class: 'form-control', disabled: false) %>
+            </div>
+          </div>
+
+          <div class='form-group form-group-sm'>
+            <label for='requestNotes' class='col-sm-4 control-label'>Notes:</label>
             <div class='col-sm-8'>
-              <%= text_field_tag(:issue, @wanted_enum_chron || '', size: '30', class: 'form-control edd-field', disabled: false) %>
+              <%= text_field_tag(:requestNotes, '', size: '30', maxlength: '250', class: 'form-control', disabled: false) %>
             </div>
           </div>
 
