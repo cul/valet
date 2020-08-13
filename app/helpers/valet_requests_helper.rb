@@ -96,10 +96,10 @@ module ValetRequestsHelper
     # second-phase, support a dynamic list
     active_delivery_locations = APP_CONFIG[:recap_loan][:active_delivery_locations]
     if active_delivery_locations
-      # First, delete from the meny anything that's not active
-      delivery_options.each do |location|
-        delivery_options.delete(location) unless active_delivery_locations.include?(location)
-      end
+      # First - remove any location options that are not in the "active" list
+      delivery_options = delivery_options.select { |location|
+        active_delivery_locations.include?(location)
+      }
       # Next, hardcode default, unless the default is an active location
       delivery_default = 'BU' unless active_delivery_locations.include?(delivery_default)
     end
