@@ -67,17 +67,17 @@ RSpec.describe 'Offsite Request Service' do
     expect(response.body).to include('suspension of borrowing privileges')
   end
 
-  it 'RECAP patron group users get item-request form without EDD option' do
-    sign_in FactoryBot.create(:happyuser, patron_group: 'RECAP')
-
-    params = { bib_id: '5396605', mfhd_id: '6224583' }
-    get new_offsite_request_path, params: params
-    expect(response.body).to include('Please select one or more items')
-    expect(response.body).to include('Item to Library')
-    # LIBSYS-1936 - prohibit EDD to patron-group RECAP
-    expect(response.body).not_to include('Citation') # EDD includes Citation form
-    expect(response.body).to include('not eligible to make EDD requests')
-    expect(response.body).not_to include('suspension of borrowing privileges')
-  end
+  # it 'RECAP patron group users get item-request form without EDD option' do
+  #   sign_in FactoryBot.create(:happyuser, patron_group: 'RECAP')
+  #
+  #   params = { bib_id: '5396605', mfhd_id: '6224583' }
+  #   get new_offsite_request_path, params: params
+  #   expect(response.body).to include('Please select one or more items')
+  #   expect(response.body).to include('Item to Library')
+  #   # LIBSYS-1936 - prohibit EDD to patron-group RECAP
+  #   expect(response.body).not_to include('Citation') # EDD includes Citation form
+  #   expect(response.body).to include('not eligible to make EDD requests')
+  #   expect(response.body).not_to include('suspension of borrowing privileges')
+  # end
 
 end

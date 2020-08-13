@@ -89,9 +89,20 @@ module ValetRequestsHelper
     delivery_options ||= get_delivery_options(offsite_location_code)
     delivery_default ||= get_delivery_default(offsite_location_code)
 
-    # LIBSYS-3154 - OVERRIDE - hardcode for first phase
-    delivery_options = [ 'BU' ]
-    delivery_default = 'BU'
+    # LIBSYS-3154 - OVERRIDE DELIVERY MENU
+    # # - hardcode for first phase
+    # delivery_options = [ 'BU' ]
+    # delivery_default = 'BU'
+    # second-phase, support a dynamic list
+    active_delivery_locations = APP_CONFIG[:recap_loan][:active_delivery_locations]
+    if active_delivery_locations
+      # First, delete from the meny anything that's not active
+      delivery_options.each do |location|
+        delivery_options.delete(location) unless active_delivery_locations.include?(location)
+      end
+      # Next, hardcode default, unless the default is an active location
+      delivery_default = 'BU' unless active_delivery_locations.include?(delivery_default)
+    end
 
     options_array = delivery_options.map do |delivery_location_code|
       [LOCATIONS[delivery_location_code], delivery_location_code]
