@@ -100,6 +100,8 @@ module ValetRequestsHelper
       delivery_options = delivery_options.select { |location|
         active_delivery_locations.include?(location)
       }
+      # Did we delete the last location?  Use 'BU' as last-resort fallback.
+      delivery_options = [ 'BU' ] if delivery_options.empty?
       # Next, hardcode default, unless the default is an active location
       delivery_default = 'BU' unless active_delivery_locations.include?(delivery_default)
     end
