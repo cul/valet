@@ -37,10 +37,12 @@ Rails.application.routes.draw do
   # resources :borrowdirect,
   resources :campus_paging,
             :campus_scan,
+            :borrow_direct,
             # :recap_scan,
             # :recap_loan,
-            :ill,
-            :docdel,
+            # :ill,
+            :ill_scan,
+            # :docdel,
             :intercampus,
             :inprocess,
             :precat,
@@ -68,8 +70,8 @@ Rails.application.routes.draw do
 
   # === OLD CRUD BELOW ===
 
-  resources :borrowdirect, only: [:show]
-  get '/borrowdirect', to: 'borrowdirect#show'  
+  # resources :borrowdirect, only: [:show]
+  # get '/borrowdirect', to: 'borrowdirect#show'
 
   # Offsite currently has custom code
   resources :offsite_requests do

@@ -3,7 +3,13 @@ module Service
 
     # For the ReCAP services, use the offsite_elibible? logic from User model
     def patron_eligible?(current_user = nil)
-      current_user.offsite_eligible?
+      return false unless current_user && current_user.affils
+
+      permitted_affils = APP_CONFIG[:recap_scan][:permitted_affils] || []
+      permitted_affils.each do |affil|
+        return true if current_user.affils.include?(affil)
+      end
+      return false
     end
 
     # May this bib be requested from Offsite?
