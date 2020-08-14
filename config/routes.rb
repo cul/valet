@@ -59,13 +59,15 @@ Rails.application.routes.draw do
   # so they need both args passed in, like so:
   #     https://valet.cul.columbia.edu/recap_loan/2929292/10086
   #     https://valet.cul.columbia.edu/recap_scan/2929292/10086
+
   # Here's the routing magic to generate the correct bound routes:
+  get 'recap_loan/:id/:mfhd_id', action: :show, controller: 'forms', as: 'recap_loan'
+  get 'recap_scan/:id/:mfhd_id', action: :show, controller: 'forms', as: 'recap_scan'
+  # Here are the regular POST routes
   resources :recap_loan, 
             :recap_scan, 
             controller: 'forms',
-            only: [:create] do
-    get ':mfhd_id', action: :show, on: :member
-  end
+            only: [:create]
 
 
   # === OLD CRUD BELOW ===

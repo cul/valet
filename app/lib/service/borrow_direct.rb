@@ -9,21 +9,13 @@ module Service
     # Also, must either
     # or
     def patron_eligible?(current_user = nil)
-      return false unless current_user
+      return false unless current_user && current_user.affils
 
-      # WIP
-      # return false if current_user.expired_patron_record?
-      # return false if current_user.patron_blocked?
-      # return false if current_user.patron_has_recalls?
-      #
-      # # two different kinds of eligible patrons...
-      # on-campus:  patron_group list && 9-digit barcode
-      #
-      # 2cul: patron-group && patron-stat && barcode prefix
-
-
-      # No disqualifying conditions?  Then yes, patron is eligible.
-      return true
+      permitted_affils = APP_CONFIG[:borrow_direct][:permitted_affils] || []
+      permitted_affils.each do |affil|
+        return true if current_user.affils.include?(affil)
+      end
+      return false
     end
 
 

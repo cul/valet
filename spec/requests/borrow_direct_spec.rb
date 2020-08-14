@@ -2,7 +2,6 @@
 
 RSpec.describe 'Borrow Direct' do
 
-  LOGIN_FAILURE_URL = APP_CONFIG[:borrow_direct][:login_failure_url]
 
   it 'redirects to relais with ISBN' do
     sign_in FactoryBot.create(:happyuser)
@@ -65,33 +64,42 @@ RSpec.describe 'Borrow Direct' do
     expect(response.body).to include('Cannot find bib record')
   end
 
+  it 'redirects blocked patron to failure page' do
+    sign_in FactoryBot.create(:blockeduser)
+    get borrow_direct_path('123')
+    ineligible_url = APP_CONFIG[:borrow_direct][:ineligible_url]
+    
+    expect(response).to redirect_to(ineligible_url)
+  end
+  
+
   # Valet no longer checks patron conditions directly.
   # Valet goes by the LDAP Affils only.
   #
   # # Various invalid-patron conditions....
   #
-  # # it 'user without patron record - redirects to login_failure_url' do
+  # # it 'user without patron record - redirects to INELIGIBLE_URL' do
   # #   sign_in FactoryBot.create(:happyuser, patron_record: nil)
   # #   get borrow_direct_path('123')
-  # #   expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  # #   expect(response).to redirect_to(INELIGIBLE_URL)
   # # end
   #
-  # # it 'expired user - redirects to login_failure_url' do
+  # # it 'expired user - redirects to INELIGIBLE_URL' do
   # #   sign_in FactoryBot.create(:expireduser)
   # #   get borrow_direct_path('123')
-  # #   expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  # #   expect(response).to redirect_to(INELIGIBLE_URL)
   # # end
   #
-  # # it 'blocked user - redirects to login_failure_url' do
+  # # it 'blocked user - redirects to INELIGIBLE_URL' do
   # #   sign_in FactoryBot.create(:blockeduser)
   # #   get borrow_direct_path('123')
-  # #   expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  # #   expect(response).to redirect_to(INELIGIBLE_URL)
   # # end
   #
-  # # it 'user with recalls - redirects to login_failure_url' do
+  # # it 'user with recalls - redirects to INELIGIBLE_URL' do
   # #   sign_in FactoryBot.create(:recalleduser)
   # #   get borrow_direct_path('123')
-  # #   expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  # #   expect(response).to redirect_to(INELIGIBLE_URL)
   # # end
   # #
   # # it 'user with good patron group - succeeds' do
@@ -105,10 +113,10 @@ RSpec.describe 'Borrow Direct' do
   # # end
   # #
   # #
-  # # it 'user with bad patron group - redirects to login_failure_url' do
+  # # it 'user with bad patron group - redirects to INELIGIBLE_URL' do
   # #   sign_in FactoryBot.create(:happyuser, patron_group: 'BAD')
   # #   get borrow_direct_path('123')
-  # #   expect(response).to redirect_to(LOGIN_FAILURE_URL)
+  # #   expect(response).to redirect_to(INELIGIBLE_URL)
   # # end
   # #
   # # it '2CUL user with bad patron group  - succeeds' do
