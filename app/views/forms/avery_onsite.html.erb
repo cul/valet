@@ -1,0 +1,51 @@
+
+
+<!-- views/forms/avery_onsite.html.erb -->
+
+<h4>Avery Non-Circulating Request Form</h4>
+
+<br>
+The item you selected is not available for circulation,
+but can be used on-site at the Avery library.
+
+<br>
+<br>
+
+<%= form_with url: avery_onsite_index_path do |form| %>
+
+  <!-- what we'll need to make the request -->
+  <%= form.hidden_field(:id, value: bib_record.id) %>
+
+  <!-- display basic bib data -->
+  <%= render 'bib', bib_record: bib_record %>
+
+  <br>
+  
+  <% if filter_barcode.nil? %>
+    Please select which item(s) you are interested in
+  <% end %>
+
+  <br>
+
+  <!-- what to collect from the patron -->
+  <% holdings.each do |holding| %>
+    <%= render 'holding', bib_record: bib_record, holding: holding, filter_barcode: filter_barcode %>
+  <% end %>
+
+  <br>
+
+  Your material should be available within
+  2-3 business days following submitting this request.
+  <br>
+
+  An email notification will be sent to: 
+  <strong><%=current_user.email%></strong>
+  to arrange access.
+
+  <br>
+  <br>
+  
+  <%= form.submit('Submit Request') %>
+
+<% end %>
+

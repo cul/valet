@@ -25,6 +25,12 @@
           <td><%= bib_record.publisher%></td>
         </tr>
       <% end %>
+      <% if bib_record.call_number.present? %>
+        <tr>
+          <td>CALL NUMBER:</td>
+          <td><%= bib_record.call_number%></td>
+        </tr>
+      <% end %>
     </tbody>
   </table>
 

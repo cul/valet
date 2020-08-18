@@ -49,8 +49,9 @@ Rails.application.routes.draw do
             :itemfeedback,
             :notonshelf,
             :bearstor,
-            controller: 'forms',
-            only: [:show, :create]
+            :avery_onsite,
+        controller: 'forms',
+        only: [:show, :create]
 
   # === NOT-SO-SIMPLE SERVICES ===
   # These services require extra information beyond the bib key

@@ -64,6 +64,16 @@ full ClioRecord object, which is the 2nd arg - the bib_record.
 
 
 
+Form - build a Valet form
+----------------------------------------
+Services configured as type:form need a form.
+
+The form should be in app/views/forms, and named after the services,
+e.g.,   /app/views/forms/avery_onsite.html.erb
+
+The form should try to re-use partials if possible.
+
+
 
 Optional - create confirmation page 
 -----------------------------------
@@ -86,3 +96,9 @@ email, you'll need to do three things:
 2) add a method to /app/mailers/form_mailer.rb to process params and send mail
 
 3) write mail template, named the same as the method, under /app/views/form_mailer/SERVICE.text.erb 
+
+
+
+
+
+

@@ -35,6 +35,10 @@ class FormMailer < ApplicationMailer
     mail(to: to, from: from, subject: subject)
   end
   
+  ###
+  ### RECAP - confirmation emails to patrons
+  ###
+  
   def recap_loan_confirm
     to = params['emailAddress']
     from = 'recap@library.columbia.edu'
@@ -69,5 +73,18 @@ class FormMailer < ApplicationMailer
   #   subject = "Paging Request [#{title}]"
   #   mail(to: to, from: from, subject: subject)
   # end
+
+
+  ###
+  ### AVERY ONSITE - mail to staff
+  ###
+  def avery_onsite_request
+    @params = params
+    to      = params[:staff_email]
+    from    = "Avery Onsite Request Service <#{params[:staff_email]}>"
+    title   = params[:bib_record].title
+    subject = "New request for Avery On-Site Access [#{title}]"
+    mail(to: to, from: from, subject: subject)
+  end
 
 end
