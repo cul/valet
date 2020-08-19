@@ -47,7 +47,6 @@ module Service
         total_item_count = total_item_count + holding[:items].size
       end
       
-
       locals = {
         bib_record: bib_record,
         holdings: avery_onsite_holdings,
