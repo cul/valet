@@ -1,0 +1,46 @@
+
+<!-- views/forms/avery_onsite_confirm.html.erb -->
+
+<h4>Avery Non-Circulating Confirmation</h4>
+
+<br>
+
+You have requested the following for Avery On-Site use:
+
+<br>
+<br>
+
+<strong>
+TITLE : 
+<%= bib_record.title %>
+<br>
+AUTHOR : 
+<%= bib_record.author %>
+<br>
+CALL NO : 
+<%= bib_record.call_number %>
+</strong>
+
+<br>
+<br>
+
+
+<br>
+Requests submitted before 12:00pm Mon-Fri will be filled in one business
+day; all requests filled in two business days.
+<br>
+<br>
+You will be contacted by email
+(to <strong><%= current_user.email %></strong>)
+when the item is available.
+<br>
+<br>
+
+<br>
+You can now close this browser window.
+<br>
+<br>
+<div id='close_popup_button'></div>
+<%= javascript_tag 'close_popup_button();' %>
+
+

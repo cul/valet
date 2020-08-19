@@ -29,9 +29,19 @@ module Service
     def service_form_handler(_params)
       nil
     end
-    
-    def get_confirmation_locals(_params, _bib_record, _current_user)
-      {}
+
+    # do nothing?
+    # def get_confirmation_locals(_params, _bib_record, _current_user)
+    #   {}
+    # end
+
+    # or always do the default?
+    def get_confirmation_locals(params, bib_record, _current_user)
+      confirm_locals = {
+        params: params,
+        bib_record: bib_record
+      }
+      confirm_locals
     end        
 
 

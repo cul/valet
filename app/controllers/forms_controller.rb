@@ -72,8 +72,10 @@ class FormsController < ApplicationController
     return redirect_to redirect_url if redirect_url.present?
 
     # --- render a confirmation page
-    locals = @service.get_confirmation_locals(params, bib_record, current_user)
-    return render("#{@config[:service]}_confirm", locals: locals) if locals.present?
+    if template_exists?("forms/#{@config[:service]}_confirm")
+      locals = @service.get_confirmation_locals(params, bib_record, current_user) || {}
+      return render("#{@config[:service]}_confirm", locals: locals)
+    end
 
     # If the service didn't render or redirect??
     return error("Valet error: No confirm page or redirect defined for service #{@config['label']}")
