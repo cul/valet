@@ -39,11 +39,20 @@ module Service
           filter_barcode = avery_onsite_holdings.first[:items].first[:barcode]
         end
       end
+      
+      # Many Avery holdings have no item records.
+      # That's ok, but we'll want to know in advance.
+      total_item_count = 0
+      avery_onsite_holdings.each do |holding|
+        total_item_count = total_item_count + holding[:items].size
+      end
+      
 
       locals = {
         bib_record: bib_record,
         holdings: avery_onsite_holdings,
-        filter_barcode: filter_barcode
+        filter_barcode: filter_barcode,
+        total_item_count: total_item_count
       }
     end
 

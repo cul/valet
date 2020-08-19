@@ -1,0 +1,47 @@
+
+
+<!-- views/forms/_holding_header.html.erb -->
+
+<div class='items_form'>
+
+  <table class='valet_request table-hover'>
+
+    <tr>
+      <td>
+        Location: <%= location_label(holding) %>
+      </td>
+    </tr>
+
+    <% if holding[:summary_holdings].present? %>
+      <tr>
+        <td>
+          <% holding[:summary_holdings].each do |summary| %>
+            <%= summary%>
+            <br>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+
+    <% if holding[:display_call_number].present? %>
+      <tr>
+        <td>
+          Call Number: 
+          <%= holding[:display_call_number] %>
+        </td>
+      </tr>
+    <% end %>
+
+    <% if holding[:customer_code].present? %>
+      <tr>
+        <td>
+          Customer Code: 
+          <%= holding[:customer_code] %>
+        </td>
+      </tr>
+    <% end %>
+
+  </table>
+
+</div>
+
