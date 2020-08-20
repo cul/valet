@@ -14,6 +14,14 @@ module Service
 
 
     def bib_eligible?(bib_record = nil)
+      # Checking location means Valet needs to have it's own list of
+      # valid locations, which is redundant w/CLIO's list, which
+      # means double-maintentance and risk of getting out-of-sync.
+
+      # But -- we need it for this service.
+      # Because we want to list holdings from all valid locations,
+      # and want to OMIT holdings from any non-avery-onsite location
+
       avery_onsite_holdings = bib_record.holdings.select do |holding|
         APP_CONFIG[:avery_onsite][:locations].include?( holding[:location_code] )
       end
@@ -58,17 +66,39 @@ module Service
 
 
     def send_emails(params, bib_record, current_user)
+      
+      avery_onsite_holdings = bib_record.holdings.select do |holding|
+        APP_CONFIG[:avery_onsite][:locations].include?( holding[:location_code] )
+      end
+      
+      requested_items = []
+      avery_onsite_holdings.each do |holding|
+        holding[:items].each do |item|
+          item[:holding] = holding
+          requested_items << item if params[:itemBarcodes].include?( item[:barcode] )
+        end
+      end
+      
+      # If the holding has no items (which happens in Avery), we
+      # create a faux item, to pass data to the location
+      if requested_items.size == 0
+        faux_item = { holding: avery_onsite_holdings.first }
+        requested_items = [ faux_item ]
+      end
+
       mail_params = {
         bib_record: bib_record,
-        barcodes:  params[:itemBarcodes],
+        requested_items: requested_items,
         patron_uni: current_user.uid,
         patron_email: current_user.email,
-        staff_email: APP_CONFIG[:avery_onsite][:staff_email]
+        seatNumber: params[:seatNumber],
+        seatDate: params[:seatDate],
+        seatTime: params[:seatTime]
       }
       # mail request to staff
       FormMailer.with(mail_params).avery_onsite_request.deliver_now
       # # mail confirm to patron
-      # FormMailer.with(mail_params).avery_onsite_confirm.deliver_now
+      FormMailer.with(mail_params).avery_onsite_confirm.deliver_now
     end
 
 

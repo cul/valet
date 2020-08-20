@@ -1,4 +1,6 @@
 class FormMailer < ApplicationMailer
+  add_template_helper(ValetRequestsHelper)
+
   default from: 'noreply@library.columbia.edu'
 
   ###
@@ -76,15 +78,29 @@ class FormMailer < ApplicationMailer
 
 
   ###
-  ### AVERY ONSITE - mail to staff
+  ### AVERY ONSITE
   ###
   def avery_onsite_request
     @params = params
-    to      = params[:staff_email]
-    from    = "Avery Onsite Request Service <#{params[:staff_email]}>"
+    staff_email = APP_CONFIG[:avery_onsite][:staff_email]
+    to      = staff_email
+    from    = "Avery Services <#{staff_email}>"
     title   = params[:bib_record].title
-    subject = "New request for Avery On-Site Access [#{title}]"
+    subject = "New On-Site Use request [#{title}]"
+    mail(to: to, from: from, subject: subject)
+  end
+
+  def avery_onsite_confirm
+    @params = params
+    staff_email = APP_CONFIG[:avery_onsite][:staff_email]
+    to      = params[:patron_email]
+    from    = "Avery Services <#{staff_email}>"
+    title   = params[:bib_record].title
+    subject = "Avery On-Site Use - Request Confirmation [#{title}]"
     mail(to: to, from: from, subject: subject)
   end
 
 end
+
+
+

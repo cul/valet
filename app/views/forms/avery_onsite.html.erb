@@ -2,14 +2,23 @@
 
 <!-- views/forms/avery_onsite.html.erb -->
 
-<h4>Avery Non-Circulating Request Form</h4>
+<h4>Avery On-Site Use</h4>
 
 <br>
-The item you selected is not available for circulation,
-but can be used on-site at the Avery library.
+Avery is open by reservation only.  In order to access paged material, please book a 
+
+<strong>
+<a href='https://seats.library.columbia.edu/spaces?lid=11138' target='_blank'>
+  seat&nbspreservation
+  <small><span class="glyphicon glyphicon-new-window"></span></small>
+</a>
+</strong>
+
+ in advance of your visit.  Paging requests for offsite books should be filled within 1-2 business days, but offsite materials may take up to 4 business days.  Please schedule your seat reservation accordingly.
 
 <br>
 <br>
+
 
 <%= form_with url: avery_onsite_index_path do |form| %>
 
@@ -21,6 +30,34 @@ but can be used on-site at the Avery library.
 
   <br>
   
+
+  <div class='instructional_title'>
+    Seat Reservation Details
+  </div>
+  <div class='instructional_description'>
+    Make a seat reservation first, 
+    <u>then</u> complete this form and submit.
+  </div>
+
+  <div class="row valet_request">
+    <div class='col-sm-2 col-xs-3'>
+      <label for='seatNumber' class='control-label'>Seat Number:</label>
+      <br>
+      <%= text_field_tag(:seatNumber, '', size: '10', class: 'form-control', disabled: false) %>
+    </div>
+    <div class='col-sm-2 col-xs-3'>
+      <label for='seatDate' class='control-label'>Date:</label>
+      <br>
+      <%= text_field_tag(:seatDate, '', size: '10', class: 'form-control', disabled: false) %>
+    </div>
+    <div class='col-sm-2 col-xs-3'>
+      <label for='seatTime' class='control-label'>Time:</label>
+      <br>
+      <%= text_field_tag(:seatTime, '', size: '10', class: 'form-control', disabled: false) %>
+    </div>
+  </div>
+
+
   <!-- Many Avery holdings don't have item-records.  That's ok.  -->
   <% if total_item_count == 0 %>
     <% holdings.each do |holding| %>
@@ -40,21 +77,28 @@ but can be used on-site at the Avery library.
     <% end %>
   <% end %>
 
+  <br> 
+
+  Requests for onsite materials should be processed in 1-2 business days; 
+  offsite materials may take up to 4 business days.
 
   <br>
-
-  Your material should be available within
-  2-3 business days following submitting this request.
   <br>
 
-  An email notification will be sent to: 
-  <strong><%=current_user.email%></strong>
-  to arrange access.
+  You will be contacted by email
+  (to <strong><%= current_user.email %></strong>)
+  when the item is available.
 
   <br>
   <br>
   
-  <%= form.submit('Submit Request') %>
+  Please limit requests to 5 or fewer per day. 
+  Contact avery-services@library.columbia.edu with questions and comments.
+
+  <br>
+  <br>  
+  
+  <%= form.submit('Submit On-Site Use Request', onclick: 'return validateAveryOnsiteRequestForm()') %>
 
 <% end %>
 

@@ -43,12 +43,21 @@ table.valet_request tr td {
 }
 
 
-table.valet_request .form-group {
+//table.valet_request .form-group {
+//  margin-bottom: 0px;
+//}
+//table.valet_request label {
+//  font-weight: normal;
+//}
+
+.valet_request .form-group {
   margin-bottom: 0px;
 }
-table.valet_request label {
+
+.valet_request label {
   font-weight: normal;
 }
+
 
 
 .offset-block {
@@ -73,12 +82,12 @@ a.info-link {
 }
 
 .instructional_title {
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 0px;
 }
 .instructional_description {
   margin-top: 0px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   width: 500px;
 }
 

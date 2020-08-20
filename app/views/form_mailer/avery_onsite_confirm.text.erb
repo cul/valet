@@ -1,7 +1,4 @@
-
-The following has been requested from Avery Non-Circ:
-
-A patron has requested the following for use on-site in Avery Library
+You have requested the following for use on-site in Avery Library
 
 TITLE : <%= @params[:bib_record].title %>
 AUTHOR : <%= @params[:bib_record].author %>
@@ -16,10 +13,15 @@ ITEM(S) REQUESTED:
 <% end %>
 <% end  # end if-requested-items  %> 
 
-PATRON UNI:  <%= @params[:patron_uni] %>
-PATRON EMAIL:  <%= @params[:patron_email] %>
-
 SEAT RESERVATION DETAILS:
   SEAT NUMBER: <%= @params[:seatNumber] %>
   SEAT DATE: <%= @params[:seatDate] %>
   SEAT TIME: <%= @params[:seatTime] %>
+
+Requests for onsite materials should be processed in 1-2 business days; offsite materials may take up to 4 business days.
+
+You will be contacted by email (to <%= @params[:patron_email] %>) when the item is available.
+
+Please limit requests to 5 or fewer per day. Contact avery-services@library.columbia.edu with questions and comments.
+
+

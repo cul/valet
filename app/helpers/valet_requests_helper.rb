@@ -135,7 +135,10 @@ module ValetRequestsHelper
     # CLEANUP location name - similar to CLIO cleanup rules
     # from = 'delivery within 2 business days'
     # to   = 'electronic delivery'
-    from = 'Place Request for delivery within 2 business days'
+    from = ' within 2 business days'
+    to   = ''
+    location_name.gsub!(/#{from}/, to)
+    from = 'Place Request for delivery'
     to   = ''
     location_name.gsub!(/#{from}/, to)
 

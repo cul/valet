@@ -16,8 +16,9 @@
       <td colspan='5'>
         <strong>
           Items for 
-          call number <%= holding[:display_call_number].upcase %>,
-          location <%= location_label(holding) %>
+          call number <%= holding[:display_call_number].upcase %>
+          <br>
+          Location: <%= location_label(holding) %>
         </strong>
         <br>
         <% holding[:summary_holdings].each do |summary| %>
