@@ -71,6 +71,10 @@ Rails.application.routes.draw do
             only: [:create]
 
 
+  # === AND... ===
+  get 'borrow_direct', action: :show, controller: 'forms'
+
+
   # === OLD CRUD BELOW ===
 
   # resources :borrowdirect, only: [:show]

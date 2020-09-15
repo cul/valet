@@ -30,6 +30,15 @@ class FormsController < ApplicationController
     return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
     return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless @service.bib_eligible?(bib_record)
 
+    # NEW - NEED TO SUPPORT SERVICE WITHOUT BIB ARGUMENT
+    # # Verify the bib - UNLESS this service permits nil bibs
+    # unless @config['bib_optional']
+    #   # Bib is required
+    #   return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
+    #   # Bib must be eligible for this service
+    #   return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless @service.bib_eligible?(bib_record)
+    # end
+    
     # process as form or as direct bounce
     case @config['type']
     when 'form'
