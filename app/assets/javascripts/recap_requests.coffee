@@ -1,4 +1,11 @@
 
+$ ->
+  # Fragile material should not be selectable when making EDD requests.
+  # Hide all checkboxs with data-attribute use-restriction='FRGL'
+  if $('input[name="requestType"]').val() == 'EDD'
+    # alert("it's an EDD!")  # DEBUG
+    $("input[data-use-restriction='FRGL']").hide()
+    
 
 ######################################################
 ######################################################
