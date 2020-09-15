@@ -187,6 +187,20 @@ class User < ApplicationRecord
     return false unless affils
     affils.include?(affil)
   end
+  
+  # Instead of querying Oracle, look through LDAP affils
+  def patron_group
+    return '' unless affils
+    patron_group = ''
+
+    affils.each do |affil|
+      if affilmatch = affil.match(/CUL_role-clio-([A-Z]+)/)
+        patron_group = affilmatch[1]
+      end
+    end
+
+    return patron_group
+  end
 
   def offsite_eligible?
     return false unless affils
@@ -333,13 +347,14 @@ class User < ApplicationRecord
   def patron_barcode_record=(val)
     @patron_barcode_record = val
   end
-      
-  def patron_group
-    patron_barcode_record['PATRON_GROUP_CODE']
-  end
-  def patron_group=(val)
-    @patron_barcode_record['PATRON_GROUP_CODE'] = val
-  end
+
+  # No - we're no longer using this in this way
+  # def patron_group
+  #   patron_barcode_record['PATRON_GROUP_CODE']
+  # end
+  # def patron_group=(val)
+  #   @patron_barcode_record['PATRON_GROUP_CODE'] = val
+  # end
 
   def patron_stats
     @patron_stats || oracle_connection.get_patron_stats(patron_id)

@@ -17,7 +17,7 @@ module Service
       # Explicitly select the form, and explicitly set form field values
       # illiad_base_url = APP_CONFIG[:campus_paging][:illiad_base_url]
       illiad_base_url = APP_CONFIG[:illiad_base_url]
-      illiad_params = get_illiad_params_explicit(bib_record)
+      illiad_params = get_illiad_params_explicit(bib_record, current_user)
 
       # Pass an OpenURL, rely on Illiad-side logic to select form and map values
       # illiad_url = APP_CONFIG[:campus_paging][:illiad_openurl_url]
@@ -44,7 +44,7 @@ module Service
     end
     
     
-    def get_illiad_params_explicit(bib_record)
+    def get_illiad_params_explicit(bib_record, current_user)
       illiad_params = {}
       
       # Explicitly tell Illiad which form to use
@@ -67,6 +67,10 @@ module Service
       # illiad_params['CitedIn']       = 'https://clio.columbia.edu/catalog/' + bib_record.id
       illiad_params['CitedIn']       = 'CLIO_OPAC-PAGING'
       
+      # LIBSYS-3206 - add Patron Group / Active Barcode
+      illiad_params['ItemInfo2']     = current_user.barcode
+      illiad_params['ItemInfo4']     = current_user.patron_group
+
       return illiad_params
     end
 
