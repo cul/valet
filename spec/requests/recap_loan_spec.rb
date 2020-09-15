@@ -4,13 +4,13 @@ RSpec.describe 'ReCAP Loan' do
   
   it 'presents item-selection and delivery-location form' do
     sign_in FactoryBot.create(:happyuser)
-    get recap_loan_path('101', '118')
+    get recap_loan_path('3269684', '3791843')
 
     # Item Selection
     expect(response.body).to include( 'Please select one or more items' )
     # Specific barcodes should be listed
-    expect(response.body).to include( 'CU08414130' )
-    expect(response.body).to include( 'CU08414149' )
+    expect(response.body).to include( 'CU02281112' )
+    expect(response.body).to include( 'CU02281120' )
  
     # Delivery Location
     expect(response.body).to include( 'Please select campus delivery location' )

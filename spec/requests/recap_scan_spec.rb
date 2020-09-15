@@ -1,15 +1,18 @@
 
 RSpec.describe 'ReCAP Scan' do
   
+  # https://clio.columbia.edu/catalog/3269684
+  # The Army List - non-ETAS, Offsite, Journal
+  
   it 'presents item-selection and citation form' do
     sign_in FactoryBot.create(:happyuser)
-    get recap_scan_path('101', '118')
+    get recap_scan_path('3269684', '3791843')
 
     # Item Selection
     expect(response.body).to include( 'Please select an item' )
     # Specific barcodes should be listed
-    expect(response.body).to include( 'CU08414130' )
-    expect(response.body).to include( 'CU08414149' )
+    expect(response.body).to include( 'CU02281112' )
+    expect(response.body).to include( 'CU02281120' )
  
     # Delivery Location
     expect(response.body).to include( 'Please enter citation details' )
