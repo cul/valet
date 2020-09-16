@@ -76,6 +76,18 @@ module Service
         illiad_params.merge!(get_illiad_book_chapter_params(bib_record))
       end
       
+      # LIBSYS-3273 - some chars break choke ILLiad - just remove them
+      illiad_params.each do |key, value|
+        next unless key && value
+        # strip problematic angle-bracket chars from the value
+        value.gsub!(/\>/,'')
+        value.gsub!(/\</,'')
+        # other chars that shouldn't be in bib fields 
+        value.gsub!(/\&/,'')
+        value.gsub!(/\%/,'')
+        value.gsub!(/\#/,'')
+      end
+
       return illiad_params
     end
 
