@@ -9,7 +9,7 @@ we need to know your primary affiliation with the University.
 Please select your affiliation:
 
 
-<%= form_with url: campus_scan_index_path do |form| %>
+<%= form_with url: ill_scan_index_path do |form| %>
 
   <%= form.hidden_field(:id, value: bib_record.id) %>
   <%= render 'campus', form: form %>
