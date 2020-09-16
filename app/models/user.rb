@@ -194,6 +194,9 @@ class User < ApplicationRecord
     patron_group = ''
 
     affils.each do |affil|
+      # LIBSYS-3206 bogus affil, not actually a patron group
+      next if affilmatch(/CUL_role-clio-PhD/)
+      # All legit patron groups are 3-4 all-caps patterns
       if affilmatch = affil.match(/CUL_role-clio-([A-Z]+)/)
         patron_group = affilmatch[1]
       end
