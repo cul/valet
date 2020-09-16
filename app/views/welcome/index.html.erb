@@ -1,4 +1,28 @@
 
+<br>
+
+<% if current_user.valet_admin? %>
+
+  <h4>Staff Links</h4>
+
+  <ul>
+    <li><%= link_to "Valet Logs", logs_path %></li>
+    <li><%= recap_staff_link() %></li>
+    <br>
+    <li><%= link_to "Offsite Logs (Old)", admin_logs_path %></li>
+  </ul>
+
+<% end %>
+
+<% if current_user.admin? %>
+  <h4>Admin Links</h4>
+  <ul>
+    <li><%= link_to "System Configuration Details", admin_system_path %></li>
+  </ul>
+<% end %>
+
+
+<!--
 
 <div class="row">
   <div class="col-xs-6">
@@ -16,4 +40,4 @@
 
 
 
-
+ -->

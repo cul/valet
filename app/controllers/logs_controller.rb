@@ -3,6 +3,8 @@ class LogsController < ApplicationController
 
   before_action :authenticate_user!
 
+  layout 'admin'
+
   # /logs/set=XXX
   #  - earliest/latest info
   #  - for each year, record-count, download-link
