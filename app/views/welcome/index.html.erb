@@ -1,7 +1,7 @@
 
 <br>
 
-<% if current_user.valet_admin? %>
+<% if current_user && current_user.valet_admin? %>
 
   <h4>Staff Links</h4>
 
@@ -14,7 +14,7 @@
 
 <% end %>
 
-<% if current_user.admin? %>
+<% if current_user && current_user.admin? %>
   <h4>Admin Links</h4>
   <ul>
     <li><%= link_to "System Configuration Details", admin_system_path %></li>
