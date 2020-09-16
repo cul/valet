@@ -71,6 +71,8 @@ module Service
       illiad_params['ItemInfo2']     = current_user.barcode
       illiad_params['ItemInfo4']     = current_user.patron_group
 
+      Oclc::Illiad.clean_hash_values(illiad_params)
+
       return illiad_params
     end
 

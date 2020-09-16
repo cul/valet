@@ -74,6 +74,8 @@ module Service
         illiad_params['Form']        = '23'
         illiad_params.merge!(get_illiad_book_chapter_params(bib_record))
       end
+
+      Oclc::Illiad.clean_hash_values(illiad_params)
       
       return illiad_params
     end
