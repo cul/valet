@@ -17,36 +17,33 @@
           UNI: <%= current_user.uid %>
           <br>
           Email: <%= current_user.email %>
+          <br>
+          Patron Groups: <%= current_user.patron_groups.join(',') %>
+          <br>
+          Patron Barcode: <%= current_user.barcode %>
+          <br>
+          Affiliations:
+          <div class='tight-list'>
+            <%= current_user.affils.join(',  ') %>
+          </div>
+          <% if current_user.valet_admin? %>
+            User Details Last Updated: <%= current_user.updated_at.localtime.strftime("%F %r") %>
+          <% end %>
+
           <% if current_user.valet_admin? %>
             <br>
             <br>
-            <%= link_to "Offsite Logs", admin_logs_path %>
-            <br>
             <%= link_to "Valet Logs", logs_path %>
+            <br>
+            <%= link_to "Offsite Logs (Old)", admin_logs_path %>
             <br>
             <%= recap_staff_link() %>
           <% end %>
+
           <% if current_user.admin? %>
             <br>
             <br>
             <%= link_to "System Configuration Details", admin_system_path %>
-          <% end %>
-
-          <% if Rails.env != 'valet_prod' %>
-            <br>
-            <br>
-            Patron Barcode: <%= current_user.barcode %>
-            <br>
-            Patron Groups: <%= current_user.patron_groups.join(',') %>
-            <br>
-            Affiliations:
-            <div class='tight-list'>
-              <%= current_user.affils.join(',  ') %>
-            </div>
-            <br>
-            Admin?  <%= current_user.admin? %>
-            <br>
-            Valet Admin?  <%= current_user.valet_admin? %>
           <% end %>
 
         </div>
