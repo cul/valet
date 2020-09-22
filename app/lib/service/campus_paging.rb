@@ -69,7 +69,7 @@ module Service
       
       # LIBSYS-3206 - add Patron Group / Active Barcode
       illiad_params['ItemInfo2']     = current_user.barcode
-      illiad_params['ItemInfo4']     = current_user.patron_group
+      illiad_params['ItemInfo4']     = current_user.patron_groups.join(',')
 
       Oclc::Illiad.clean_hash_values(illiad_params)
 

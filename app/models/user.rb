@@ -188,21 +188,38 @@ class User < ApplicationRecord
     affils.include?(affil)
   end
   
+  # # Instead of querying Oracle, look through LDAP affils
+  # def patron_group
+  #   return '' unless affils
+  #   patron_group = ''
+  #
+  #   affils.each do |affil|
+  #     # LIBSYS-3206 bogus affil, not actually a patron group
+  #     next if affil.match(/CUL_role-clio-PhD/)
+  #     # All legit patron groups are 3-4 all-caps patterns
+  #     if affilmatch = affil.match(/CUL_role-clio-([A-Z]+)/)
+  #       patron_group = affilmatch[1]
+  #     end
+  #   end
+  #
+  #   return patron_group
+  # end
+
   # Instead of querying Oracle, look through LDAP affils
-  def patron_group
-    return '' unless affils
-    patron_group = ''
+  def patron_groups
+    return [] unless affils
+    patron_groups = []
 
     affils.each do |affil|
       # LIBSYS-3206 bogus affil, not actually a patron group
       next if affil.match(/CUL_role-clio-PhD/)
       # All legit patron groups are 3-4 all-caps patterns
       if affilmatch = affil.match(/CUL_role-clio-([A-Z]+)/)
-        patron_group = affilmatch[1]
+        patron_groups.push(affilmatch[1])
       end
     end
 
-    return patron_group
+    return patron_groups
   end
 
   def offsite_eligible?
@@ -232,7 +249,7 @@ class User < ApplicationRecord
   # Extra requirements for EDD-eligibility (Electronic Document Delivery)
   def offsite_edd_eligible?
     # LIBSYS-1936 - prohibit EDD to patron-group RECAP
-    return false if ['RECAP'].include?(patron_group)
+    return false if patron_groups.include?('RECAP')
 
     # If the user is currently blocked, don't permit EDD
     return false if offsite_blocked?

@@ -31,7 +31,6 @@ FactoryBot.define do
     }}
     patron_barcode_record {{
       "PATRON_BARCODE"=>"123456789",
-      "PATRON_GROUP_CODE"=>"REG",
       "BARCODE_STATUS"=>1
     }}
     over_recall_notice_count { 0 }
