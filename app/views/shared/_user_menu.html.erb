@@ -37,7 +37,7 @@
             <br>
             Patron Barcode: <%= current_user.barcode %>
             <br>
-            Patron Groups: <%= current_user.patron_groups %>
+            Patron Groups: <%= current_user.patron_groups.join(',') %>
             <br>
             Affiliations:
             <div class='tight-list'>
