@@ -26,19 +26,19 @@ class FormsController < ApplicationController
 
     # validate bib record
     bib_id = params['id']
-    bib_record = ClioRecord.new_from_bib_id(bib_id)
-    return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
-    return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless @service.bib_eligible?(bib_record)
-
-    # NEW - NEED TO SUPPORT SERVICE WITHOUT BIB ARGUMENT
-    # # Verify the bib - UNLESS this service permits nil bibs
-    # unless @config['bib_optional']
-    #   # Bib is required
-    #   return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
-    #   # Bib must be eligible for this service
-    #   return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless @service.bib_eligible?(bib_record)
-    # end
     
+    # All services require a bib_id, unless they are configured as "bib_optional"
+    if bib_id.blank?
+      return error("Service #{@config['label']} not passed a bib id") unless @config['bib_optional']
+    end
+    
+    # If the bib id was passed, then it needs to be a real, valid ID
+    if bib_id.present?
+      bib_record = ClioRecord.new_from_bib_id(bib_id)
+      return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
+      return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless @service.bib_eligible?(bib_record)
+    end
+        
     # process as form or as direct bounce
     case @config['type']
     when 'form'
@@ -183,8 +183,9 @@ class FormsController < ApplicationController
     data[:logset] = @config['logset'] || @config[:service].titleize
 
     # build up logdata for this specific transation
-    # - tell about the bib
-    logdata = bib_record.basic_log_data
+    logdata = Hash.new
+    # - tell about the bib, if there is one for this service request
+    logdata.merge!(bib_record.basic_log_data) if bib_record.present?
     # - tell about the user
     login = current_user.present? ? current_user.login : ''
     logdata[:user] = login

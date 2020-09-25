@@ -31,11 +31,18 @@ module Service
       url = 'https://bd.relaisd2d.com/'
       url += '?LS=COLUMBIA'
       url += '&PI=' + current_user.barcode
-      url += '&query=' + build_query(bib_record)
-      url
+      
+      # Support redirect to BorrowDirect landing page without any bib data
+      if bib_record.present?
+        url += '&query=' + build_query(bib_record)
+      end
+
+      return url
     end
 
     def build_query(bib_record)
+      return '' unless bib_record
+      
       query = ''
       if bib_record.issn.present?
         query = 'issn=' + bib_record.issn.first
