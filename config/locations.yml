@@ -3,7 +3,8 @@
 BC:  Bibliographic Control
 BT:  Butler Preservation
 CI:  Interlibrary Loan
-CV:  Milstein Reserves
+# CV:  Milstein Reserves
+CV:  Butler Library
 MP:  Monographic Recon -- for MRP
 # LIBSYS-1647 - Create new Offsite delivery location
 # MZ:  ReCAP Coordinator
