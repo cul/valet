@@ -99,6 +99,25 @@ email, you'll need to do three things:
 
 
 
+Supporting services without a bib argument
+---------------------
+The basic Valet structure assumes that each service takes a single param, the bib id.
+Some services support a simple redirect without a bib id, and need special setup.
+These services still use Valet-based authentication and logging.
+
+1) Add a route to the "SIMPLE REDIRECT SERVICES" section of routes.rb
+
+    get 'illiad', action: :show, controller: 'forms'
+
+2) Add a new key to the app_config.yml section for this service:
+
+    bib_optional: true
+
+3) Setup the rest as usual
+
+ 
+
+
 
 
 
