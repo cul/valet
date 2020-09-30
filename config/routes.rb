@@ -28,7 +28,7 @@ Rails.application.routes.draw do
     end
   end
 
-  # === SIMPLE SERVICES ===
+  # === SIMPLE BIB SERVICES ===
   # Valet maps all these requests to the Forms Controller,
   # with each path mapping to a key in app_config.yml
   # - incoming links to /docdel/123 map to #show, with bibkey 123,
@@ -38,11 +38,7 @@ Rails.application.routes.draw do
   resources :campus_paging,
             :campus_scan,
             :borrow_direct,
-            # :recap_scan,
-            # :recap_loan,
-            # :ill,
             :ill_scan,
-            # :docdel,
             :intercampus,
             :inprocess,
             :precat,
@@ -53,10 +49,23 @@ Rails.application.routes.draw do
         controller: 'forms',
         only: [:show, :create]
 
+
+
+  # === SIMPLE REDIRECT SERVICES ===
+  # These services take no arguments.
+  # They authenticate, log, and then redirect only.
+  # [n.b., these lines must come AFTER simple-bib services in routes.rb,
+  #  for precedence order for borrow_direct#show with and without an :id ]
+  get 'borrow_direct', action: :show, controller: 'forms'
+  get 'illiad', action: :show, controller: 'forms'
+
+
+
   # === NOT-SO-SIMPLE SERVICES ===
   # These services require extra information beyond the bib key
-  
-  # The ReCAP services act upon a specific holding within a bib,
+
+  # ----- BIB/HOLDING SERVICES -----
+  # The ReCAP services act upon a specific holding within a specific bib,
   # so they need both args passed in, like so:
   #     https://valet.cul.columbia.edu/recap_loan/2929292/10086
   #     https://valet.cul.columbia.edu/recap_scan/2929292/10086
@@ -71,14 +80,8 @@ Rails.application.routes.draw do
             only: [:create]
 
 
-  # === AND... ===
-  get 'borrow_direct', action: :show, controller: 'forms'
-
 
   # === OLD CRUD BELOW ===
-
-  # resources :borrowdirect, only: [:show]
-  # get '/borrowdirect', to: 'borrowdirect#show'
 
   # Offsite currently has custom code
   resources :offsite_requests do
@@ -99,3 +102,4 @@ Rails.application.routes.draw do
   get 'admin/log_file'
 
 end
+

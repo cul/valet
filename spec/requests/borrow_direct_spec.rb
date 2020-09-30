@@ -72,6 +72,27 @@ RSpec.describe 'Borrow Direct' do
     expect(response).to redirect_to(ineligible_url)
   end
   
+  # Valet's Borrow Direct also 
+  
+  it 'without bib id, redirects authorized users to ILLiad' do
+    sign_in FactoryBot.create(:happyuser)
+
+    relais_url = 'https://bd.relaisd2d.com/?' \
+                 'LS=COLUMBIA&PI=123456789'
+    
+    get '/borrow_direct'
+    expect(response).to redirect_to(relais_url)
+  end
+
+  it 'without bib id, redirects unauthorized users to ineligible URL' do
+    sign_in FactoryBot.create(:blockeduser)
+
+    ineligible_url = APP_CONFIG[:borrow_direct][:ineligible_url]
+  
+    get '/borrow_direct'
+    expect(response).to redirect_to(ineligible_url)
+  end
+    
 
   # Valet no longer checks patron conditions directly.
   # Valet goes by the LDAP Affils only.
