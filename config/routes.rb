@@ -64,7 +64,7 @@ Rails.application.routes.draw do
   # === NOT-SO-SIMPLE SERVICES ===
   # These services require extra information beyond the bib key
 
-  # ----- BIB/HOLDING SERVICES -----
+  # ----- BIB+HOLDING SERVICES -----
   # The ReCAP services act upon a specific holding within a specific bib,
   # so they need both args passed in, like so:
   #     https://valet.cul.columbia.edu/recap_loan/2929292/10086
@@ -78,6 +78,13 @@ Rails.application.routes.draw do
             :recap_scan, 
             controller: 'forms',
             only: [:create]
+
+
+  # === ARBITRARY SERVICES ===
+  #
+  #   "Let's use Valet for this!"
+  #
+  resources :patron_barcode, only: [:index]
 
 
 
