@@ -9,7 +9,8 @@ class PatronBarcodeController < ApplicationController
     
     return head(:unauthorized) unless authorize_client( params[:token] )     
     
-    @patron_barcode = lookup_patron_barcode(params[:uni])
+    @uni = params[:uni]
+    @patron_barcode = lookup_patron_barcode(@uni)
   end
   
   
