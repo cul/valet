@@ -188,7 +188,10 @@ class ClioRecord
     # If that didn't work, try to get call number from the 050
     tag050 = @marc_record['050']
     call_number_050 = call_number_from_050(tag050)
-    return call_number_050 || ''
+    return call_number_050 if call_number_050.present?
+    
+    # none found?
+    return nil
   end
   
   CALL_NUMBER_ONLY = /^.* \>\> (.*)\|DELIM\|.*/
@@ -225,11 +228,14 @@ class ClioRecord
       oclc_number = oclc_match[1]
       return oclc_number
     end
+    # didn't find any 035, or any 035 that looks like an OCLC number?
+    return nil
   end
 
   # Bibs can have multiple ISBNs for different formats,
   # and 020$a can have ISBN together with notes "123 (paperback)"
   def isbn
+    return nil unless @marc_record.fields('020')
     isbns = @marc_record.fields('020').map do |field|
       StdNum::ISBN.normalize(field['a'])
     end
@@ -237,6 +243,7 @@ class ClioRecord
   end
 
   def issn
+    @marc_record.fields('022')
     issns = @marc_record.fields('022').map do |field|
       StdNum::ISSN.normalize(field['a'])
     end
