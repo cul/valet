@@ -100,29 +100,6 @@ class ClioRecord
     owningInstitution == 'CUL' && id.match(/^\d+$/)
   end
 
-  # def title
-  #   title ||= []
-  #   "abcfghknps".split(//).each do |subfield|
-  #     if @marc_record['245']
-  #       title << @marc_record['245'][subfield]
-  #     end
-  #   end
-  #   return title.compact.join(' ')
-  # end
-  #
-  # def author
-  #   author ||= []
-  #   ['100', '110', '111'].each do |field|
-  #     next unless @marc_record[field]
-  #     'abcdefgjklnpqtu'.split(//).each do |subfield|
-  #       author << @marc_record[field][subfield]
-  #     end
-  #     # stop once the 1st possible field is found & processed
-  #     break
-  #   end
-  #   return author.compact.join(' ')
-  # end
-
   def title
     return '' unless @marc_record && @marc_record['245']
     subfieldA = @marc_record['245']['a'] || ''
@@ -368,16 +345,6 @@ class ClioRecord
     end
   end
 
-  # def barnard_remote_holdings
-  #   barnard_config = APP_CONFIG['barnard']
-  #   die "Missing barnard configuration!" unless
-  #     barnard_config.present? && barnard_config['remote_location_code'].present?
-  #
-  #   holdings.select do |holding|
-  #     holding[:location_code] == barnard_config['remote_location_code']
-  #   end
-  # end
-
   def populate_barcodes
     # Single array of barcodes from all holdings, all items
     barcodes = @holdings.collect do |holdings|
@@ -439,40 +406,41 @@ class ClioRecord
     @tocs = tocs
   end
 
-  def openurl
-    openurl = {}
-
-    # The OpenURL keys are fixed by Illiad servce.
-    # We re-purpose some fields for other purposes.
-    # (E.g., "loadplace", "loandate")
-    openurl[:title]      = title
-    openurl[:author]     = author
-    openurl[:publisher]  = pub_name
-    openurl[:loanplace]  = pub_place
-    openurl[:loandate]   = pub_date
-    openurl[:isbn]       = isbn
-    if issn.present?
-      openurl[:issn]       = issn
-      openurl[:genre]      = 'article'
-    end
-    openurl[:CallNumber] = call_number
-    openurl[:edition]    = edition
-    # "External Service Provider Number"
-    # (Illiad only wants the numeric portion, not any ocm/ocn prefix)
-    openurl[:ESPNumber]  = oclc_number.gsub(/\D/, '')
-    openurl[:sid]        = 'CLIO OPAC'
-    openurl[:notes]      = 'https://clio.columbia.edu/catalog/' + id
-
-    openurl_string = openurl.map do |key, value|
-      # puts "key=[#{key}] value=[#{value}]"
-      "#{key}=#{CGI.escape(value)}"
-    end.join('&')
-
-    # puts "-- openurl params as string:"
-    # puts openurl_string
-    # puts "--"
-    openurl_string
-  end
+  # # 10/2020 - UNUSED
+  # def openurl
+  #   openurl = {}
+  #
+  #   # The OpenURL keys are fixed by Illiad servce.
+  #   # We re-purpose some fields for other purposes.
+  #   # (E.g., "loadplace", "loandate")
+  #   openurl[:title]      = title
+  #   openurl[:author]     = author
+  #   openurl[:publisher]  = pub_name
+  #   openurl[:loanplace]  = pub_place
+  #   openurl[:loandate]   = pub_date
+  #   openurl[:isbn]       = isbn
+  #   if issn.present?
+  #     openurl[:issn]       = issn
+  #     openurl[:genre]      = 'article'
+  #   end
+  #   openurl[:CallNumber] = call_number
+  #   openurl[:edition]    = edition
+  #   # "External Service Provider Number"
+  #   # (Illiad only wants the numeric portion, not any ocm/ocn prefix)
+  #   openurl[:ESPNumber]  = oclc_number.gsub(/\D/, '')
+  #   openurl[:sid]        = 'CLIO OPAC'
+  #   openurl[:notes]      = 'https://clio.columbia.edu/catalog/' + id
+  #
+  #   openurl_string = openurl.map do |key, value|
+  #     # puts "key=[#{key}] value=[#{value}]"
+  #     "#{key}=#{CGI.escape(value)}"
+  #   end.join('&')
+  #
+  #   # puts "-- openurl params as string:"
+  #   # puts openurl_string
+  #   # puts "--"
+  #   openurl_string
+  # end
 
   # Trim punctuation from MARC fields
   # (copied directly from https://github.com/traject/traject)
@@ -496,103 +464,5 @@ class ClioRecord
     str
   end
 
-  # OpenURL generation code, from /wwws/cgi/cul/forms/illiad CGI
-  # sub printout {
-  #
-  #   my $out = shift;
-  #
-  #   if ($out->{'issn'})      {$open .= "genre=article&issn="       . $out->{'issn'}      . "&"};
-  #   if ($out->{'LCcall'})    {$open .= "CallNumber=" . $out->{'LCcall'}    . "&"};
-  #   if ($out->{'isbn'})      {$open .= "isbn="       . $out->{'isbn'}      . "&"};
-  #   if ($out->{'edition'})   {$open .= "edition="    . $out->{'edition'}   . "&"};
-  #   if ($out->{'author'})    {$open .= "author="     . $out->{'author'}    . "&"};
-  #   if ($out->{'oclc'})      {$oclc = $out->{'oclc'};  $oclc =~ s/\D//g;
-  #                             $open .= "ESPNumber="  . $oclc . "&"};
-  #   if ($out->{'publisher'}) {$open .= "publisher="  . $out->{'publisher'} . "&"};
-  #   if ($out->{'pub_place'}) {$open .= "loanplace="  . $out->{'pub_place'} . "&"};
-  #   if ($out->{'pub_date'})  {$date = $out->{'pub_date'}; $date =~ s/\D//g;
-  #                             $open .= "loandate="   . $date . "&"};
-  #   $open .= "title=" . $out->{'title'} . "&";
-  #   $open .= "sid=CLIO OPAC&notes=https://clio.columbia.edu/catalog/$bib_id&";
-  #
-  #
-  # $open =~ s/([^A-Za-z0-9])/sprintf("%%%02X", ord($1))/seg;
-  #
-  #
-  # }
-
-  # def public_locations
-  #   # basic set of public delivery locations
-  #   basic_set = ['AR', 'BL', 'UT', 'BS', 'BU', 'EA', 'HS', 'CJ', 'GS', 'LE', 'ML', 'MR', 'CA', 'SW']
-  #
-  #   locations = {
-  #     'OFF AVE'   => { default: 'AR', available: ['AR']},
-  #     'OFF BIO'   => { default: 'CA', available: basic_set},
-  #     'OFF BMC'   => { default: 'CV', available: ['CV']},
-  #     'OFF BSSC'  => { default: 'BS', available: ['BS']},
-  #     'OFF BUS'   => { default: 'BS', available: basic_set},
-  #     'OFF CHE'   => { default: 'CA', available: basic_set},
-  #     'OFF DOCS'  => { default: 'LE', available: basic_set},
-  #     'OFF EAL'   => { default: 'EA', available: basic_set},
-  #     'OFF EAN'   => { default: 'EA', available: ['EA']},
-  #     'OFF EAX'   => { default: 'EA', available: basic_set},
-  #     'OFF ENG'   => { default: 'CA', available: basic_set},
-  #     'OFF FAX'   => { default: 'AR', available: ['AR']},
-  #     'OFF GLG'   => { default: 'CA', available: basic_set},
-  #     'OFF GLX'   => { default: 'BU', available: basic_set},
-  #     'OFF GSC'   => { default: 'GS', available: basic_set},
-  #     'OFF HSL'   => { default: 'HS', available: basic_set},
-  #     'OFF HSR'   => { default: 'HS', available: basic_set},
-  #     'OFF JOU'   => { default: 'CJ', available: basic_set},
-  #     'OFF LEH'   => { default: 'LE', available: basic_set},
-  #     'OFF LES'   => { default: 'LE', available: ['LE']},
-  #     'OFF MAT'   => { default: 'ML', available: basic_set},
-  #     'OFF MRR'   => { default: 'CF', available: ['CF']},
-  #     'OFF MSC'   => { default: 'MR', available: ['MR']},
-  #     'OFF MSR'   => { default: 'MR', available: ['MR']},
-  #     'OFF MUS'   => { default: 'MR', available: basic_set},
-  #     'OFF MVR'   => { default: 'MR', available: ['MR']},
-  #     'OFF PHY'   => { default: 'CA', available: basic_set},
-  #     'OFF PSY'   => { default: 'CA', available: basic_set},
-  #     'OFF REF'   => { default: 'BU', available: basic_set},
-  #     'OFF SCI'   => { default: 'CA', available: basic_set},
-  #     'OFF SWX'   => { default: 'SW', available: basic_set},
-  #     'OFF UNR'   => { default: 'UT', available: ['UT']},
-  #     'OFF UTMRL' => { default: 'UT', available: ['UT']},
-  #     'OFF UTN'   => { default: 'UT', available: basic_set},
-  #     'OFF UTP'   => { default: 'UT', available: ['UT']},
-  #     'OFF UTS'   => { default: 'UT', available: basic_set},
-  #     'OFF WAR'   => { default: 'AR', available: basic_set}
-  #   }
-  # end
-  #
-  # def location_labels
-  #   labels = {
-  #   'BC' => 'Bibliographic Control',
-  #   'BT' => 'Butler Preservation',
-  #   'CI' => 'Interlibrary Loan<',
-  #   'CV' => 'Milstein Reserves',
-  #   'MP' => 'Monographic Recon -- for MRP',
-  #   'MZ' => 'ReCAP Coordinator',
-  #   'IL' => 'ReCAP Interlibrary Loan',
-  #   'AR' => 'Avery Library',
-  #   'BL' => 'Barnard Library',
-  #   'UT' => 'Burke Library (UTS)',
-  #   'BS' => 'Business/Econ Library',
-  #   'BU' => 'Butler Library',
-  #   'EA' => 'East Asian Library',
-  #   'EN' => 'Engineering Library',
-  #   'GS' => 'Lamont-Doherty Earth Observatory',
-  #   'HS' => 'Health Sciences Library',
-  #   'CJ' => 'Journalism Library',
-  #   'LE' => 'Lehman Library',
-  #   'RH' => 'Lehman Suite',
-  #   'ML' => 'Mathematics Library',
-  #   'CF' => '401 Butler Library (Microform Reading Room)',
-  #   'MR' => 'Music &amp; Arts Library',
-  #   'RS' => 'Rare Book Library',
-  #   'CA' => 'Science &amp; Engineering Lib (NWC Building)',
-  #   'SW' => 'Social Work Library'
-  # }
-  # end
 end
+
