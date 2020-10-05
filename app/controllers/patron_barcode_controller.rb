@@ -5,9 +5,15 @@ class PatronBarcodeController < ApplicationController
     return head(:internal_server_error) unless @config && @config[:clients]
 
     params = patron_barcode_params
-    return head(:bad_request) unless params[:uni] && params[:token]
+    return head(:bad_request) unless params[:uni]
     
-    return head(:unauthorized) unless authorize_client( params[:token] )     
+    # Find the api key - in the header or the params (params override header)
+    api_key = request.headers['X-API-Key']
+    api_key = params[:api_key] if params[:api_key]
+    return head(:bad_request) unless api_key
+    
+    # Is the key valid, and valid for this client?
+    return head(:unauthorized) unless authorize_client( api_key )     
     
     @uni = params[:uni]
     @patron_barcode = lookup_patron_barcode(@uni)
@@ -17,7 +23,7 @@ class PatronBarcodeController < ApplicationController
   private
   
   def patron_barcode_params
-    params.permit(:uni, :token)
+    params.permit(:uni, :api_key)
   end
 
   
@@ -33,13 +39,13 @@ class PatronBarcodeController < ApplicationController
   end
 
   
-  def authorize_client(token)
-    # (1) Verify Token
-    # find the client-config block matching the given token
-    client = @config[:clients].select { |client| client[:token] == token }.first
+  def authorize_client(api_key)
+    # (1) Verify API Key
+    # find the client-config block matching the given api key
+    client = @config[:clients].select { |client| client[:api_key] == api_key }.first
     return unless client
     
-    # (2) Verify IP
+    # (2) Verify client IP
     # test client-ip against the list of approved addresses
     whitelisted = client[:ips].any? { |cidr| IPAddr.new(cidr) === request.remote_addr }
     return unless whitelisted
