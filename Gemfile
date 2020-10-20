@@ -56,14 +56,16 @@ group :development do
   # # Access an IRB console on exception pages or by using <%= console %> in views
   # gem 'web-console', '~> 2.0'
 
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  # gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'listen'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
 
   # browser-based live debugger and REPL
   # HAML REPL breaks in 2.7.0/2.7.1 ???
-  gem 'better_errors', '~> 2.6.0'
+  # gem 'better_errors', '~> 2.6.0'
+  gem 'better_errors'
   # And get a REPL
   gem 'binding_of_caller'
 
