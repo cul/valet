@@ -143,6 +143,10 @@ off,msr:
 
 off,mus:
   default:  MR
+  # LIBSYS-3320 - during COVID, set explicit list, in order to exclude BU
+  available:
+    -  MR
+    -  HS
 
 off,mvr:
   default:  MR
