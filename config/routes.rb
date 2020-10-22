@@ -46,6 +46,11 @@ Rails.application.routes.draw do
             :notonshelf,
             :bearstor,
             :avery_onsite,
+            # Faux services to aid in testing and demonstration
+            :outage_redirect_example,
+            :outage_message_example,
+            :outage_template_example,
+            :outage_default_example,
         controller: 'forms',
         only: [:show, :create]
 

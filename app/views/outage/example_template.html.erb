@@ -1,0 +1,34 @@
+
+<!-- views/outage/example_template.html.erb -->
+
+<h4>Outage - Custom Template Example</h4>
+
+<div class='outage_example_template'>
+  This is an example showing how a service's outage configuration can 
+  point to a custom template.
+  <br>
+  <br>
+  A custom outage template gives full control over the display of the page
+</div>
+
+<div class='offset-block'>
+  <div class='offset-block'>
+    This is more work to setup, as the Rails view file has to 
+    be created within the Valet application, committed along with 
+    the rest of the source code, and deployed.
+  </div>
+</div>
+
+<br>
+
+<table class='table valet_request' width="30%">
+  <tr><td>
+    <h5 class='offset-block'>
+    But if a fully customizable outage webpage is what's wanted, then
+    it makes more sense to author that page in another system (e.g., AIM),
+    and use an outage-redirect to bounce to that external page.
+    </h5>
+  </td></tr>
+</table>
+
+

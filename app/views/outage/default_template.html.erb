@@ -1,0 +1,24 @@
+
+<!-- views/outage/default_template.html.erb -->
+
+<% outage_message ||= nil %>
+
+<div class='outage_default_template'>
+
+
+  <div class="bs-callout bs-callout-danger bg-danger">
+
+    <h4>Service Outage</h4>
+    <br>
+
+    <% if outage_message.present? %>
+      <%= outage_message %>
+    <% else %>
+      There is currently an outage of the requested service.
+    <% end %>
+
+  </div>
+  
+</div>
+
+

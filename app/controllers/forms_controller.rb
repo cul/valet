@@ -15,6 +15,10 @@ class FormsController < ApplicationController
   # - build an appropriate form
   # - bounce directly to URL
   def show
+
+    # short-circuit immediately if the service is in an outage state
+    return outage! if @config[:outage]
+
     # Is the user eligible to use this service?
     if not @service.patron_eligible?(current_user)
       # There may be a service-specific message or URL
@@ -99,6 +103,10 @@ class FormsController < ApplicationController
     service = determine_service
     return error('Unable to determine service!') unless service
     load_service_config(service)
+    
+    # If this service is in an outage state, take no further initialization steps!
+    return if @config[:outage]
+
     authenticate_user! if @config[:authenticate]
     instantiate_service_object(service)
   end
@@ -218,4 +226,22 @@ class FormsController < ApplicationController
                     end
     render :error, locals: { service_error: service_error }
   end
+
+  # Outages may redirect, render custom forms, or custom messasges, or use a default form
+  def outage!
+    Rails.logger.debug "outage!"
+    
+    # Redirect to outage URL, if configured
+    return redirect_to(@config['outage_url']) if @config['outage_url']
+
+    # Pass custom outage message, if configured
+    locals = { params: params }
+    locals[:outage_message] = @config['outage_message'].html_safe if @config['outage_message']
+
+    # Render custom template, if configured
+    return render(@config['outage_template'], locals: locals) if @config['outage_template']
+    
+    return render('outage/default_template', locals: locals)
+  end
+
 end
