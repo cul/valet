@@ -318,8 +318,11 @@ class User < ApplicationRecord
   # application-level admin permissions
   def valet_admin?
     return true if admin?
-    valet_admins = Array(APP_CONFIG['valet_admins']) || []
-    return true if valet_admins.include? login
+
+    # "Admin" means they can see logs, which we now grant to allstaff
+    # valet_admins = Array(APP_CONFIG['valet_admins']) || []
+    # return true if valet_admins.include? login
+
     # We don't have any more granular permissions!!
     return true if affils && affils.include?('CUL_allstaff')
 
