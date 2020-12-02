@@ -46,9 +46,11 @@ class PatronBarcodeController < ApplicationController
     return unless client
     
     # (2) Verify client IP
-    # test client-ip against the list of approved addresses
-    whitelisted = client[:ips].any? { |cidr| IPAddr.new(cidr) === request.remote_addr }
-    return unless whitelisted
+    # IF there's an IP whitelist, test client-ip against the list of approved addresses
+    if client[:ips] && client[:ips].count > 0
+      whitelisted = client[:ips].any? { |cidr| IPAddr.new(cidr) === request.remote_addr }
+      return unless whitelisted
+    end
 
     # If the above tests didn't fail, we're authorized
     return true
