@@ -26,6 +26,14 @@ module Service
       locals = { bib_record: bib_record }
       locals
     end
+    
+    # By default render a form with the same name as the service.
+    # But individual services may override this with custom logic to 
+    # branch to different forms if appropriate.
+    def get_form_name(_params, _bib_record, _current_user)
+      form_name = @service_config[:service_name]
+      return form_name
+    end
 
     # Forms Controller manages redirects, emails, and confirms.
     # If the service needs to do any form-param processing before all that,
