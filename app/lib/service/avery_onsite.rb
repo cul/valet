@@ -5,7 +5,7 @@ module Service
     def patron_eligible?(current_user = nil)
       return false unless current_user && current_user.affils
 
-      permitted_affils = APP_CONFIG[:avery_onsite][:permitted_affils] || []
+      permitted_affils = @service_config[:permitted_affils] || []
       permitted_affils.each do |affil|
         return true if current_user.affils.include?(affil)
       end
@@ -23,7 +23,7 @@ module Service
       # and want to OMIT holdings from any non-avery-onsite location
 
       avery_onsite_holdings = bib_record.holdings.select do |holding|
-        APP_CONFIG[:avery_onsite][:locations].include?( holding[:location_code] )
+        @service_config[:locations].include?( holding[:location_code] )
       end
 
       return true if avery_onsite_holdings.present?
@@ -37,7 +37,7 @@ module Service
 
     def setup_form_locals(params, bib_record, current_user)
       avery_onsite_holdings = bib_record.holdings.select do |holding|
-        APP_CONFIG[:avery_onsite][:locations].include?( holding[:location_code] )
+        @service_config[:locations].include?( holding[:location_code] )
       end
 
       # If there's only one holding with only one item, pre-select that item
@@ -68,7 +68,7 @@ module Service
     def send_emails(params, bib_record, current_user)
       
       avery_onsite_holdings = bib_record.holdings.select do |holding|
-        APP_CONFIG[:avery_onsite][:locations].include?( holding[:location_code] )
+        @service_config[:locations].include?( holding[:location_code] )
       end
       
       requested_items = []

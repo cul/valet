@@ -5,7 +5,7 @@ module Service
     def patron_eligible?(current_user = nil)
       return false unless current_user && current_user.affils
 
-      permitted_affils = APP_CONFIG[:campus_paging][:permitted_affils] || []
+      permitted_affils = @service_config[:permitted_affils] || []
       permitted_affils.each do |affil|
         return true if current_user.affils.include?(affil)
       end
@@ -15,12 +15,12 @@ module Service
     def build_service_url(params, bib_record, current_user)
 
       # Explicitly select the form, and explicitly set form field values
-      # illiad_base_url = APP_CONFIG[:campus_paging][:illiad_base_url]
+      # illiad_base_url = @service_config[:illiad_base_url]
       illiad_base_url = APP_CONFIG[:illiad_base_url]
       illiad_params = get_illiad_params_explicit(bib_record, current_user)
 
       # Pass an OpenURL, rely on Illiad-side logic to select form and map values
-      # illiad_url = APP_CONFIG[:campus_paging][:illiad_openurl_url]
+      # illiad_url = @service_config[:illiad_openurl_url]
       # illiad_params = get_illiad_params_openurl(bib_record)
 
       illiad_full_url = get_illiad_full_url(illiad_base_url, illiad_params)
@@ -35,7 +35,7 @@ module Service
       illiad_url_with_params = illiad_base_url + '?' + illiad_params.to_query
       
       # Patrons always access Illiad through our CUL EZproxy
-      # ezproxy_url = APP_CONFIG[:campus_paging][:ezproxy_url]
+      # ezproxy_url = @service_config[:ezproxy_url]
       ezproxy_url = APP_CONFIG[:ezproxy_login_url]
 
       illiad_full_url = ezproxy_url + '?url=' + illiad_url_with_params
@@ -112,7 +112,7 @@ module Service
     #     barcodes:  params[:itemBarcodes],
     #     patron_uni: current_user.uid,
     #     patron_email: current_user.email,
-    #     staff_email: APP_CONFIG[:campus_paging][:staff_email]
+    #     staff_email: @service_config[:staff_email]
     #   }
     #   # mail request to staff
     #   FormMailer.with(mail_params).paging.deliver_now

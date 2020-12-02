@@ -17,15 +17,15 @@ class FormsController < ApplicationController
   def show
 
     # short-circuit immediately if the service is in an outage state
-    return outage! if @config[:outage]
+    return outage! if @service_config[:outage]
 
     # Is the user eligible to use this service?
     if not @service.patron_eligible?(current_user)
       # There may be a service-specific message or URL
-      return redirect_to(@config['ineligible_url']) if @config['ineligible_url']
-      return error(@config['ineligible_message']) if @config['ineligible_message']
+      return redirect_to(@service_config['ineligible_url']) if @service_config['ineligible_url']
+      return error(@service_config['ineligible_message']) if @service_config['ineligible_message']
       # Otherwise, use the default.
-      return error("Current user is not elible for service #{@config['label']}") 
+      return error("Current user is not elible for service #{@service_config['label']}") 
     end
 
     # validate bib record
@@ -33,27 +33,27 @@ class FormsController < ApplicationController
     
     # All services require a bib_id, unless they are configured as "bib_optional"
     if bib_id.blank?
-      return error("Service #{@config['label']} not passed a bib id") unless @config['bib_optional']
+      return error("Service #{@service_config['label']} not passed a bib id") unless @service_config['bib_optional']
     end
     
     # If the bib id was passed, then it needs to be a real, valid ID
     if bib_id.present?
       bib_record = ClioRecord.new_from_bib_id(bib_id)
       return error("Cannot find bib record for id #{bib_id}") if bib_record.blank?
-      return error("Bib ID #{bib_id} is not eligble for service #{@config['label']}") unless @service.bib_eligible?(bib_record)
+      return error("Bib ID #{bib_id} is not eligble for service #{@service_config['label']}") unless @service.bib_eligible?(bib_record)
     end
         
     # process as form or as direct bounce
-    case @config['type']
+    case @service_config['type']
     when 'form'
       return build_form(bib_record)
     when 'bounce'
       return bounce(bib_record)
     else
-      return error("No 'type' defined for service #{@config['label']}")
+      return error("No 'type' defined for service #{@service_config['label']}")
     end
 
-    return error("Valet error: unknown show() failure for service #{@config['label']}")
+    return error("Valet error: unknown show() failure for service #{@service_config['label']}")
   end
 
   # form processor
@@ -85,13 +85,13 @@ class FormsController < ApplicationController
     return redirect_to redirect_url if redirect_url.present?
 
     # --- render a confirmation page
-    if template_exists?("forms/#{@config[:service]}_confirm")
+    if template_exists?("forms/#{@service_config[:service_name]}_confirm")
       locals = @service.get_confirmation_locals(params, bib_record, current_user) || {}
-      return render("#{@config[:service]}_confirm", locals: locals)
+      return render("#{@service_config[:service_name]}_confirm", locals: locals)
     end
 
     # If the service didn't render or redirect??
-    return error("Valet error: No confirm page or redirect defined for service #{@config['label']}")
+    return error("Valet error: No confirm page or redirect defined for service #{@service_config['label']}")
   end
 
   private
@@ -100,15 +100,15 @@ class FormsController < ApplicationController
 
   # called in before_action
   def initialize_service
-    service = determine_service
-    return error('Unable to determine service!') unless service
-    load_service_config(service)
+    service_name = determine_service
+    return error('Unable to determine service!') unless service_name
+    load_service_config(service_name)
     
     # If this service is in an outage state, take no further initialization steps!
-    return if @config[:outage]
+    return if @service_config[:outage]
 
-    authenticate_user! if @config[:authenticate]
-    instantiate_service_object(service)
+    authenticate_user! if @service_config[:authenticate]
+    instantiate_service_object(service_name)
   end
 
   # Original path is something like:  /docdel/123
@@ -123,12 +123,13 @@ class FormsController < ApplicationController
     service
   end
 
-  def load_service_config(service)
-    Rails.logger.debug "load_service_config() for #{service}..."
-    @config = APP_CONFIG[service]
-    # store the service key within the config hash
-    @config[:service] = service
-    return error("Can't find configuration for: #{service}") unless @config.present?
+  def load_service_config(service_name)
+    Rails.logger.debug "load_service_config() for #{service_name}..."
+    @service_config = APP_CONFIG[service_name]
+    return error("Can't find configuration for: #{service_name}") unless @service_config.present?
+
+    # store the service name within the service config hash
+    @service_config[:service_name] = service_name
   end
 
   # # Dynamically prepend the module methods for the active service
@@ -139,12 +140,12 @@ class FormsController < ApplicationController
   #   service_module_name = "Service::#{service.camelize}"
   #   Rails.logger.debug "self.class prepend #{service_module_name}"
   #   service_module = service_module_name.constantize rescue nil
-  #   return error("Cannot load service module for #{@config['label']}") unless service_module.present?
+  #   return error("Cannot load service module for #{@service_config['label']}") unless service_module.present?
   #   self.class.send :prepend, service_module_name.constantize
   # end
 
-  def instantiate_service_object(service)
-    service_class_name = "Service::#{service.camelize}"
+  def instantiate_service_object(service_name)
+    service_class_name = "Service::#{service_name.camelize}"
     Rails.logger.debug "instatiating class #{service_class_name}"
     service_class_instance = begin
                                service_class_name.constantize
@@ -152,7 +153,7 @@ class FormsController < ApplicationController
                                nil
                              end
     return error("Cannot constantize #{service_class_name}") if service_class_instance.nil?
-    @service = service_class_instance.new
+    @service = service_class_instance.new(@service_config)
   end
 
   # HELPER METHODS
@@ -162,7 +163,8 @@ class FormsController < ApplicationController
   # - render the service-specific form
   def build_form(bib_record = nil)
     locals = @service.setup_form_locals(params, bib_record, current_user)
-    render @config[:service], locals: locals
+    form_name = @service.get_form_name(params, bib_record, current_user)
+    render form_name, locals: locals
   end
 
   # Process a 'bounce' service.
@@ -178,7 +180,7 @@ class FormsController < ApplicationController
     end
 
     # Unable to build a bounce URL?  Error!
-    return error("Cannot determine bounce url for service #{@config['label']}")
+    return error("Cannot determine bounce url for service #{@service_config['label']}")
   end
 
   # DEFAULT LOGGING
@@ -188,7 +190,7 @@ class FormsController < ApplicationController
     data = request_data
 
     # which log set?
-    data[:logset] = @config['logset'] || @config[:service].titleize
+    data[:logset] = @service_config['logset'] || @service_config[:service_name].titleize
 
     # build up logdata for this specific transation
     logdata = Hash.new
@@ -232,14 +234,14 @@ class FormsController < ApplicationController
     Rails.logger.debug "outage!"
     
     # Redirect to outage URL, if configured
-    return redirect_to(@config['outage_url']) if @config['outage_url']
+    return redirect_to(@service_config['outage_url']) if @service_config['outage_url']
 
     # Pass custom outage message, if configured
     locals = { params: params }
-    locals[:outage_message] = @config['outage_message'].html_safe if @config['outage_message']
+    locals[:outage_message] = @service_config['outage_message'].html_safe if @service_config['outage_message']
 
     # Render custom template, if configured
-    return render(@config['outage_template'], locals: locals) if @config['outage_template']
+    return render(@service_config['outage_template'], locals: locals) if @service_config['outage_template']
     
     return render('outage/default_template', locals: locals)
   end

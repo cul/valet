@@ -5,7 +5,7 @@ module Service
     def patron_eligible?(current_user = nil)
       return false unless current_user && current_user.affils
 
-      permitted_affils = APP_CONFIG[:campus_scan][:permitted_affils] || []
+      permitted_affils = @service_config[:permitted_affils] || []
       permitted_affils.each do |affil|
         return true if current_user.affils.include?(affil)
       end
@@ -28,7 +28,7 @@ module Service
       # MCC - Medical Center Campus, a.k.a., HSL
       # MBUTS - Morningside, Barnard, UTS
 
-      # illiad_base_url = APP_CONFIG[:campus_scan][:illiad_base_url]
+      # illiad_base_url = @service_config[:illiad_base_url]
       illiad_base_url = APP_CONFIG[:illiad_base_url]
       illiad_params = get_illiad_params_explicit(bib_record)
 
@@ -44,7 +44,7 @@ module Service
       illiad_url_with_params = illiad_base_url + '?' + illiad_params.to_query
       
       # Patrons always access Illiad through our CUL EZproxy
-      # ezproxy_url = APP_CONFIG[:campus_scan][:ezproxy_url]
+      # ezproxy_url = @service_config[:ezproxy_url]
       ezproxy_url = APP_CONFIG[:ezproxy_login_url]
 
       illiad_full_url = ezproxy_url + '?url=' + illiad_url_with_params

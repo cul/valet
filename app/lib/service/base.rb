@@ -2,6 +2,10 @@ module Service
   class Base
     attr_accessor :error
 
+    def initialize(config)
+      @service_config = config
+    end
+
     # DEFAULT METHOD IMPLEMENTATIONS
     # They may be overridden in service-specific modules.
 

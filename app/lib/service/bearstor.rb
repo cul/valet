@@ -55,7 +55,7 @@ module Service
         barcodes:  params[:itemBarcodes],
         patron_uni: current_user.uid,
         patron_email: current_user.email,
-        staff_email: APP_CONFIG[:bearstor][:staff_email]
+        staff_email: @service_config[:staff_email]
       }
       # mail request to staff
       FormMailer.with(mail_params).bearstor_request.deliver_now
@@ -71,7 +71,7 @@ module Service
     #     barcodes:  params[:itemBarcodes],
     #     patron_uni: current_user.uid,
     #     patron_email: current_user.email,
-    #     staff_email: APP_CONFIG[:bearstor][:staff_email]
+    #     staff_email: @service_config[:staff_email]
     #   }
     #   confirm_params = {
     #     template: '/forms/bearstor_confirm',
@@ -86,13 +86,13 @@ module Service
         barcodes:  params[:itemBarcodes],
         patron_uni: current_user.uid,
         patron_email: current_user.email,
-        staff_email: APP_CONFIG[:bearstor][:staff_email]
+        staff_email: @service_config[:staff_email]
       }
       confirm_locals
     end
 
     def get_bearstor_holdings(bib_record)
-      bearstor_location = APP_CONFIG[:bearstor][:location_code]
+      bearstor_location = @service_config[:location_code]
       get_holdings_by_location_code(bib_record, bearstor_location)
     end
   end

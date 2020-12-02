@@ -5,7 +5,7 @@ module Service
     def patron_eligible?(current_user = nil)
       return false unless current_user && current_user.affils
 
-      permitted_affils = APP_CONFIG[:recap_scan][:permitted_affils] || []
+      permitted_affils = @service_config[:permitted_affils] || []
       permitted_affils.each do |affil|
         return true if current_user.affils.include?(affil)
       end
