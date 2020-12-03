@@ -1,0 +1,39 @@
+<!-- views/forms/recap_loan_holdings.html.erb -->
+
+<h4><%=@service_config['label']%> Request</h4>
+
+Which holding of this record would you like to request?
+
+<br>
+<br>
+
+<!-- display basic bib data -->
+<%= render 'bib', bib_record: bib_record %>
+
+
+<% bib_record.offsite_holdings.each_with_index do |holding, i| %>  
+  <% position = i + 1 %>
+
+  <br>
+  Holding <%= position %>:
+  <br>
+
+  <div class='offset-block'>
+    <strong>
+      Call number <%=holding[:display_call_number].upcase%>,
+      location <%=location_label(holding[:location_code])%>
+    </strong>
+
+    <br>
+    <% holding[:summary_holdings].each do |summary| %>
+      <%= summary%>
+      <br>
+    <% end %>
+    
+    <%=link_to("Request", recap_loan_path(bib_record.id, holding[:mfhd_id]) )%>
+
+  </div>
+
+  <br>
+  
+<% end %>

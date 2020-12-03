@@ -17,17 +17,45 @@ module Service
       bib_record.offsite_holdings.size > 0
     end
 
+    def get_form_name(params, bib_record, current_user)
+      # We need to know the holding id to build the default form
+      default_form_name = @service_config[:service_name]
 
+      # We already know the holding id if:
+      # - there's a mfhd_id in the params, or 
+      return default_form_name if params[:mfhd_id]
+      # - there's only a single offsite holding
+      return default_form_name if bib_record.offsite_holdings.size == 1
+
+      # But if we don't know the holding, ask for it, 
+      # using a special "holdings" form...
+      return "#{default_form_name}_holdings"
+    end
+
+    # this method needs to setup form locals for 
+    # EITHER holdings-selection form OR item-selection form
     def setup_form_locals(params, bib_record, current_user)
-      # find the holding being requested
-      target_holding = bib_record.holdings.select do |holding|
-        holding[:mfhd_id] == params[:mfhd_id]
-      end.first
+      # identify the target holding for item-selection form
+      # (or leave nil for holding-selection form)
+      target_holding = nil
+      
+      if params[:mfhd_id]
+        target_holding = bib_record.holdings.select do |holding|
+          holding[:mfhd_id] == params[:mfhd_id]
+        end.first
+      end
 
-      # form has special handling for zero-available-items
+      if target_holding.nil? && bib_record.offsite_holdings.size == 1
+        target_holding = bib_record.offsite_holdings.first
+      end
+      
+      # item-selection form has special handling for zero-available-items
       available_count = 0
-      target_holding[:items].each do |item|
-        available_count += 1 if (bib_record.fetch_scsb_availabilty[item[:barcode]] == 'Available')
+
+      if target_holding
+        target_holding[:items].each do |item|
+          available_count += 1 if (bib_record.fetch_scsb_availabilty[item[:barcode]] == 'Available')
+        end
       end
 
       # pass along the bib and the holding being requested
