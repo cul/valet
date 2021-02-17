@@ -134,6 +134,10 @@ gem 'browser'
 # Some services (e.g., paging) want to log a sortable call number
 gem 'lcsort'
 
+# dependency of many other gems
+# need to pin to 1.10, due to old libc on CentOS 6
+gem 'nokogiri', '~> 1.10.0'
+
 # now fixed.
 # # UNIX-5942 - work around spotty CUIT DNS
 # gem 'resolv-hosts-dynamic'
