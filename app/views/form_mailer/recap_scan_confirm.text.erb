@@ -5,6 +5,14 @@
   CALL NO : <%= @params['callNumber'] %>
   BARCODE:  <%= Array(@params['itemBarcodes']).join(', ') %>
 
+  Chapter/Article Title:   <%= @params['chapterTitle'] %>
+  Article Author:          <%= @params['author'] %>
+  Volume #:                <%= @params['volume'] %>
+  Issue #, Date:           <%= @params['issue'] %>
+  Start Page:              <%= @params['startPage'] %>
+  End Page:                <%= @params['endPage'] %>
+  Notes:                   <%= @params['requestNotes'] %>
+
   <% if @params['service_response']['success'] != true %>
   ---------------------------------------------
   ERROR : This submission was not successful.

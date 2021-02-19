@@ -56,13 +56,16 @@ class FormMailer < ApplicationMailer
   def recap_scan_confirm
     to = params['emailAddress']
     from = 'recap@library.columbia.edu'
+    confirm_bcc = APP_CONFIG[:recap_scan][:confirm_bcc]
     recap_subject = 'Offsite Scan Confirmation'
     recap_subject += " [#{params['titleIdentifier']}]" if params['titleIdentifier']
     recap_subject += " (#{Rails.env})" if Rails.env != 'valet_prod'
     subject = recap_subject
     # Make params available within template by using an instance variable
     @params = params
-    mail(to: to, from: from, subject: subject)
+    mail_params = {to: to, from: from, subject: subject}
+    mail_params[:bcc] = confirm_bcc if confirm_bcc
+    mail(mail_params)
   end
 
 
