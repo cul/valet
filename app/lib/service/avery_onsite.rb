@@ -75,7 +75,7 @@ module Service
       avery_onsite_holdings.each do |holding|
         holding[:items].each do |item|
           item[:holding] = holding
-          requested_items << item if params[:itemBarcodes].include?( item[:barcode] )
+          requested_items << item if ( params[:itemBarcodes] && params[:itemBarcodes].include?( item[:barcode] ) )
         end
       end
       
