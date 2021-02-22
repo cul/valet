@@ -43,7 +43,7 @@ RSpec.describe 'Campus Scan' do
     params = { id: '123', campus: 'tc' }
     post campus_scan_index_path, params: params
 
-    expect(response).to redirect_to('https://library.tc.columbia.edu')
+    expect(response).to redirect_to('https://library.tc.columbia.edu/p/request-materials')
   end
 
   it 'redirects Law-campus patrons to Law website' do

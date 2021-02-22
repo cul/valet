@@ -20,7 +20,7 @@ module Service
       # FIRST - process the campus triage form.
       campus = params['campus']
       # TC - Teachers College Library
-      return 'https://library.tc.columbia.edu' if campus == 'tc'
+      return 'https://library.tc.columbia.edu/p/request-materials' if campus == 'tc'
       # LAW - Arthur W. Diamond Law Library
       return 'http://www.law.columbia.edu/library/services' if campus == 'law'
 
