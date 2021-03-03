@@ -1,7 +1,7 @@
 module Service
-  # This service is like Campus-Paging, but for FLI Partnership material.
-  # This service functions the same way, except for eligibiilty.
-  # The app_config stanza specifies SAC as the only permitted affil.
+  # This service is like Campus-Paging, but for FLI Partnership.
+  # It's only valid for FLIP holdings (bar,flip and mrr,flip),
+  # and the only permitted patron affil is SAC.
   class FlipPaging < Service::Base
 
     # Is the current patron allowed to use the Paging service?
@@ -12,6 +12,28 @@ module Service
       permitted_affils.each do |affil|
         return true if current_user.affils.include?(affil)
       end
+      return false
+    end
+
+    def bib_eligible?(bib_record = nil)
+      # Checking location means Valet needs to have it's own list of
+      # valid locations, which is redundant w/CLIO's list, which
+      # means double-maintentance and risk of getting out-of-sync.
+
+      # But -- we need it for this service.
+      # Because we want to list holdings from all valid locations,
+      # and want to OMIT holdings from any non-avery-onsite location
+
+      flip_holdings = bib_record.holdings.select do |holding|
+        @service_config[:locations].include?( holding[:location_code] )
+      end
+
+      return true if flip_holdings.present?
+
+      self.error = "This record has no FLI Partnership holdings.
+      <br><br>
+      This service is for the request of FLI Partnership materials only."
+
       return false
     end
 

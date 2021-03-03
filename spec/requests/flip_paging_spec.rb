@@ -34,8 +34,6 @@ RSpec.describe 'FLIP Paging' do
 
   end
 
-
-
   it 'redirects to REG patron to failure page' do
     sign_in FactoryBot.create(:happyuser)
     get flip_paging_path('123')
@@ -47,6 +45,14 @@ RSpec.describe 'FLIP Paging' do
     sign_in FactoryBot.create(:blockeduser)
     get flip_paging_path('123')
     expect(response).to redirect_to( APP_CONFIG[:flip_paging][:ineligible_url] )
+  end
+
+  it 'fails for non-FLIP material' do
+    user = FactoryBot.create(:happyuser)
+    user.affils = ['CUL_role-clio-SAC'] 
+    sign_in user
+    get flip_paging_path('123')
+    expect(response.body).to include('This record has no FLI Partnership holdings')
   end
 
 end
