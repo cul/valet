@@ -1,13 +1,14 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5'
+gem 'rails', '~> 6.0'
 
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 
 # Use SCSS for stylesheets
-gem 'sass-rails'
+# gem 'sass-rails'
+gem 'sass-rails', '~> 5.0'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
@@ -83,13 +84,14 @@ end
 
 # # Authentication
 # gem 'devise', '~> 3.0'
-gem 'devise', '~> 4.4.0'
+# gem 'devise', '~> 4.4.0'
+gem 'devise'
 
 # gem 'cul_omniauth'
 # gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-5'
-# gem 'cul_omniauth', path: '/Users/marquis/src/cul_omniauth'
-gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'cas-5.3'
-
+gem 'cul_omniauth', path: '/Users/marquis/src/cul_omniauth'
+# gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'cas-5.3'
+# gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-6'
 
 # Fetch ldap details - first name, last name, etc.
 gem 'net-ldap'
@@ -135,9 +137,10 @@ gem 'browser'
 # Some services (e.g., paging) want to log a sortable call number
 gem 'lcsort'
 
-# dependency of many other gems
-# need to pin to 1.10, due to old libc on CentOS 6
-gem 'nokogiri', '~> 1.10.0'
+# # dependency of many other gems
+# # need to pin to 1.10, due to old libc on CentOS 6
+# gem 'nokogiri', '~> 1.10.0'
+gem 'nokogiri'
 
 # now fixed.
 # # UNIX-5942 - work around spotty CUIT DNS

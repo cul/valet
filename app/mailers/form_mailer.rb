@@ -1,5 +1,5 @@
 class FormMailer < ApplicationMailer
-  add_template_helper(ValetRequestsHelper)
+  helper ValetRequestsHelper
 
   default from: 'noreply@library.columbia.edu'
 
