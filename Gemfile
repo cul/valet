@@ -82,7 +82,7 @@ group :development do
 end
 
 # # Authentication
-gem 'devise', '~> 4.4.0'
+gem 'devise', '~> 4.7.1'
 
 # gem 'cul_omniauth'
 # gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-5'
