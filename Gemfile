@@ -27,8 +27,8 @@ gem 'jquery-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
 
-# bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', group: :doc
+# # bundle exec rake doc:rails generates the API under doc/api.
+# gem 'sdoc', group: :doc
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt'
@@ -59,8 +59,8 @@ group :development do
   # gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'listen'
 
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
+  # # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  # gem 'spring'
 
   # browser-based live debugger and REPL
   # HAML REPL breaks in 2.7.0/2.7.1 ???
@@ -82,7 +82,6 @@ group :development do
 end
 
 # # Authentication
-# gem 'devise', '~> 3.0'
 gem 'devise', '~> 4.4.0'
 
 # gem 'cul_omniauth'
@@ -102,6 +101,9 @@ gem 'rsolr'
 
 # Parse the MARC data structure of our catalog records
 gem 'marc'
+
+# marc uses rexml, and rexml was unbundled from the stdlib in ruby 3
+gem 'rexml'
 
 # Normalization of ISBN (10 and 13), ISSN, and LCCN
 gem 'library_stdnums'
