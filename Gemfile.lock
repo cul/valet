@@ -339,7 +339,6 @@ DEPENDENCIES
   net-ldap
   nokogiri
   rails (~> 6.0)
-  rake
   rexml
   rsolr
   rspec-rails
