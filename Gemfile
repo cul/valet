@@ -87,10 +87,9 @@ gem 'devise'
 
 # gem 'cul_omniauth'
 # gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-5'
-# gem 'cul_omniauth', path: '/Users/marquis/src/cul_omniauth'
+gem 'cul_omniauth', path: '/Users/marquis/src/cul_omniauth'
 # gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'cas-5.3'
 # gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-6'
-gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'rails-6'
 
 # Fetch ldap details - first name, last name, etc.
 gem 'net-ldap'
@@ -147,8 +146,4 @@ gem 'nokogiri'
 # now fixed.
 # # UNIX-5942 - work around spotty CUIT DNS
 # gem 'resolv-hosts-dynamic'
-
-# Webpacker is the default JavaScript compiler for Rails 6
-gem 'webpacker'
-
 
