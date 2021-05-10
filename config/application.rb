@@ -11,7 +11,7 @@ VALET_VERSION = IO.read('VERSION').strip
 module Valet
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.0
+    config.load_defaults 6.0
 
     include Cul::Omniauth::FileConfigurable
 
