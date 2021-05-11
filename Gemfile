@@ -1,13 +1,15 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5'
+gem 'rails', '~> 6.0.0'
 
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 
 # Use SCSS for stylesheets
-gem 'sass-rails'
+# gem 'sass-rails'
+# sass-rails 6.x uses sassc, which won't build on our CentOS 6 VMs
+gem 'sass-rails', '~> 5.0'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
@@ -81,13 +83,15 @@ group :development do
   gem 'capistrano-passenger', require: false
 end
 
-# # Authentication
-gem 'devise', '~> 4.4.0'
+# Authentication
+# gem 'devise', '~> 4.4.0'
+gem 'devise'
 
 # gem 'cul_omniauth'
 # gem 'cul_omniauth', github: 'cul/cul_omniauth', branch: 'rails-5'
 # gem 'cul_omniauth', path: '/Users/marquis/src/cul_omniauth'
-gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'cas-5.3'
+# gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'cas-5.3'
+gem 'cul_omniauth', git: 'https://github.com/cul/cul_omniauth', branch: 'rails-6'
 
 
 # Fetch ldap details - first name, last name, etc.
