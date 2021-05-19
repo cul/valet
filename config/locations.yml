@@ -33,7 +33,8 @@ SW:  Social Work Library
 
 
 offsite_locations:
-  # location codes for the two ReCAP partners
+  # location codes for the three ReCAP partners
+  - scsbhl
   - scsbnypl
   - scsbpul
   # (hyphens are old pattern - no longer used?)

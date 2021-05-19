@@ -39,9 +39,13 @@ QK:
 #   If there is no 'available' list then the
 #   standard set (standard_delivery_locations) will be used.
 
-# Partner material
+# ReCAP Partner material
 # For now, Butler is the only valid delivery location.
 # This may change in the future.
+
+scsbhl:
+  default:  BU
+
 scsbnypl:
   default:  BU
 
