@@ -37,7 +37,7 @@ RSpec.describe 'Campus Scan' do
     expect(response).to redirect_to('https://ezproxy.cul.columbia.edu/login?url=https://columbia.illiad.oclc.org/illiad/zcu/illiad.dll?Action=10&CitedIn=CLIO_OPAC-DOCDEL&ESPNumber=3777209&Form=23&ISSN=&PhotoItemAuthor=Sokorski%2C+W%C5%82odzimierz&PhotoItemEdition=Wyd.+1.&PhotoItemPlace=Warszawa&PhotoItemPublisher=Pan%CC%81stwowy+Instytut+Wydawniczy&PhotoJournalTitle=Piotr&PhotoJournalYear=1976.&notes=http%3A%2F%2Fclio.columbia.edu%2Fcatalog%2F123')
   end
 
-  it 'redirects TC-campus patrons to Law website' do
+  it 'redirects TC-campus patrons to TC website' do
     sign_in FactoryBot.create(:happyuser)
 
     params = { id: '123', campus: 'tc' }
@@ -45,16 +45,6 @@ RSpec.describe 'Campus Scan' do
 
     expect(response).to redirect_to('https://library.tc.columbia.edu/p/request-materials')
   end
-
-  it 'redirects Law-campus patrons to Law website' do
-    sign_in FactoryBot.create(:happyuser)
-
-    params = { id: '123', campus: 'law' }
-    post campus_scan_index_path, params: params
-
-    expect(response).to redirect_to('http://www.law.columbia.edu/library/services')
-  end
-
 
   it 'redirects blocked patron to failure page' do
     sign_in FactoryBot.create(:blockeduser)

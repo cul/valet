@@ -21,8 +21,6 @@ module Service
       campus = params['campus']
       # TC - Teachers College Library
       return 'https://library.tc.columbia.edu/p/request-materials' if campus == 'tc'
-      # LAW - Arthur W. Diamond Law Library
-      return 'http://www.law.columbia.edu/library/services' if campus == 'law'
 
       # Otherwise, proceed with a redirect to OCLC ILLiad
       # MCC - Medical Center Campus, a.k.a., HSL
