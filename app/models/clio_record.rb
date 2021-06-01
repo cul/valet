@@ -382,7 +382,24 @@ class ClioRecord
   # @scsb_availability format:
   #   { barcode: availability, barcode: availability, ...}
   def fetch_scsb_availabilty
-    @scsb_availability ||= Recap::ScsbRest.get_bib_availability(owningInstitutionBibId, owningInstitution) || {}
+    if id.empty?
+      Rails.logger.error "ERROR: fetch_scsb_availabilty() called with null id"
+      return
+    end
+
+    # Default - assume this is Columbia offsite material
+    institution = 'CUL'
+    institution_id = id.to_s
+
+    # But if it's a SCSB Id...
+    if institution_id =~ /^SCSB\-/
+      institution = 'SCSB'
+      institution_id = institution_id.gsub(/SCSB-/, '')
+    end
+
+    @scsb_availability ||= Recap::ScsbRest.get_bib_availability(institution_id, institution) || {}
+    Rails.logger.debug "fetch_scsb_availabilty(#{id}): #{@scsb_availability}"
+    return @scsb_availability
   end
 
   # Fetch availability for each barcode from Voyager (via clio-backend)
