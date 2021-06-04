@@ -262,6 +262,8 @@ class ClioRecord
       @owningInstitution = 'NYPL'
     when 'scsb-pul', 'scsbpul'
       @owningInstitution = 'PUL'
+    when 'scsbhl'
+      @owningInstitution = 'HL'
     else
       @owningInstitution = 'CUL'
     end
