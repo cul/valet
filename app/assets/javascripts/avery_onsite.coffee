@@ -16,9 +16,9 @@
   if barcodes_count > 0 && checked_barcodes_count < 1
     errors.push "  * You must select at least one barcode."
 
-  # Avery Onsite use requires a seat reservation
-  if ($('#seatNumber').val().length == 0) || ($('#seatDate').val().length == 0) || ($('#seatTime').val().length == 0)
-    errors.push "  * You must fill in your seat reservation details (seat number, date, and time) before making an On-Site Use request"
+  # Avery Onsite use requires a date of visit
+  if $('#visitDate').val().length == 0
+    errors.push "  * You must fill in the date of your onsite visit when making an On-Site Use request"
   
   # IF WE HAVE ERRORS, alert the user, and fail the form validation
   if errors.length > 0

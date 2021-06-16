@@ -91,9 +91,7 @@ module Service
         requested_items: requested_items,
         patron_uni: current_user.uid,
         patron_email: current_user.email,
-        seatNumber: params[:seatNumber],
-        seatDate: params[:seatDate],
-        seatTime: params[:seatTime]
+        visitDate: params[:visitDate],
       }
       # mail request to staff
       FormMailer.with(mail_params).avery_onsite_request.deliver_now

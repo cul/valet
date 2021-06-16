@@ -5,16 +5,11 @@
 <h4>Avery On-Site Use</h4>
 
 <br>
-Avery is open by reservation only.  In order to access paged material, please book a 
 
-<strong>
-<a href='https://seats.library.columbia.edu/reserve/spaces/avery' target='_blank'>
-  seat&nbspreservation
-  <small><span class="glyphicon glyphicon-new-window"></span></small>
-</a>
-</strong>
-
- in advance of your visit.  On-site Use requests for onsite books will be filled in 1-2 business days, but offsite materials may take up to 4 days.  Please schedule your seat reservation accordingly.
+On-site Use requests for onsite books will be filled in 1-2 business days, 
+but offsite materials may take up to 4 days.
+<br> 
+Please schedule your visit accordingly.
 
 <br>
 <br>
@@ -32,28 +27,17 @@ Avery is open by reservation only.  In order to access paged material, please bo
   
 
   <div class='instructional_title'>
-    Seat Reservation Details
+    Visit Details
   </div>
   <div class='instructional_description'>
-    Make a seat reservation first, 
-    <u>then</u> complete this form and submit.
+    Please let us know when you would like to see the above material(s):
   </div>
 
-  <div class="row valet_request">
-    <div class='col-sm-2 col-xs-3'>
-      <label for='seatNumber' class='control-label'>Seat Number:</label>
-      <br>
-      <%= text_field_tag(:seatNumber, '', size: '10', class: 'form-control', disabled: false) %>
-    </div>
-    <div class='col-sm-2 col-xs-3'>
-      <label for='seatDate' class='control-label'>Date:</label>
-      <br>
-      <%= text_field_tag(:seatDate, '', size: '10', class: 'form-control', disabled: false) %>
-    </div>
-    <div class='col-sm-2 col-xs-3'>
-      <label for='seatTime' class='control-label'>Time:</label>
-      <br>
-      <%= text_field_tag(:seatTime, '', size: '10', class: 'form-control', disabled: false) %>
+  <div class='form-inline valet_request'>
+    <div class='form-group'>
+      <label for='visitDate' class='control-label'>Date:</label>
+      &nbsp;
+      <%= text_field_tag(:visitDate, '', size: '15', class: 'form-control', disabled: false, placeholder: 'MM/DD/YYYY') %>
     </div>
   </div>
 
