@@ -110,6 +110,15 @@ class ClioRecord
     trim_punctuation(title)
   end
 
+  # For some purposes (e.g., Borrow Direct) we want only 245$a (NEXT-1735)
+  def title_brief
+    return '' unless @marc_record && @marc_record['245']
+    subfieldA = @marc_record['245']['a'] || ''
+    title = subfieldA.strip
+    # return the cleaned up title
+    trim_punctuation(title)
+  end
+
   def author
     author_tokens = []
     %w(100 110 111).each do |field|
