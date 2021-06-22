@@ -49,7 +49,7 @@ module Service
       elsif bib_record.isbn.present?
         query = 'isbn=' + bib_record.isbn.first
       else
-        query = 'ti="' + bib_record.title + '"'
+        query = 'ti="' + bib_record.title_brief + '"'
         if bib_record.author.present?
           query += ' and au="' + bib_record.author + '"'
         end

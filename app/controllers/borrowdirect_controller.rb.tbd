@@ -92,7 +92,7 @@ class BorrowdirectController < ApplicationController
       logdata[:query] = 'isbn'
       query = 'isbn=' + bib_record.isbn.first
     else
-      query = 'ti="' + bib_record.title_brief + '"'
+      query = 'ti="' + bib_record.title + '"'
       logdata[:query] = 'ti'
       if bib_record.author.present?
         logdata[:query] = 'ti/au'
